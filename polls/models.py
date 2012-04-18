@@ -21,27 +21,27 @@ class Choice(models.Model):
         return self.choice
 
 class TrackName(models.Model):
-    trackName = models.CharField(max_length=200)
+    trackname = models.CharField(max_length=200)
 
 class SingleRaceDetails(models.Model):
-    trackName = models.ForeignKey(TrackName)
-    raceData = models.CharField(max_length=200)
-    roundNumber = models.IntegerField()
-    raceNumber = models.IntegerField()
-    raceDate = models.DateTimeField('date of the race')
-    uploadDate = models.DateTimeField('date of the race')
+    trackkey = models.ForeignKey(TrackName)
+    racedata = models.CharField(max_length=200)
+    roundnumber = models.IntegerField()
+    racenumber = models.IntegerField()
+    racedate = models.DateTimeField('date of the race')
+    uploaddate = models.DateTimeField('date of the race')
 
 # The a single racer, there name (probably not going be be unique by default)
 class RacerId(models.Model):
-    racerPreferredName = models.CharField(max_length=200)
+    racerpreferredname = models.CharField(max_length=200)
     
     
 class SingleRacerData(models.Model):
-    raceId = models.ForeignKey(SingleRaceDetails)
-    racerId = models.ForeignKey(RacerId)
-    raceLap = models.SmallIntegerField()
-    racePosition = models.SmallIntegerField()
-    raceLapTime = models.DecimalField(decimal_places=3, max_digits=5)
+    raceid = models.ForeignKey(SingleRaceDetails)
+    racerid = models.ForeignKey(RacerId)
+    racelap = models.SmallIntegerField()
+    raceposition = models.SmallIntegerField()
+    racelaptime = models.DecimalField(decimal_places=3, max_digits=5)
 
 
 
