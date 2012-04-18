@@ -3,7 +3,6 @@ Created on Jan 4, 2012
 
 @author: Anthony Honstain
 '''
-import random
 import unittest
 
 
@@ -122,9 +121,9 @@ class SingleRace(object):
 #            print self.lapRowsRaw
 
 
-        # ----------------------------------------------------
+        # ===================================================
         # Process the lapRowsRaw data
-        # ----------------------------------------------------
+        # ===================================================
         
         #print self.columnHeaders.split()
         for index in range(len(self.columnHeaders.split())):
@@ -162,27 +161,29 @@ class SingleRace(object):
         #print self.lapRowsTime[3]
         #print self.lapRowsPosition[3]
         
-        # ----------------------------------------------------
-        # Process the header data
-        # ----------------------------------------------------
-        #Scoring Software by www.RCScoringPro.com                10:32:24 PM  8/13/2011
-        #
-        #                             Bremerton R/C Raceway
-        #
-        #Stock Buggy A Main                                            Round# 3, Race# 5
-        #
-        #________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
-        #                  Behlen, kyle    #4      29     8:08.626     16.084           
-        #             Honstain, Anthony    #2      28     8:00.509     16.471           
-        #                  Fabie, Edwin    #8      27     8:04.445     16.787           
-        #                   Craig, Mike    #1      27     8:04.702     16.387      0.257
-        #                    Jim, Reeve    #9      27     8:15.222     17.005     10.777
-        #                   Yates, Paul    #7      26     8:01.765     17.382           
-        #              Haselberger, Joe    #6      26     8:10.132     16.962      8.367
-        #               Cantrell, Jason    #5      26     8:14.373     17.139     12.608
-        #                mcneal, pierre    #3      25     8:07.776     17.303           
-        #                     simon,joe    #10     25     8:13.158     17.903      5.382
         
+        # ====================================================
+        # Process the header data - Example
+        # ====================================================
+        """        
+        Scoring Software by www.RCScoringPro.com                10:32:24 PM  8/13/2011
+        
+                                     Bremerton R/C Raceway
+        
+        Stock Buggy A Main                                            Round# 3, Race# 5
+        
+        ________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
+                          Behlen, kyle    #4      29     8:08.626     16.084           
+                     Honstain, Anthony    #2      28     8:00.509     16.471           
+                          Fabie, Edwin    #8      27     8:04.445     16.787           
+                           Craig, Mike    #1      27     8:04.702     16.387      0.257
+                            Jim, Reeve    #9      27     8:15.222     17.005     10.777
+                           Yates, Paul    #7      26     8:01.765     17.382           
+                      Haselberger, Joe    #6      26     8:10.132     16.962      8.367
+                       Cantrell, Jason    #5      26     8:14.373     17.139     12.608
+                        mcneal, pierre    #3      25     8:07.776     17.303           
+                             simon,joe    #10     25     8:13.158     17.903      5.382
+        """
 
         # Get the date and time
         self.date = self.ParseDate(self.raceHeaderData_RAW[0])
