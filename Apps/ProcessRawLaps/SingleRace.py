@@ -130,7 +130,7 @@ class SingleRace(object):
             self.lapRowsTime.append([])
             self.lapRowsPosition.append([])    
         
-        lapWidth = self.lapRowsRaw[0][1:].find(' ') - 1
+        lapWidth = self.columnHeaders[1:].find(' ') - 1
             
         # INFO - at this stage, we are going to keep empty laps here, it is
         # usefull information for the user.
@@ -145,10 +145,12 @@ class SingleRace(object):
             racerIndex = 0
             while i < len(row):                  
                 # Print line debugging
-#                print "Row:'" + row + "'"
-#                print racerIndex
-#                print "i:", i, "'" + row[i:i+lapWidth + 1] + "'"
-                            
+                #print "Row:'" + row + "'"
+                #print "raceIndex:" + str(racerIndex) + " lapWidth:" + str(lapWidth)
+                #print "i:", i, "'" + row[i:i+lapWidth + 1] + "'" 
+                #print "lapRwosPos:" + str(self.lapRowsPosition)
+                #print self.columnHeaders
+
                 pos, lap = self.ParseLap(row[i:i+lapWidth + 1])
                 self.lapRowsPosition[racerIndex].append(pos)
                 self.lapRowsTime[racerIndex].append(lap)
@@ -201,11 +203,15 @@ class SingleRace(object):
             car = lineList[0]
             laps = lineList[1]
             racetime = lineList[2]
-            fastlap = lineList[3]
+            
+            fastlap = ""
             behind = ""
-            # Not everyone had a 'behind' field.
+            # Not everyone had a 'behind' or a 'fastlap' field.
+            if (len(lineList) > 3):
+                fastlap = lineList[3]
             if len(lineList) == 5:
                 behind = lineList[4]
+
             self.raceHeaderData.append({"Driver":driver, 
                                          "Car#":car, 
                                          "Laps":laps, 
@@ -480,6 +486,56 @@ class TestSingleRaceModified(unittest.TestCase):
                           "Behind":""})
         
         
+singleRaceEarlyDrop = '''Scoring Software by www.RCScoringPro.com                8:29:37 PM  01/14/2012
+
+                               TACOMA R/C RACEWAY
+
+MODIFIED SHORT COURSE B Main                                  Round# 3, Race# 18
+
+________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
+JONES, GREG			#2 		16		 5:33.539		 19.147		          
+LEONARD, DMITRI			#4 		15		 5:24.548		 19.540		          
+KILE, CORRY			#3 		14		 5:03.416		 19.153		          
+MIKE CRAIG			#1 		 0		    0.000		       		          
+
+ ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
+         1/24.85 3/27.50 2/26.13                                                
+         1/20.00 3/20.19 2/21.22                                                
+         1/20.41 2/21.93 3/22.72                                                
+         1/19.97 3/24.01 2/21.98                                                
+         1/20.28 3/20.81 2/20.87                                                
+         1/20.27 3/19.15 2/20.24                                                
+         1/20.29 3/21.15 2/19.61                                                
+         1/20.27 2/21.07 3/25.53                                                
+         1/20.00 2/21.00 3/20.11                                                
+         1/19.14 2/22.12 3/20.78                                                
+         1/20.27 3/20.87 2/19.54                                                
+         1/19.92 3/20.39 2/21.28                                                
+         1/23.70 3/23.00 2/21.27                                                
+         1/20.33 3/20.16 2/20.78                                                
+         1/21.26         2/22.43                                                
+         1/22.50                                                                
+ ------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+      0/     16/     14/     15/                                                
+     0.0  5:33.5  5:03.4  5:24.5                                                
+
+'''
+
+class TestSingleRaceModified(unittest.TestCase):
+
+    def setUp(self):        
+        self.SingleRace = SingleRace(singleRaceEarlyDrop.split('\n'), False)
+
+    def test_racerOne(self):
+        expectedLaps = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+        self.assertEqual(expectedLaps, self.SingleRace.lapRowsTime[0])
+
+    def test_racerTwo(self):
+        expectedLaps = ["24.85", "20.00", "20.41", "19.97", "20.28", "20.27", "20.29", "20.27", "20.00", "19.14", "20.27", "19.92", "23.70", "20.33", "21.26", "22.50"]
+        self.assertEqual(expectedLaps, self.SingleRace.lapRowsTime[1])
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
