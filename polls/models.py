@@ -1,5 +1,5 @@
 from django.db import models
-
+import datetime
 
 class Poll(models.Model):
     question = models.CharField(max_length=200)
@@ -20,11 +20,16 @@ class Choice(models.Model):
     def __unicode__(self):
         return self.choice
 
-
+class TrackName(models.Model):
+    trackName = models.CharField(max_length=200)
 
 class SingleRaceDetails(models.Model):
+    trackName = models.ForeignKey(TrackName)
     raceData = models.CharField(max_length=200)
+    roundNumber = models.IntegerField()
+    raceNumber = models.IntegerField()
     raceDate = models.DateTimeField('date of the race')
+    uploadDate = models.DateTimeField('date of the race')
 
 # The a single racer, there name (probably not going be be unique by default)
 class RacerId(models.Model):
@@ -35,6 +40,7 @@ class SingleRacerData(models.Model):
     raceId = models.ForeignKey(SingleRaceDetails)
     racerId = models.ForeignKey(RacerId)
     raceLap = models.SmallIntegerField()
+    racePosition = models.SmallIntegerField()
     raceLapTime = models.DecimalField(decimal_places=3, max_digits=5)
 
 
