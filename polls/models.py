@@ -40,8 +40,8 @@ class SingleRacerData(models.Model):
     raceid = models.ForeignKey(SingleRaceDetails)
     racerid = models.ForeignKey(RacerId)
     racelap = models.SmallIntegerField()
-    raceposition = models.SmallIntegerField()
-    racelaptime = models.DecimalField(decimal_places=3, max_digits=5)
+    raceposition = models.SmallIntegerField(null=True)
+    racelaptime = models.DecimalField(decimal_places=3, max_digits=6, null=True)
 
 
 

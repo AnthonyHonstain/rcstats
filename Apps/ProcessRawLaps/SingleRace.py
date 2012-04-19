@@ -200,7 +200,10 @@ class SingleRace(object):
             driver = line[:line.find("#")].strip()
             lineList = line[line.find("#"):].split()
             #print "lineList:" , lineList
-            car = lineList[0]
+            carRaw = lineList[0]
+            if (carRaw[0] != '#'):
+                raise Exception("Incorrect format for header data, execting a '#' in the car number, line: " + line)
+            car = carRaw[1:]
             laps = lineList[1]
             racetime = lineList[2]
             
@@ -356,7 +359,7 @@ class TestSingleRaceSimple(unittest.TestCase):
         
         self.assertEqual(self.SingleRace.raceHeaderData[-1], 
                          {"Driver":"TOM WAGGONER", 
-                          "Car#":"#9", 
+                          "Car#":"9", 
                           "Laps":"26", 
                           "RaceTime":"8:07.943", 
                           "Fast Lap":"17.063", 
@@ -397,7 +400,7 @@ class TestSingleRaceSimpleTextFile(unittest.TestCase):
         
         self.assertEqual(self.SingleRace.raceHeaderData[-1], 
                          {"Driver":"TOM WAGGONER", 
-                          "Car#":"#9", 
+                          "Car#":"9", 
                           "Laps":"26", 
                           "RaceTime":"8:07.943", 
                           "Fast Lap":"17.063", 
@@ -479,7 +482,7 @@ class TestSingleRaceModified(unittest.TestCase):
         
         self.assertEqual(self.SingleRace.raceHeaderData[-1], 
                          {"Driver":"MATESA, TANNER", 
-                          "Car#":"#9", 
+                          "Car#":"9", 
                           "Laps":"4", 
                           "RaceTime":"1:20.392", 
                           "Fast Lap":"17.097", 
