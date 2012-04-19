@@ -53,17 +53,18 @@ class SingleRace(object):
     '''
             
 
-    def __init__(self, singleRaceLines, verbose):
+    def __init__(self, filename, singleRaceLines):
         '''
         Constructor
         '''
         # The raw data rows from the text file.
         #     HAVE NOT BEEN PARSED YET
-        self.raceHeaderData_RAW = []
-        self.columnHeaders = ""
-        self.lapRowsRaw = []
-        self.trailingLapRows = []
+        self._raceHeaderData_RAW = []
+        self._columnHeaders = ""
+        self._lapRowsRaw = []
+        self._trailingLapRows = []
         
+        self.filename = filename
         # The refined structures.
         #________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
         #                   Behlen, kyle    #4      29     8:08.626     16.084           
@@ -88,7 +89,7 @@ class SingleRace(object):
                 # ___1___ ___2___ ___3___ ___4___ ___5___ 
                 if not line.find('__1__'):
                     raise Exception("The column header data spilled into a new line")
-                self.columnHeaders = line
+                self._columnHeaders = line
                 lapData = True
                 
             # The trailing data is redundant
@@ -99,42 +100,42 @@ class SingleRace(object):
             # Get the laps in row format
             elif lapData:
                 # Warning - we dont want to blanket strip this (white space matters)
-                self.lapRowsRaw.append(line.strip('\n'))
+                self._lapRowsRaw.append(line.strip('\n'))
                 
             # Get race header data.
             if not lapData:
                 # 3/17.20 2/20.37 10/18.1 1/20.19 
-                self.raceHeaderData_RAW.append(line)
+                self._raceHeaderData_RAW.append(line)
             
 #        if verbose:
-#            print "self.raceHeaderData_RAW"
+#            print "self._raceHeaderData_RAW"
 #            print "-"*20
-#            for line in self.raceHeaderData_RAW:
+#            for line in self._raceHeaderData_RAW:
 #                print line.strip('\n')
 #            
-#            print "self.columnHeaders"
+#            print "self._columnHeaders"
 #            print "-"*20
-#            print self.columnHeaders
+#            print self._columnHeaders
 #            
-#            print "self.lapRowsRaw"
+#            print "self._lapRowsRaw"
 #            print "-"*20
-#            print self.lapRowsRaw
+#            print self._lapRowsRaw
 
 
         # ===================================================
-        # Process the lapRowsRaw data
+        # Process the _lapRowsRaw data
         # ===================================================
         
-        #print self.columnHeaders.split()
-        for index in range(len(self.columnHeaders.split())):
+        #print self._columnHeaders.split()
+        for index in range(len(self._columnHeaders.split())):
             self.lapRowsTime.append([])
             self.lapRowsPosition.append([])    
         
-        lapWidth = self.columnHeaders[1:].find(' ') - 1
+        lapWidth = self._columnHeaders[1:].find(' ') - 1
             
         # INFO - at this stage, we are going to keep empty laps here, it is
         # usefull information for the user.
-        for row in self.lapRowsRaw:
+        for row in self._lapRowsRaw:
             # Need to parse the row
             # Example:3/3.804 1/2.936 7/6.013 2/3.487 4/4.118 6/5.817 10/7.72 5/4.512 8/6.310 9/6.941
                         
@@ -149,7 +150,7 @@ class SingleRace(object):
                 #print "raceIndex:" + str(racerIndex) + " lapWidth:" + str(lapWidth)
                 #print "i:", i, "'" + row[i:i+lapWidth + 1] + "'" 
                 #print "lapRwosPos:" + str(self.lapRowsPosition)
-                #print self.columnHeaders
+                #print self._columnHeaders
 
                 pos, lap = self.ParseLap(row[i:i+lapWidth + 1])
                 self.lapRowsPosition[racerIndex].append(pos)
@@ -188,13 +189,13 @@ class SingleRace(object):
         """
 
         # Get the date and time
-        self.date = self.ParseDate(self.raceHeaderData_RAW[0])
+        self.date = self.ParseDate(self._raceHeaderData_RAW[0])
         
-        self.trackName = self.raceHeaderData_RAW[2].strip()
+        self.trackName = self._raceHeaderData_RAW[2].strip()
         
-        self.raceClass, self.roundNumber, self.raceNumber = self.ParseClassRndData(self.raceHeaderData_RAW[4])
+        self.raceClass, self.roundNumber, self.raceNumber = self.ParseClassRndData(self._raceHeaderData_RAW[4])
         
-        individualResult = self.raceHeaderData_RAW[7:]
+        individualResult = self._raceHeaderData_RAW[7:]
         #print "individualResult" + individualResult.__str__()
         for line in individualResult[:-1]:
             driver = line[:line.find("#")].strip()
@@ -226,6 +227,11 @@ class SingleRace(object):
         #self.roundNumber
         #self.raceNumber
         #self.raceHeaderData 
+
+        # *******************************************************
+        # Logging code - need to implement logging in this module.
+        # *******************************************************
+        '''
         if verbose:
             print "self.date: " + str(self.date)
             print "self.trackName: " + str(self.trackName)
@@ -247,7 +253,7 @@ class SingleRace(object):
             print "-"*20
             for line in  self.lapRowsPosition:
                 print line
-            
+         '''
    
     def ParseDate(self, rawDateLine):
         #Scoring Software by www.RCScoringPro.com                10:32:24 PM  8/13/2011
@@ -331,7 +337,7 @@ TOM WAGGONER            #9         26         8:07.943         17.063           
 class TestSingleRaceSimple(unittest.TestCase):
 
     def setUp(self):        
-        self.SingleRace = SingleRace(singleRaceSimple.split('\n'), False)
+        self.SingleRace = SingleRace("test_filename", singleRaceSimple.split('\n'))
 
     def test_racerOne(self):
         # Note - this test verifies racer one, it expects empty laps at the end
@@ -370,9 +376,13 @@ class TestSingleRaceSimple(unittest.TestCase):
 class TestSingleRaceSimpleTextFile(unittest.TestCase):
 
     def setUp(self):   
-        with open("TestFile_SingleRaceSimple.txt") as f: 
+        self.filename = "TestFile_SingleRaceSimple.txt"
+        with open(self.filename) as f: 
             content = f.readlines()     
-        self.SingleRace = SingleRace(content, False)
+        self.SingleRace = SingleRace(self.filename, content)
+
+    def test_filename(self):
+        self.assertEqual(self.filename, self.SingleRace.filename)
 
     def test_racerOne(self):
         # Note - this test verifies racer one, it expects empty laps at the end
@@ -455,7 +465,7 @@ MATESA, TANNER            #9          4         1:20.392         17.097
 class TestSingleRaceModified(unittest.TestCase):
 
     def setUp(self):        
-        self.SingleRace = SingleRace(singleRaceModified.split('\n'), False)
+        self.SingleRace = SingleRace("testfilename", singleRaceModified.split('\n'))
 
     def test_racerOne(self):
         # Note - this test verifies racer one, it expects empty laps at the end
@@ -527,7 +537,7 @@ MIKE CRAIG			#1 		 0		    0.000
 class TestSingleRaceModified(unittest.TestCase):
 
     def setUp(self):        
-        self.SingleRace = SingleRace(singleRaceEarlyDrop.split('\n'), False)
+        self.SingleRace = SingleRace("t1", singleRaceEarlyDrop.split('\n'))
 
     def test_racerOne(self):
         expectedLaps = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
