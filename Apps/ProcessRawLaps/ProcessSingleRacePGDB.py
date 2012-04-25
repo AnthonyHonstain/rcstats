@@ -119,14 +119,14 @@ def ProcessSingleRacePGDB(singleRaceData, database, user, password):
     sql.close()
 
 
-def _connectSqlWithPGDB(databse, user, password):
+def _connectSqlWithPGDB(database_name, user_name, passwd):
     """
     Opens the necessary connection to postgresql and returns the pgdb object. 
     """        
     # Does not look like I need the host or port.
-    sql = pgdb.connect(database='django_lapTracker', 
-                     user='asymptote', 
-                     password='perrin25') #host='127.0.0.0', port=8080)
+    sql = pgdb.connect(database=database_name, 
+                     user=user_name, 
+                     password=passwd) #host='127.0.0.0', port=8080)
 
     #print "PrintLineDebug - sql: " + str(sql)    
     return sql

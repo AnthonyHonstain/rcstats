@@ -534,7 +534,7 @@ MIKE CRAIG			#1 		 0		    0.000
 
 '''
 
-class TestSingleRaceModified(unittest.TestCase):
+class TestSingleRaceRacerDropped(unittest.TestCase):
 
     def setUp(self):        
         self.SingleRace = SingleRace("t1", singleRaceEarlyDrop.split('\n'))
