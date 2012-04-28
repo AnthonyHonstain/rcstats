@@ -29,7 +29,7 @@ class SingleRaceDetails(models.Model):
     roundnumber = models.IntegerField()
     racenumber = models.IntegerField()
     racedate = models.DateTimeField('date of the race')
-    uploaddate = models.DateTimeField('date of the race')
+    uploaddate = models.DateTimeField('date the race was uploaded')
 
 # The a single racer, there name (probably not going be be unique by default)
 class RacerId(models.Model):
