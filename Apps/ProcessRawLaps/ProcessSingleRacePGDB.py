@@ -45,7 +45,7 @@ import pgdb
 import time
 import sys
 import logging
-
+import math
 
 
 # set up logging to file - see previous section for more details
@@ -65,12 +65,25 @@ console.setFormatter(formatter)
 logger1 = logging.getLogger('UploadToPostgres')
 
 
+# Database table names
+_trackName_tblname = "polls_trackname"
+_trackName_column_trackname = "trackname"
 
-def ProcessSingleRacePGDB(singleRaceData, database, user, password):
+_racerName_tblname = "polls_racerid"
+_racerName_column_trackname = "racerpreferredname" 
+
+_lapTimes_tablname = "polls_laptimes"
+
+_raceDetails_tblname = "polls_singleracedetails"
+
+_raceResults_tblname = "polls_singleraceresults"
+
+
+def ProcessSingleRacePGDB(singleRaceData, database_name, user_name, passwd):
     # Get the SQL connection
-    sql = _connectSqlWithPGDB(database, user, password)
-    
-
+    sql = pgdb.connect(database=database_name, 
+                       user=user_name, 
+                       password=passwd) #host='127.0.0.0', port=8080)
     """
     The following code will insert the singleRaceData into the database, it will use multiple
     select and inserts to ensure the information for the race is stored in the 
@@ -78,28 +91,36 @@ def ProcessSingleRacePGDB(singleRaceData, database, user, password):
     """
 
     try:
-        trackName_dbname = "polls_trackname"
-        trackName_column_trackname = "trackname"
-
-        trackName_selectcmd = "select * from " + trackName_dbname + " where " + trackName_column_trackname + " like '" + singleRaceData.trackName + "';"
-        trackName_insertcmd = "insert into " + trackName_dbname + " values (nextval('" + trackName_dbname + "_id_seq'), '" + singleRaceData.trackName + "');"
+        trackName_selectcmd = "select * from " + _trackName_tblname +\
+            " where " + _trackName_column_trackname +\
+            " like '" + singleRaceData.trackName + "';"
+              
+        trackName_insertcmd = "insert into " + _trackName_tblname +\
+            " values (nextval('" + _trackName_tblname + "_id_seq'), '" +\
+            singleRaceData.trackName + "');"
 
         # I need to see if this is a known track, and if it is, grab the key
         # for the insert of the race data.
         trackKey = _insertRetrieveKey(sql, trackName_selectcmd, trackName_insertcmd)
         logger1.debug("Processed trackName:{0} trackKey:{1}".format(singleRaceData.trackName, trackKey))
-
-        racerName_dbname = "polls_racerid"
-        racerName_column_trackname = "racerpreferredname"
       
         # For each racer, we need to insert them if they are not already.
         for headerDict in singleRaceData.raceHeaderData:
-            racerName_selectcmd = "select * from " + racerName_dbname + " where " + racerName_column_trackname + " like '" + headerDict['Driver'] + "';"
-            racerName_insertcmd = "insert into " + racerName_dbname + " values (nextval('" + racerName_dbname + "_id_seq'), '" + headerDict['Driver'] + "');"
+            
+            racerName_selectcmd = "select * from " + _racerName_tblname +\
+                " where " + _racerName_column_trackname +\
+                " like '" + headerDict['Driver'] + "';"
+            
+            racerName_insertcmd = "insert into " + _racerName_tblname +\
+                " values (nextval('" + _racerName_tblname + "_id_seq'), '" +\
+                headerDict['Driver'] + "');"
         
             headerDict['racerKey'] = _insertRetrieveKey(sql, racerName_selectcmd, racerName_insertcmd)
             #print "debugging - racerKey:", headerDict['racerKey']
             logger1.debug("Processed racer:{0} raceKey:{1}".format(headerDict['Driver'], headerDict['racerKey']))
+
+        # We need to calculate the length of the race.
+        racelength = _CalculateRaceLength(singleRaceData.raceHeaderData)
 
         # Now that we know the track and the racers are in the database, insert the race.
         racedetailskey = _insert_singleRaceDetails(sql, 
@@ -107,29 +128,46 @@ def ProcessSingleRacePGDB(singleRaceData, database, user, password):
                                                   singleRaceData.raceClass, 
                                                   singleRaceData.roundNumber,
                                                   singleRaceData.raceNumber,
-                                                  singleRaceData.date)
+                                                  singleRaceData.date,
+                                                  racelength)
     
         # Now we need to insert the lap data for each racer.
-        #    self.lapRowsTime = [] # List of Lists
-        #    self.lapRowsPosition = []
-        _insertLapData(sql, singleRaceData.raceHeaderData, racedetailskey, singleRaceData.lapRowsTime, singleRaceData.lapRowsPosition)
-
-    except Exception:
-        logger1.error("Failed to upload file: {0} raceClass: {1}".format(singleRaceData.filename, singleRaceData.raceClass))
+        #      lapRowsTime = [] # List of Lists
+        _insertLapData(sql, 
+                       singleRaceData.raceHeaderData, 
+                       racedetailskey, 
+                       singleRaceData.lapRowsTime, 
+                       singleRaceData.lapRowsPosition)
+        
+        _insert_singleRaceResults(sql, racedetailskey, singleRaceData.raceHeaderData)
+        
+    except Exception as e:
+        errortxt = "Failed to upload file: {0} raceClass: {1} exception: {2}"
+        logger1.error(errortxt.format(singleRaceData.filename, 
+                                      singleRaceData.raceClass,
+                                      str(e)))
     sql.close()
 
 
-def _connectSqlWithPGDB(database_name, user_name, passwd):
-    """
-    Opens the necessary connection to postgresql and returns the pgdb object. 
-    """        
-    # Does not look like I need the host or port.
-    sql = pgdb.connect(database=database_name, 
-                     user=user_name, 
-                     password=passwd) #host='127.0.0.0', port=8080)
-
-    #print "PrintLineDebug - sql: " + str(sql)    
-    return sql
+def _CalculateRaceLength(raceHeaderData):
+    '''
+    Look at all the racetimes and take largest number of minutes (note: we only
+    look at the number of minutes in the race, not the number of seconds).
+    
+    Some people may be recorded as not going the entire race time, or have no
+    race time at all.
+    '''
+    maxNumMinutes = 0
+    
+    for racer in raceHeaderData:
+        if (racer["RaceTime"] == ''):
+            continue
+        else:
+            numMin = int(racer["RaceTime"].split(':')[0])
+            if numMin > maxNumMinutes:
+                maxNumMinutes = numMin
+    
+    return maxNumMinutes
 
 
 def _insertLapData(sql, raceHeaderData, raceDetailskey, lapRowsTime, lapRowsPosition):
@@ -150,8 +188,8 @@ def _insertLapData(sql, raceHeaderData, raceDetailskey, lapRowsTime, lapRowsPosi
                 lapRowsTime[index][row] = 'null'
 
             #  id | raceid_id | racerid_id | racelap | raceposition | racelaptime
-            rawcmd = "insert into polls_singleracerdata values " +\
-                "( nextval('polls_singleracerdata_id_seq'), {0}, {1}, {2}, {3}, {4})"
+            rawcmd = "insert into " + _lapTimes_tablname + " values ( " +\
+                "nextval('" + _lapTimes_tablname + "_id_seq'), {0}, {1}, {2}, {3}, {4})"
             cmd = rawcmd.format(raceDetailskey, 
                                 racer['racerKey'], 
                                 row, 
@@ -205,8 +243,8 @@ def _insertRetrieveKey(sql, selectcmd, insertcmd):
     return results[0][0]
 
 
-def _insert_singleRaceDetails(sql, trackKey, className, roundNum, raceNum,  date):
-
+def _insert_singleRaceDetails(sql, trackKey, className, roundNum, raceNum,  date, racelength):
+    # Logging first, since alot of problems can come from this insert.
     logger1.debug("Processing  racedetails className:{0} roundNum:{1} raceNum:{2} date:{3}".format(
             className, 
             roundNum,
@@ -250,8 +288,9 @@ vvv        strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime())
     # Befor we insert, we should see if this already exists in the database
     cur = sql.cursor()
     #id | trackkey_id |      racedata      | roundnumber | racenumber |        racedate        |       uploaddate       
-    rawcmd = "SELECT * FROM polls_singleracedetails WHERE " +\
-        " trackkey_id = {0} AND racedata LIKE '{1}' AND roundnumber = {2} AND racenumber = {3} AND racedate = '{4}'"
+    rawcmd = "SELECT * FROM " + _raceDetails_tblname +\
+        " WHERE  trackkey_id = {0} AND racedata LIKE '{1}' " +\
+        "AND roundnumber = {2} AND racenumber = {3} AND racedate = '{4}'"
     cmd = rawcmd.format(trackKey, className, roundNum, raceNum, formatedtime)
     cur.execute(cmd)
     results = cur.fetchall()
@@ -270,18 +309,28 @@ vvv        strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime())
         raise Exception("The race has already been processed into the DB")
 
     cur = sql.cursor()
-    rawcmd = "insert into polls_singleracedetails values " +\
-        "( nextval('polls_singleracedetails_id_seq'), {0}, '{1}', {2}, {3}, '{4}', '{5}')"
-    cmd = rawcmd.format(trackKey, className, roundNum, raceNum, formatedtime, currenttime)
+    rawcmd = "insert into " + _raceDetails_tblname + " values " +\
+        "( nextval('" + _raceDetails_tblname + "_id_seq'), " +\
+        "{0}, '{1}', {2}, {3}, '{4}', '{5}', {6})"
+        
+    cmd = rawcmd.format(trackKey, 
+                        className, 
+                        roundNum, 
+                        raceNum, 
+                        formatedtime, 
+                        currenttime,
+                        racelength)
     cur.execute(cmd)    
     cur.close()
     sql.commit()
     
-
+    
     cur = sql.cursor()
     #id | trackkey_id |      racedata      | roundnumber | racenumber |        racedate        |       uploaddate       
-    rawcmd = "SELECT id FROM polls_singleracedetails WHERE " +\
-        " trackkey_id = {0} AND racedata LIKE '{1}' AND roundnumber = {2} AND racenumber = {3} AND racedate = '{4}'"
+    rawcmd = "SELECT id FROM " + _raceDetails_tblname + " WHERE " +\
+        " trackkey_id = {0} AND racedata LIKE '{1}' AND roundnumber = {2} " +\
+        " AND racenumber = {3} AND racedate = '{4}'"
+    
     cmd = rawcmd.format(trackKey, className, roundNum, raceNum, formatedtime)
     cur.execute(cmd)
     results = cur.fetchall()
@@ -289,7 +338,66 @@ vvv        strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime())
     return results[0][0]
 
 
+def _insert_singleRaceResults(sql, raceDetailsKey, raceHeaderData):
+       
+    '''
+    Warning - to fields to be concerned about -
+        'RaceTime' - Because it may have '0.000'
+        'Fast Lap' - Because it may be blank.
+            _________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
+            John Doe            #1          0            0.000
+        'Behind' - Because it may not exist.
+        
+    Example of the data structure we will work with here:
+                          [{"Driver":"TOM WAGGONER", 
+                          "Car#":"9", 
+                          "Laps":"26", 
+                          "RaceTime":"8:07.943", 
+                          "Fast Lap":"17.063", 
+                          "Behind":"6.008",
+                          "Final Position":9} , ...]
+    '''
+    # We are assuming that the check to see if this race was already inserted was
+    # done already (when the raceDetailsKey was retrieved).
+    cur = sql.cursor()
     
-   
+    #rcraceperformance=> select * from polls_singleraceresults;
+    #id | raceid_id | racerid_id | carnum | lapcount | racetime | fastlap | behind | finalpos 
 
+    insert = "INSERT INTO " + _raceResults_tblname +\
+        " (id, raceid_id, racerid_id, carnum, lapcount, " +\
+        "racetime, fastlap, behind, finalpos) " +\
+        "VALUES ( " +\
+        "nextval('" + _trackName_tblname + "_id_seq'), " +\
+        "%(raceid_id)s, " +\
+        "%(racerid_id)s, " +\
+        "%(carnum)s, " +\
+        "%(lapcount)s, " +\
+        "%(racetime)s, " +\
+        "%(fastlap)s, " +\
+        "%(behind)s, " +\
+        "%(finalpos)s);"
+        
+    params = []
+    # For each racer in the raceHeaderData
+    for racer in raceHeaderData:
+        if (racer['RaceTime'] == ''):
+            racer['RaceTime'] = None
+        if (racer['Fast Lap'] == ''):
+            racer['Fast Lap'] = None
+        if (racer['Behind'] == ''):
+            racer['Behind'] = None
+           
+        params.append({ 'raceid_id': raceDetailsKey, 
+                        'racerid_id': racer['racerKey'],
+                        'carnum': racer['Car#'], 
+                        'lapcount': racer['Laps'], 
+                        'racetime': racer['RaceTime'],
+                        'fastlap': racer['Fast Lap'],
+                        'behind': racer['Behind'],
+                        'finalpos': racer['Final Position']})
+        
+    cur.executemany(insert, params)
+    cur.close()
+    sql.commit()
 

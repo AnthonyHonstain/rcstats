@@ -77,6 +77,27 @@ class SingleRace(object):
         self.raceHeaderData = [] # List of Dictionaries
         self.lapRowsTime = [] # List of Lists
         self.lapRowsPosition = []
+           
+        '''     
+        # Some race results have the pace for the lap included in the results
+         ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
+         6/37.57 5/32.86 4/31.55         3/29.97 2/29.45 1/29.18                        
+         10/15.7 11/01.4 12/18.7         13/29.7 13/22.8 13/19.3                        
+
+         6/20.12 5/22.57 4/20.81         1/19.34 3/22.50 2/22.56                        
+         13/15.1 13/00.3 14/06.5         15/09.8 14/03.7 14/02.1                        
+
+         6/19.56 5/20.44 4/21.30         1/20.43 3/20.52 2/19.76                        
+         14/00.6 15/19.3 15/08.3         16/12.0 15/02.3 16/21.3                        
+
+         6/24.54 4/21.61 3/19.91         1/19.21 2/19.79 5/28.67
+         
+         # We want to check if laps 3,6,9 are all empty
+        EXAMPLE - print singleRaceLines
+         '/37.57 5/32.86 4/31.55         3/29.97 2/29.45 1/29.18', 
+         ' 10/15.7 11/01.4 12/18.7         13/29.7 13/22.8 13/19.3', 
+         '',
+        '''
                 
         # Process the file lines into initial structures.
         lapData = False
@@ -91,6 +112,15 @@ class SingleRace(object):
                     raise Exception("The column header data spilled into a new line")
                 self._columnHeaders = line
                 lapData = True
+                
+                # Check to see if pace data is mixed in - this is a strong indicator.
+                index = singleRaceLines.index(line)
+                if (singleRaceLines[index + 3] == '' and 
+                    singleRaceLines[index + 6] == '' and 
+                    singleRaceLines[index + 9] == ''):
+                    
+                    raise Exception("This file format not supported, cannot mix pace data in with lap times.")
+                
                 
             # The trailing data is redundant
             elif lapData and (line.find('-----') != -1):
@@ -196,16 +226,25 @@ class SingleRace(object):
         self.raceClass, self.roundNumber, self.raceNumber = self.ParseClassRndData(self._raceHeaderData_RAW[4])
         
         individualResult = self._raceHeaderData_RAW[7:]
+        finalRacePosition = 0;
+        
         #print "individualResult" + individualResult.__str__()
         for line in individualResult[:-1]:
+            finalRacePosition += 1
             driver = line[:line.find("#")].strip()
-            lineList = line[line.find("#"):].split()
+            
+            # Cut off the racer names to simplify things.
+            racedata = line[line.find("#"):]
+            lineList = racedata.split()
+                                
             #print "lineList:" , lineList
             carRaw = lineList[0]
             if (carRaw[0] != '#'):
                 raise Exception("Incorrect format for header data, execting a '#' in the car number, line: " + line)
             car = carRaw[1:]
             laps = lineList[1]
+            
+            # WARNING - it is possible to have a fast lap, but NO racetime.
             racetime = lineList[2]
             
             fastlap = ""
@@ -216,12 +255,22 @@ class SingleRace(object):
             if len(lineList) == 5:
                 behind = lineList[4]
 
-            self.raceHeaderData.append({"Driver":driver, 
+            if (racetime.find(':') >= 0):
+                self.raceHeaderData.append({"Driver":driver, 
+                                             "Car#":car, 
+                                             "Laps":laps, 
+                                             "RaceTime":racetime, 
+                                             "Fast Lap":fastlap, 
+                                             "Behind":behind,
+                                             "Final Position":finalRacePosition})
+            else:
+                self.raceHeaderData.append({"Driver":driver, 
                                          "Car#":car, 
                                          "Laps":laps, 
-                                         "RaceTime":racetime, 
-                                         "Fast Lap":fastlap, 
-                                         "Behind":behind})
+                                         "RaceTime":'', 
+                                         "Fast Lap":racetime, 
+                                         "Behind":behind,
+                                         "Final Position":finalRacePosition})
 
         #self.class
         #self.roundNumber
@@ -350,7 +399,7 @@ class TestSingleRaceSimple(unittest.TestCase):
         expectedLaps = ["20.58", "17.09", "16.93", "17.11", "17.25", "17.25", "16.99", "17.44", "17.33", "17.56", "17.31", "17.35", "18.07", "17.31", "18.23", "17.40", "17.32", "17.15", "17.31", "17.47", "17.31", "17.42", "18.37", "17.47", "17.34", "17.36", "17.27", "17.14"]
 
         self.assertEqual(expectedLaps, self.SingleRace.lapRowsTime[1])
-
+#
     def test_racerTen(self):
         expectedLaps = ["23.92", "18.13", "17.26", "19.10", "18.50", "17.19", "19.47", "17.26", "17.34", "22.36", "17.75", "19.70", "18.20", "21.60", "17.80", "17.22", "17.19", "17.65", "17.12", "17.58", "18.30", "17.48", "17.91", "17.49", "23.20", "17.66", "", ""]
 
@@ -369,7 +418,8 @@ class TestSingleRaceSimple(unittest.TestCase):
                           "Laps":"26", 
                           "RaceTime":"8:07.943", 
                           "Fast Lap":"17.063", 
-                          "Behind":"6.008"})
+                          "Behind":"6.008",
+                          "Final Position":10})
 
 
 
@@ -414,7 +464,8 @@ class TestSingleRaceSimpleTextFile(unittest.TestCase):
                           "Laps":"26", 
                           "RaceTime":"8:07.943", 
                           "Fast Lap":"17.063", 
-                          "Behind":"6.008"})
+                          "Behind":"6.008",
+                          "Final Position":10})
         
 
 singleRaceModified ='''Scoring Software by www.RCScoringPro.com                10:36:55 PM  01/14/2012
@@ -496,7 +547,8 @@ class TestSingleRaceModified(unittest.TestCase):
                           "Laps":"4", 
                           "RaceTime":"1:20.392", 
                           "Fast Lap":"17.097", 
-                          "Behind":""})
+                          "Behind":"",
+                          "Final Position":9})
         
         
 singleRaceEarlyDrop = '''Scoring Software by www.RCScoringPro.com                8:29:37 PM  01/14/2012
@@ -535,7 +587,7 @@ MIKE CRAIG			#1 		 0		    0.000
 '''
 
 class TestSingleRaceRacerDropped(unittest.TestCase):
-
+ 
     def setUp(self):        
         self.SingleRace = SingleRace("t1", singleRaceEarlyDrop.split('\n'))
 
@@ -547,7 +599,168 @@ class TestSingleRaceRacerDropped(unittest.TestCase):
         expectedLaps = ["24.85", "20.00", "20.41", "19.97", "20.28", "20.27", "20.29", "20.27", "20.00", "19.14", "20.27", "19.92", "23.70", "20.33", "21.26", "22.50"]
         self.assertEqual(expectedLaps, self.SingleRace.lapRowsTime[1])
 
+singleRaceWithBrokeRacer = '''Scoring Software by www.RCScoringPro.com                9:10:24 PM  01/14/2012
 
+                               TACOMA R/C RACEWAY
+
+4WD MODIFIED A1 Main                                          Round# 3, Race# 22
+
+________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
+SCHOETLER, MICHAEL            #1         23         6:15.854         15.552                  
+SMITH, LUKE            #2         22         6:02.864         15.808                  
+Barnes, Marty            #3         22         6:07.925         15.906             5.061
+WALENTIA, JOHN            #5         22         6:11.373         16.058             8.509
+DIBRINO, ANDY            #4         21         6:00.911         15.940                  
+BRIAN MUNN            #6         21         6:05.274         16.200             4.363
+HONSTAIN, ANTHONY            #8         20         6:03.032         16.662                  
+MATESA, TANNER            #9         20         6:12.549         16.794             9.517
+AUSTIN SEIM            #7         19         6:00.231         16.821                  
+Gilley, Tres            #10         1           21.675                                 
+
+ ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
+         1/19.29 2/19.75 3/20.48 5/24.82 6/26.83 8/27.84 9/28.00 7/27.23 4/21.67
+ 1/34.59 2/16.38 3/16.58 4/16.56 5/17.24 6/17.17 9/22.09 8/19.50 7/18.80        
+ 3/20.47 1/16.36 2/17.13 4/18.92 5/16.96 6/16.54 9/17.50 7/17.30 8/21.02        
+ 3/16.10 1/15.95 2/16.21 4/16.16 5/16.60 6/16.92 9/20.37 7/16.83 8/18.06        
+ 3/16.23 1/16.11 2/16.46 4/16.51 5/16.29 6/16.83 9/18.54 7/16.66 8/18.99        
+ 3/15.55 1/15.80 2/15.90 4/16.75 5/16.69 6/17.77 9/18.69 7/16.92 8/17.18        
+ 3/15.82 1/16.19 2/16.32 4/16.21 5/16.54 6/17.10 9/18.83 7/17.66 8/19.18        
+ 2/16.22 1/15.99 3/17.15 5/21.69 4/16.45 6/17.29 9/17.39 7/17.37 8/18.34        
+ 2/15.68 1/16.01 3/16.24 5/16.06 4/16.39 6/16.68 9/17.73 7/18.47 8/18.11        
+ 2/15.73 1/17.36 3/16.38 5/16.22 4/16.33 6/16.63 9/20.26 7/19.29 8/17.18        
+ 2/15.90 1/15.86 3/16.59 5/16.32 4/16.32 6/16.37 9/17.91 7/17.53 8/17.43        
+ 2/16.05 1/16.57 3/16.32 5/15.94 4/16.23 6/16.33 9/17.59 7/16.74 8/19.66        
+ 2/16.03 1/16.04 3/16.51 5/19.00 4/16.39 6/16.20 9/17.98 7/16.73 8/17.58        
+ 2/15.99 1/15.80 3/16.10 5/16.51 4/16.24 6/17.00 9/17.98 7/16.81 8/18.84        
+ 2/15.95 1/16.21 3/16.42 5/17.65 4/16.86 6/17.63 9/17.79 7/17.33 8/17.05        
+ 2/15.79 1/15.99 3/16.68 5/17.70 4/16.06 6/17.61 9/18.40 7/17.71 8/17.88        
+ 1/17.01 2/18.32 3/16.56 5/17.23 4/16.37 6/16.66 9/17.62 7/17.14 8/16.79        
+ 1/15.79 2/16.78 3/16.09 5/16.29 4/16.51 6/17.15 9/18.83 7/16.99 8/17.77        
+ 1/16.05 2/16.18 3/17.97 5/16.28 4/17.32 6/16.63 9/16.82 7/16.92 8/17.27        
+ 1/16.03 2/17.22 3/17.44 5/16.14 4/16.21 6/17.16         7/21.04 8/18.10        
+ 1/15.80 2/16.20 3/16.05 5/16.22 4/16.38 6/16.69                                
+ 1/15.73 2/16.16 3/16.97         4/16.05                                        
+ 1/17.27                                                                        
+ ------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+     23/     22/     22/     21/     22/     21/     19/     20/     20/      1/
+  6:15.8  6:02.8  6:07.9  6:00.9  6:11.3  6:05.2  6:00.2  6:03.0  6:12.5    21.6
+'''
+
+class TestSingleRaceBrokeRacer(unittest.TestCase):
+
+    def setUp(self):        
+        self.SingleRace = SingleRace("testfilename", singleRaceWithBrokeRacer.split('\n'))
+        
+    def test_headerData(self):
+        self.assertEqual("TACOMA R/C RACEWAY", self.SingleRace.trackName)
+        #self.assertEqual("8:09:03 PM  01/14/2012", self.SingleRace.date)
+        self.assertEqual("4WD MODIFIED A1 Main", self.SingleRace.raceClass)
+        self.assertEqual("3", self.SingleRace.roundNumber)
+        self.assertEqual("22", self.SingleRace.raceNumber)
+        
+        # Gilley, Tres            #10         1           21.675                      
+        self.assertEqual(self.SingleRace.raceHeaderData[9], 
+                         {"Driver":"Gilley, Tres", 
+                          "Car#":"10", 
+                          "Laps":"1", 
+                          "RaceTime":"", 
+                          "Fast Lap":"21.675", 
+                          "Behind":"",
+                          "Final Position":10})
+        # SCHOETLER, MICHAEL            #1         23         6:15.854         15.552      
+        self.assertEqual(self.SingleRace.raceHeaderData[0], 
+                         {"Driver":"SCHOETLER, MICHAEL", 
+                          "Car#":"1", 
+                          "Laps":"23", 
+                          "RaceTime":"6:15.854", 
+                          "Fast Lap":"15.552", 
+                          "Behind":"",
+                          "Final Position":1})
+        
+        
+singleRaceWithPaceData = '''Scoring Software by www.RCScoringPro.com                10:05:41 PM  03/18/2011
+
+                               TACOMA R/C RACEWAY
+
+STOCK BUGGY B Main                                            Round# 3, Race# 1
+
+________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
+FRANK, JON            #5         18         6:09.135         19.183                  
+JOHNSON, JJ            #6         18         6:16.021         19.456             6.886
+CADDELL, ANDREW            #3         17         6:05.638         19.211                  
+JOHNSON, JAMES            #7         16         5:40.504         18.829                  
+MARGESON, EVAN            #1         16         6:06.879         19.568            26.375
+BUTLER, BRANDON            #2         15         6:12.022         19.415                  
+
+ ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
+ 6/37.57 5/32.86 4/31.55         3/29.97 2/29.45 1/29.18                        
+ 10/15.7 11/01.4 12/18.7         13/29.7 13/22.8 13/19.3                        
+
+ 6/20.12 5/22.57 4/20.81         1/19.34 3/22.50 2/22.56                        
+ 13/15.1 13/00.3 14/06.5         15/09.8 14/03.7 14/02.1                        
+
+ 6/19.56 5/20.44 4/21.30         1/20.43 3/20.52 2/19.76                        
+ 14/00.6 15/19.3 15/08.3         16/12.0 15/02.3 16/21.3                        
+
+ 6/24.54 4/21.61 3/19.91         1/19.21 2/19.79 5/28.67                        
+ 15/21.8 15/05.6 16/14.3         17/18.1 16/09.0 15/15.7                        
+
+ 5/20.36 6/27.97 3/20.23         1/19.82 2/19.94 4/20.20                        
+ 15/06.5 15/16.4 16/04.2         17/09.8 17/21.5 15/01.1                        
+
+ 5/19.68 6/20.04 3/19.64         1/20.17 2/19.45 4/18.82                        
+ 16/18.3 15/03.7 17/18.1         17/05.4 17/13.0 16/11.2                        
+
+ 6/23.51 5/19.41 3/19.21         1/20.24 2/20.38 4/19.17                        
+ 16/18.0 16/16.9 17/10.7         17/02.3 17/09.2 16/02.0                        
+
+ 5/23.20 6/26.41 3/19.66         1/19.59 2/19.87 4/19.09                        
+ 16/17.1 16/22.6 17/06.2         18/19.8 17/05.3 17/17.1                        
+
+ 5/20.18 6/23.97 2/20.40         1/23.43 3/22.77 4/21.67                        
+ 16/11.1 16/22.7 17/04.0         17/03.1 17/07.7 17/16.2                        
+
+ 5/22.65 6/24.61 2/20.63         1/20.93 3/19.65 4/18.97                        
+ 16/10.3 16/23.8 17/02.7         17/02.4 17/04.4 17/10.8                        
+
+ 5/24.19 6/28.28 2/19.58         1/19.18 3/19.45 4/19.32                        
+ 16/11.8 15/05.7 17/00.0         18/20.2 17/01.3 17/06.9                        
+
+ 5/21.53 6/26.16 2/20.39         1/19.26 3/20.09 4/19.92                        
+ 16/09.5 15/07.9 18/20.0         18/17.4 18/20.8 17/04.6                        
+
+ 5/21.30 6/28.63 4/24.88         1/19.86 2/21.92 3/20.53                        
+ 16/07.3 15/12.7 17/03.8         18/15.9 17/00.7 17/03.4                        
+
+ 5/26.81 6/23.90 4/19.73         1/19.38 2/19.90 3/19.87                        
+ 16/11.7 15/11.6 17/01.8         18/13.9 18/20.2 17/01.6                        
+
+ 5/21.04 6/25.10 4/26.10         1/19.67 2/19.63 3/19.90                        
+ 16/09.4 15/12.0 17/07.3         18/12.6 18/18.4 17/00.0                        
+
+ 5/20.55         4/21.47         1/19.48 2/19.74 3/22.81                        
+ 16/06.8         17/07.1         18/11.2 18/17.0 17/01.7                        
+
+                 3/20.07         1/19.59 2/21.16                                
+                 17/05.6         18/10.1 18/17.2                                
+
+                                 1/19.51 2/19.73                                
+                                 18/09.1 18/16.0                                
+ ------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+     16/     15/     17/             18/     18/     16/                        
+  6:06.8  6:12.0  6:05.6          6:09.1  6:16.0  5:40.5      
+'''
+        
+class TestSingleRaceWithPaceData(unittest.TestCase):
+ 
+    #def setUp(self):        
+        #self.assertRaises(Exception, SingleRace, "t1", singleRaceWithPaceData.split('\n'))
+        #self.SingleRace = SingleRace("t1", singleRaceEarlyDrop.split('\n'))
+        
+    def test_notSupported(self):
+        self.assertRaises(Exception, SingleRace, "t1", singleRaceWithPaceData.split('\n'))    
+        #expectedLaps = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+        #self.assertEqual(expectedLaps, self.SingleRace.lapRowsTime[0])
 
 
 if __name__ == '__main__':

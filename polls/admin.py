@@ -28,6 +28,9 @@ class RacerIdAdmin(admin.ModelAdmin):
     fields = ['racerPreferredName']
 
 #Poll, PollAdmin, 
+admin.site.register(Poll)
+#admin.site.register(PollAdmin)
+
 admin.site.register(SingleRaceDetails)
 admin.site.register(SingleRacerData)
 admin.site.register(RacerId)

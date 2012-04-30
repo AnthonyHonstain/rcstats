@@ -23,20 +23,30 @@ class Choice(models.Model):
 class TrackName(models.Model):
     trackname = models.CharField(max_length=200)
 
+# The a single racer, their name (probably not going be be unique by default)
+class RacerId(models.Model):
+    racerpreferredname = models.CharField(max_length=200)
+    
 class SingleRaceDetails(models.Model):
     trackkey = models.ForeignKey(TrackName)
     racedata = models.CharField(max_length=200)
     roundnumber = models.IntegerField()
     racenumber = models.IntegerField()
-    racedate = models.DateTimeField('date of the race')
-    uploaddate = models.DateTimeField('date the race was uploaded')
+    racedate = models.DateTimeField('Date of the race')
+    uploaddate = models.DateTimeField('Date the race was uploaded')
+    racelength = models.IntegerField('Number of minutes for the race')
 
-# The a single racer, there name (probably not going be be unique by default)
-class RacerId(models.Model):
-    racerpreferredname = models.CharField(max_length=200)
+class SingleRaceResults(models.Model):
+    raceid = models.ForeignKey(SingleRaceDetails)
+    racerid = models.ForeignKey(RacerId)
+    carnum = models.SmallIntegerField('Car number for this race')
+    lapcount = models.SmallIntegerField('Number of laps they completed')
+    racetime = models.TimeField(null=True)
+    fastlap = models.DecimalField(decimal_places=3, max_digits=6, null=True)
+    behind = models.DecimalField(decimal_places=3, max_digits=6, null=True)
+    finalpos = models.SmallIntegerField('Final race position')
     
-    
-class SingleRacerData(models.Model):
+class LapTimes(models.Model):
     raceid = models.ForeignKey(SingleRaceDetails)
     racerid = models.ForeignKey(RacerId)
     racelap = models.SmallIntegerField()
