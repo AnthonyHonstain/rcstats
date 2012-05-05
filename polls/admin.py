@@ -1,5 +1,5 @@
 from polls.models import Poll, Choice
-from polls.models import SingleRaceDetails, RacerId, SingleRacerData
+from polls.models import SingleRaceDetails, RacerId, LapTimes
 from django.contrib import admin
 
 class ChoiceInline(admin.TabularInline):
@@ -21,7 +21,7 @@ class PollAdmin(admin.ModelAdmin):
 class SingleRaceDetailsAdmin(admin.ModelAdmin):
     fields = ['raceData', 'raceDate']
 
-class SingleRacerDataAdmin(admin.ModelAdmin):
+class LapTImesAdmin(admin.ModelAdmin):
     fields = ['raceId', 'racerId', 'raceLap', 'raceLapTime']
 
 class RacerIdAdmin(admin.ModelAdmin):
@@ -32,7 +32,7 @@ admin.site.register(Poll)
 #admin.site.register(PollAdmin)
 
 admin.site.register(SingleRaceDetails)
-admin.site.register(SingleRacerData)
+admin.site.register(LapTimes)
 admin.site.register(RacerId)
 
 

@@ -122,6 +122,8 @@ def ProcessSingleRacePGDB(singleRaceData, database_name, user_name, passwd):
         # We need to calculate the length of the race.
         racelength = _CalculateRaceLength(singleRaceData.raceHeaderData)
 
+        winningLapCount = _CalculateWinningLaps(singleRaceData.raceHeaderData, singleRaceData.lapRowsTime)
+
         # Now that we know the track and the racers are in the database, insert the race.
         racedetailskey = _insert_singleRaceDetails(sql, 
                                                   trackKey, 
@@ -129,7 +131,8 @@ def ProcessSingleRacePGDB(singleRaceData, database_name, user_name, passwd):
                                                   singleRaceData.roundNumber,
                                                   singleRaceData.raceNumber,
                                                   singleRaceData.date,
-                                                  racelength)
+                                                  racelength,
+                                                  winningLapCount)
     
         # Now we need to insert the lap data for each racer.
         #      lapRowsTime = [] # List of Lists
@@ -168,6 +171,25 @@ def _CalculateRaceLength(raceHeaderData):
                 maxNumMinutes = numMin
     
     return maxNumMinutes
+
+
+def _CalculateWinningLaps(raceHeaderData, lapRowsTime):
+    '''
+    Calculate the winning number of laps.
+    '''
+    maxLaps = 0;
+    for racer in raceHeaderData:
+        if (racer['Laps'] > maxLaps):
+            maxLaps = racer['Laps']
+    
+    # Do an additional sanity check.
+    lapTimesCount = len(lapRowsTime[0])
+    
+    if (maxLaps != lapTimesCount):
+        errortxt = "Unexpected winning number of laps in lapRowsTime, raceHeaderData: {0} lapRowsTime: {1}"
+        logger1.error(errortxt.format(raceHeaderData, lapRowsTime))
+        
+    return maxLaps
 
 
 def _insertLapData(sql, raceHeaderData, raceDetailskey, lapRowsTime, lapRowsPosition):
@@ -368,7 +390,7 @@ def _insert_singleRaceResults(sql, raceDetailsKey, raceHeaderData):
         " (id, raceid_id, racerid_id, carnum, lapcount, " +\
         "racetime, fastlap, behind, finalpos) " +\
         "VALUES ( " +\
-        "nextval('" + _trackName_tblname + "_id_seq'), " +\
+        "nextval('" + _raceResults_tblname + "_id_seq'), " +\
         "%(raceid_id)s, " +\
         "%(racerid_id)s, " +\
         "%(carnum)s, " +\
