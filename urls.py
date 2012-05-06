@@ -7,10 +7,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^polls/$', 'polls.views.index'),
-    url(r'^polls/(?P<poll_id>\d+)/$', 'polls.views.detail'),
-    url(r'^polls/(?P<poll_id>\d+)/results/$', 'polls.views.results'),
-    url(r'^polls/(?P<poll_id>\d+)/vote/$', 'polls.views.vote'),
+    url(r'^rcdata/$', 'rcdata.views.index'),
+    #url(r'^polls/(?P<poll_id>\d+)/$', 'polls.views.detail'),
 
     # Example:
     # (r'^mysite/', include('mysite.foo.urls')),

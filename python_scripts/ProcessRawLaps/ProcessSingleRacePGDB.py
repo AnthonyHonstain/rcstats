@@ -19,7 +19,7 @@ Overivew and reference for this module.
 
     EXAMPLE OF SELECTING DATA FROM Database and working with it:
     cur = sql.cursor()
-    cur.execute( "select * from polls_singleracedetails" )        
+    cur.execute( "select * from rcdata_singleracedetails" )        
     results = cur.fetchall()
     print "="*40 + "\n" + "Printline debugging\n" + "="*40
     print "Current Description:\n\t" + str(cur.description)
@@ -66,17 +66,17 @@ logger1 = logging.getLogger('UploadToPostgres')
 
 
 # Database table names
-_trackName_tblname = "polls_trackname"
+_trackName_tblname = "rcdata_trackname"
 _trackName_column_trackname = "trackname"
 
-_racerName_tblname = "polls_racerid"
+_racerName_tblname = "rcdata_racerid"
 _racerName_column_trackname = "racerpreferredname" 
 
-_lapTimes_tablname = "polls_laptimes"
+_lapTimes_tablname = "rcdata_laptimes"
 
-_raceDetails_tblname = "polls_singleracedetails"
+_raceDetails_tblname = "rcdata_singleracedetails"
 
-_raceResults_tblname = "polls_singleraceresults"
+_raceResults_tblname = "rcdata_singleraceresults"
 
 
 def ProcessSingleRacePGDB(singleRaceData, database_name, user_name, passwd):
@@ -182,12 +182,13 @@ def _CalculateWinningLaps(raceHeaderData, lapRowsTime):
         if (racer['Laps'] > maxLaps):
             maxLaps = racer['Laps']
     
+    # You can not be sure of this, it depends on how the scoring is set up, 
+    # it is different depending on track.
     # Do an additional sanity check.
-    lapTimesCount = len(lapRowsTime[0])
-    
-    if (maxLaps != lapTimesCount):
-        errortxt = "Unexpected winning number of laps in lapRowsTime, raceHeaderData: {0} lapRowsTime: {1}"
-        logger1.error(errortxt.format(raceHeaderData, lapRowsTime))
+    #lapTimesCount = len(lapRowsTime[0]) - 1 # The first lap (partial) does not count.    
+    #if (maxLaps != lapTimesCount):
+    #    errortxt = "Unexpected winning number of laps in lapRowsTime, raceHeaderData: {0} lapRowsTime: {1}"
+    #    logger1.error(errortxt.format(raceHeaderData, lapRowsTime))
         
     return maxLaps
 
@@ -265,7 +266,7 @@ def _insertRetrieveKey(sql, selectcmd, insertcmd):
     return results[0][0]
 
 
-def _insert_singleRaceDetails(sql, trackKey, className, roundNum, raceNum,  date, racelength):
+def _insert_singleRaceDetails(sql, trackKey, className, roundNum, raceNum,  date, racelength, winninglapcount):
     # Logging first, since alot of problems can come from this insert.
     logger1.debug("Processing  racedetails className:{0} roundNum:{1} raceNum:{2} date:{3}".format(
             className, 
@@ -276,7 +277,7 @@ def _insert_singleRaceDetails(sql, trackKey, className, roundNum, raceNum,  date
     Overview of how to insert time from the format I parse from the raw text
     files, into the postgres time format.
 
-     insert into polls_singleracedetails values (2, 'Stock Buggy Test', '2012-01-04 20:20:20-01')
+     insert into rcdata_singleracedetails values (2, 'Stock Buggy Test', '2012-01-04 20:20:20-01')
     
      I have to find some way to change this date into something I can use.
      The raw version of what I have to work with.
@@ -333,7 +334,7 @@ vvv        strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime())
     cur = sql.cursor()
     rawcmd = "insert into " + _raceDetails_tblname + " values " +\
         "( nextval('" + _raceDetails_tblname + "_id_seq'), " +\
-        "{0}, '{1}', {2}, {3}, '{4}', '{5}', {6})"
+        "{0}, '{1}', {2}, {3}, '{4}', '{5}', {6}, {7})"
         
     cmd = rawcmd.format(trackKey, 
                         className, 
@@ -341,7 +342,8 @@ vvv        strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime())
                         raceNum, 
                         formatedtime, 
                         currenttime,
-                        racelength)
+                        racelength,
+                        winninglapcount)
     cur.execute(cmd)    
     cur.close()
     sql.commit()
@@ -383,7 +385,7 @@ def _insert_singleRaceResults(sql, raceDetailsKey, raceHeaderData):
     # done already (when the raceDetailsKey was retrieved).
     cur = sql.cursor()
     
-    #rcraceperformance=> select * from polls_singleraceresults;
+    #rcraceperformance=> select * from rcdata_singleraceresults;
     #id | raceid_id | racerid_id | carnum | lapcount | racetime | fastlap | behind | finalpos 
 
     insert = "INSERT INTO " + _raceResults_tblname +\

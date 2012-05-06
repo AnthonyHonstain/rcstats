@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>RCRacePerformance</title>
+<link rel="stylesheet" type="text/css" href="static/default.css"/>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <!--[if IE]><script language="javascript" type="text/javascript" src="flot/excanvas.min.js"></script><![endif]--> 
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script type="text/javascript" src="/flot/jquery.flot.js"></script>
+  <script type="text/javascript" src="/flot/jquery.flot.stack.js"></script>
+</head>
+
+<body>
+
+    <div class="wrapOverall">
+    
+        <div class="header">
+          <a href="index.html">
+          <img class="logo" src="images/headerLogo.png" width="564" height="52" alt="RCRacePerformance"/>
+          </a>
+          <div class="navMain">
+            	
+              <ul>
+                    <li><a href="MyResults.html">MyResults</a></li>
+                    <li><a href="TrackData.html">TrackData</a></li>
+                </ul>
+                
+            </div>
+        		
+        </div> <!-- END header -->
+        
+        <div class="content">
+        
+        <!--
+        	<div class="wrapLinks">
+
+            	<ul>
+                	<li><a href="#">Web Hosting</a></li>
+                    <li><a href="#">cPanel</a></li>
+                    <li><a href="#">Email</a></li>
+                    <li><a href="#">Reseller</a></li>
+                </ul>
+                
+            </div>
+        -->
+      </div> <!-- END content -->
+      
+        <div id="placeholder" style="width:550px;height:200px;"></div>
+        <!--
+        <script type="text/javascript" src="/media/stacked_bar_ex.js"></script>
+        -->
+        <script type="text/javascript"> 
+          $(function (data) {
+          var css_id = "#placeholder";
+          var data = {% autoescape off %} {{ jsdata }} {% endautoescape %};    
+
+          var options = {
+              yaxis: {
+                  ticks: 10,
+                  min: 0,
+                  max: 10
+              },
+              xaxis: { mode: "time" }, 
+              series: {stack: 0,
+                       lines: {show: false, steps: false },
+                       bars: {show: true, barWidth: 0.9, align: 'center',},},                
+          };
+
+          $.plot($(css_id), data, options);
+          });
+        </script>
+	</div>
+
+</body>
+</html>

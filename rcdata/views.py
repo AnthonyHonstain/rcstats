@@ -1,28 +1,29 @@
-# Create your views here.
-
-
 import time
 
 from django.template import Context, loader
 from django.shortcuts import render_to_response, get_object_or_404
-from polls.models import Poll
+#from polls.models import Poll
 from django.http import HttpResponse
 
 from django.db import connection
 
 from django.utils import simplejson
 
-def index(request):
-    latest_poll_list = Poll.objects.all().order_by('-pub_date')[:5]
-    t = loader.get_template('polls/index.html')
-    c = Context({
-        'latest_poll_list': latest_poll_list,
-    })
-    return HttpResponse(t.render(c))
+# *********************************************
+# The old index, awating redesign.
+# *********************************************
+#def index(request):
+#    latest_poll_list = Poll.objects.all().order_by('-pub_date')[:5]
+#    t = loader.get_template('polls/index.html')
+#    c = Context({
+#        'latest_poll_list': latest_poll_list,
+#    })
+    
+#    return HttpResponse(t.render(c))
 
 # Use the template to provide more detail than just a simple string response.
-def detail(request, poll_id):
-    p = get_object_or_404(Poll, pk=poll_id)
+def index(request):
+    #p = get_object_or_404(Poll, pk=poll_id)
     
     '''
      TESTING -
@@ -46,13 +47,13 @@ def detail(request, poll_id):
     #
     sqlquery = '''SELECT rdetail.racedate, rresults.finalpos 
 FROM (
-    (polls_singleraceresults as rresults INNER JOIN polls_racerid as rid ON rresults.racerid_id = rid.id)
-        INNER JOIN polls_singleracedetails as rdetail ON rdetail.id = rresults.raceid_id)        
+    (rcdata_singleraceresults as rresults INNER JOIN rcdata_racerid as rid ON rresults.racerid_id = rid.id)
+        INNER JOIN rcdata_singleracedetails as rdetail ON rdetail.id = rresults.raceid_id)        
 WHERE (racerpreferredname ILIKE '%%george%%' AND 
        racerpreferredname ILIKE '%%cherry%%' AND
        rdetail.racelength = 8 AND
-       rdetail.trackkey_id = 1 AND
-       rdetail.racedata ILIKE '%%MODIFIED BUGGY A Main%%')
+       rdetail.trackkey_id = 2 AND
+       rdetail.racedata ILIKE '%%Modified BUGGY A Main%%')
 ORDER BY rdetail.racedate DESC
 LIMIT 100;'''
     
@@ -82,12 +83,12 @@ LIMIT 100;'''
     ]
     jsdata = simplejson.dumps(mylist)
     
-    return render_to_response('polls/detail.html', {'poll': p , 'jsdata':jsdata})
+    return render_to_response('index.html', {'jsdata':jsdata})
 #def detail(request, poll_id):
 #    return HttpResponse("You're looking at poll %s." % poll_id)
 
-def results(request, poll_id):
-    return HttpResponse("You're looking at the results of poll %s." % poll_id)
-
-def vote(request, poll_id):
-    return HttpResponse("You're voting on poll %s." % poll_id)
+#def results(request, poll_id):
+#    return HttpResponse("You're looking at the results of poll %s." % poll_id)
+#
+#def vote(request, poll_id):
+#    return HttpResponse("You're voting on poll %s." % poll_id)

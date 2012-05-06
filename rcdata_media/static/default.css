@@ -1,0 +1,129 @@
+@charset "utf-8";
+/* CSS Document */
+
+body {
+	background-image:url(images/bgBody.jpg);
+	background-repeat:repeat-x;
+	background-attachment:fixed;
+	background-color:#a4a3a3;
+	background-position:top;
+}
+
+/* General HTML Tag Rules */
+h1, h2, h3, h4, h5, h6 {
+	
+}
+
+p {
+	
+}
+
+/* Links */
+a {
+	
+}
+
+/* Hover state of the link */
+a:hover {
+	
+}
+
+/* Horizontal rule */
+hr {
+	
+}
+
+/* ############################ */
+/* General Template Class Rules */
+/* ############################ */
+.wrapOverall {
+	width:1016px;
+	margin: 0 auto;
+}
+.wrapLinks {
+	
+}
+.wrapBuckets {
+	
+}
+.header {
+	background-image:url(images/bgHeader.png);
+	background-repeat:no-repeat;
+	background-position:top-center;
+	height:128px;
+}
+.header img.logo {
+	float:left;
+	margin:35px 0px 30px 30px;
+}
+.navMain {
+	margin:60px 0px 0px 0px;
+	float:right;
+}
+.content {
+	background-image:url(images/bgContent.png);
+	background-repeat:no-repeat;
+	background-position:top-center;
+	height:395px;
+}
+.bucket {
+	
+}
+
+/* ############################ */
+/* General Navigation Rules */
+/* ############################ */
+
+/* Inside nav div, this is a rule for any unordered list */
+.navMain ul {
+	margin:0px;
+	padding:0px;	
+}
+.navMain ul li {
+	margin:0px;
+	/* Having adding on li, means we need to be on text to get link */
+	padding:20px; 
+	list-style:none;
+	display:inline;
+}
+.navMain ul li a {
+	margin:0px;
+	padding:0px;	
+	color:#FFFFFF;
+	text-decoration:none;
+	font-size:25px;
+	font-weight:bold;
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif, "Franklin Gothic Book";
+	
+}
+.navMain ul li a:hover {
+	text-decoration:underline;
+}	
+
+.wrapLinks ul {
+	
+}
+.wrapLinks ul li {
+	
+}
+.wrapLinks ul li a {
+	
+}
+.wrapLinks ul li a:hover {
+	
+}	
+
+/* ############################ */
+/* Bucket Rules */
+/* ############################ */
+.bucket ul {
+	
+}
+.bucket ul li {
+	
+}
+
+/* Inside the bucket div, with class cost */
+.bucket p.cost {
+	
+}
