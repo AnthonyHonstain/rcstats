@@ -1,7 +1,15 @@
 from django.db import models
 
 class TrackName(models.Model):
-    trackname = models.CharField(max_length=200)
+    trackname = models.CharField(max_length=200)    
+    def __str__(self):
+        return str(self.trackname)
+
+class SupportedTrackName(models.Model):
+    trackkey = models.ForeignKey(TrackName)
+    trackurl = models.URLField()
+    # I am going to pass on this for now, this seems like alot of work.
+    #trackimage = models.FilePathField(path="//home/asymptote/Desktop/RCRacePerformance/rcdata_media/images")
 
 # The a single racer, their name (probably not going be be unique by default)
 class RacerId(models.Model):

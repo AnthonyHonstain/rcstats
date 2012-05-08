@@ -84,6 +84,11 @@ LIMIT 100;'''
     jsdata = simplejson.dumps(mylist)
     
     return render_to_response('index.html', {'jsdata':jsdata})
+
+def trackdata(request):
+    return render_to_response('trackdata.html')
+
+
 #def detail(request, poll_id):
 #    return HttpResponse("You're looking at poll %s." % poll_id)
 

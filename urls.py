@@ -8,6 +8,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^rcdata/$', 'rcdata.views.index'),
+    url(r'^rcdata/trackdata/$', 'rcdata.views.trackdata'),
     #url(r'^polls/(?P<poll_id>\d+)/$', 'polls.views.detail'),
 
     # Example:
@@ -17,7 +18,7 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    (r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', include(admin.site.urls)),
 )
 
 if settings.DEBUG:
