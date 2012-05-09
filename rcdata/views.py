@@ -1,9 +1,11 @@
 import time
+import datetime
+from dateutil.relativedelta import relativedelta
 
 from django.template import Context, loader
 from django.shortcuts import render_to_response, get_object_or_404
 #from polls.models import Poll
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 
 from django.db import connection
 
@@ -92,8 +94,24 @@ def trackdata(request):
 
     return render_to_response('trackdata.html', {'track_list':tracklist})
 
-def trackdetail(request, track_id):
+def trackdetail(request, track_id, time_frame='alltime'):
     p = get_object_or_404(SupportedTrackName, pk=track_id)
+    
+    if (time_frame not in ('alltime', 'month', '6months')):
+        raise Http404
+    
+    sqltimefilter = ''
+    filterdatestr = 'All Time'
+    if (time_frame == 'month'):
+        filterdate = datetime.datetime.now() + relativedelta(months=-1)
+        filterdatestr = time.strftime('%a, %d %b %Y', filterdate.timetuple())
+        dbdate = time.strftime('%Y-%m-%d %H:%M:%S-01', filterdate.timetuple())
+        sqltimefilter = "AND rdetails.racedate > '" + dbdate + "'"
+    elif (time_frame == '6months'):
+        filterdate = datetime.datetime.now() + relativedelta(months=-6)
+        filterdatestr = time.strftime('%a, %d %b %Y', filterdate.timetuple())
+        dbdate = time.strftime('%Y-%m-%d %H:%M:%S-01', filterdate.timetuple())
+        sqltimefilter = "AND rdetails.racedate > '" + dbdate + "'"
     
     cursor = connection.cursor()
     sqlquery = '''SELECT racedata.id, racedata.racerpreferredname, SUM(racedata.finalpos) FROM
@@ -105,11 +123,12 @@ def trackdetail(request, track_id):
         /* Get all the races those racerids were in */
         rcdata_singleraceresults as rresults
         WHERE rresults.racerid_id = racerids.id AND
-            rresults.finalpos = 1
+            rresults.finalpos = 1    
       ) as racedata,
     rcdata_singleracedetails as rdetails
     WHERE rdetails.id = racedata.raceid_id AND
       rdetails.trackkey_id = %(trackkey)s
+      ''' + sqltimefilter + '''
     /* This is were we would filter out by track id and racelength */
     GROUP BY racedata.id, racedata.racerpreferredname
     ORDER BY SUM(racedata.finalpos) desc
@@ -131,6 +150,7 @@ def trackdetail(request, track_id):
     rcdata_singleracedetails as rdetails
     WHERE rdetails.id = racedata.raceid_id AND
       rdetails.trackkey_id = %(trackkey)s
+      ''' + sqltimefilter + '''
     /* This is were we would filter out by track id and racelength */
     GROUP BY racedata.id, racedata.racerpreferredname
     ORDER BY SUM(racedata.lapcount) desc
@@ -139,7 +159,10 @@ def trackdetail(request, track_id):
     cursor.execute(querytoplaps, {'trackkey':p.trackkey.id})
     toplaps = cursor.fetchall()
         
-    ctx = Context({'trackname':p.trackkey, 'topwins':topwins, 'toplaps':toplaps})
+    ctx = Context({'trackname':p.trackkey,
+                   'filterdate':filterdatestr,
+                   'topwins':topwins, 
+                   'toplaps':toplaps})
     return render_to_response('trackdatadetail.html', ctx)
     
 
