@@ -44,16 +44,16 @@
         </div> <!-- END content -->
 
 		<div>
-			{% if track_list %}
-		    <ul>
-		    {% for track in track_list %}
-		        <li><a href="/rcdata/trackdata/{{ track.id }}/">{{ track.trackkey }}</a></li>
-		        {{ track.trackurl }}
+			<h1>{{ trackname }}</h1>
+			<h2>Total number of wins</h2>
+			{% for topwin in topwins %}
+		        <li>{{ topwin.1 }} - {{ topwin.2 }}</li>	        
 		    {% endfor %}
-		    </ul>
-			{% else %}
-			    <p>No tracks are available.</p>
-			{% endif %}	
+		    
+		    <h2>Total number of laps</h2>			
+			{% for toplap in toplaps %}
+		        <li>{{ toplap.1 }} - {{ toplap.2 }}</li>	        
+		    {% endfor %}
 		</div>
 	</div>
 

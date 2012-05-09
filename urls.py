@@ -9,6 +9,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^rcdata/$', 'rcdata.views.index'),
     url(r'^rcdata/trackdata/$', 'rcdata.views.trackdata'),
+    url(r'^rcdata/trackdata/(?P<track_id>\d+)/$', 'rcdata.views.trackdetail'),
     #url(r'^polls/(?P<poll_id>\d+)/$', 'polls.views.detail'),
 
     # Example:

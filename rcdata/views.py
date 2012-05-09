@@ -9,6 +9,8 @@ from django.db import connection
 
 from django.utils import simplejson
 
+from rcdata.models import SupportedTrackName
+
 # *********************************************
 # The old index, awating redesign.
 # *********************************************
@@ -86,7 +88,60 @@ LIMIT 100;'''
     return render_to_response('index.html', {'jsdata':jsdata})
 
 def trackdata(request):
-    return render_to_response('trackdata.html')
+    tracklist = SupportedTrackName.objects.all()
+
+    return render_to_response('trackdata.html', {'track_list':tracklist})
+
+def trackdetail(request, track_id):
+    p = get_object_or_404(SupportedTrackName, pk=track_id)
+    
+    cursor = connection.cursor()
+    sqlquery = '''SELECT racedata.id, racedata.racerpreferredname, SUM(racedata.finalpos) FROM
+      (
+      SELECT rresults.raceid_id, racerids.id, racerids.racerpreferredname, rresults.finalpos FROM
+          /* Get all the racer ids */
+          (SELECT id, racerpreferredname FROM rcdata_racerid as rid 
+           ) as racerids,
+        /* Get all the races those racerids were in */
+        rcdata_singleraceresults as rresults
+        WHERE rresults.racerid_id = racerids.id AND
+            rresults.finalpos = 1
+      ) as racedata,
+    rcdata_singleracedetails as rdetails
+    WHERE rdetails.id = racedata.raceid_id AND
+      rdetails.trackkey_id = %(trackkey)s
+    /* This is were we would filter out by track id and racelength */
+    GROUP BY racedata.id, racedata.racerpreferredname
+    ORDER BY SUM(racedata.finalpos) desc
+    LIMIT 30;'''
+       
+    cursor.execute(sqlquery, {'trackkey':p.trackkey.id})
+    topwins = cursor.fetchall()
+
+    querytoplaps = '''SELECT racedata.id, racedata.racerpreferredname, SUM(racedata.lapcount) FROM
+      (
+      SELECT rresults.raceid_id, racerids.id, racerids.racerpreferredname, rresults.lapcount FROM
+          /* Get all the racer ids */
+          (SELECT id, racerpreferredname FROM rcdata_racerid as rid 
+           ) as racerids,
+        /* Get all the races those racerids were in */
+        rcdata_singleraceresults as rresults
+        WHERE rresults.racerid_id = racerids.id
+      ) as racedata,
+    rcdata_singleracedetails as rdetails
+    WHERE rdetails.id = racedata.raceid_id AND
+      rdetails.trackkey_id = %(trackkey)s
+    /* This is were we would filter out by track id and racelength */
+    GROUP BY racedata.id, racedata.racerpreferredname
+    ORDER BY SUM(racedata.lapcount) desc
+    LIMIT 30;'''
+       
+    cursor.execute(querytoplaps, {'trackkey':p.trackkey.id})
+    toplaps = cursor.fetchall()
+        
+    ctx = Context({'trackname':p.trackkey, 'topwins':topwins, 'toplaps':toplaps})
+    return render_to_response('trackdatadetail.html', ctx)
+    
 
 
 #def detail(request, poll_id):
