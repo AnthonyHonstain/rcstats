@@ -1,0 +1,9 @@
+<h2>Total number of wins since {{ filterdate }}</h2>
+{% for topwin in topwins %}
+    <li>{{ topwin.1 }} - {{ topwin.2 }}</li>	        
+{% endfor %}
+
+<h2>Total number of laps since {{ filterdate }}</h2>			
+{% for toplap in toplaps %}
+    <li>{{ toplap.1 }} - {{ toplap.2 }}</li>	        
+{% endfor %}

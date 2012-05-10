@@ -1,0 +1,46 @@
+
+
+  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+  
+  <script src="static/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
+    
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function() {
+	
+	{% for result in raceresults %}
+
+	    $('#dynamic{{  result.tagid  }}').html( '<table cellpadding="10" cellspacing="5" border="5" class="display" id="table{{  result.tagid  }}"></table>' );
+	    $('#table{{  result.tagid  }}').dataTable( {
+	    	"bPaginate": false,
+	        "bLengthChange": false,
+	        "bFilter": false,				        
+	        "bInfo": false,
+	        "aaData": {{  result.individual_results  }},
+	        "aoColumns": [
+	        				{ "sTitle": "Finish" },
+						    { "sTitle": "id" },
+							{ "sTitle": "LapCount" },
+							{ "sTitle": "RaceTime" },
+							{ "sTitle": "FastLap" },
+							{ "sTitle": "Behind" }
+	        ]
+	    } );
+	    
+	{% endfor %}
+	
+	} );
+				
+</script>
+
+<h2>Race results for {{  trackname  }}</h2>
+{% for result in raceresults %}
+    <li><h3>{{  result.racedata  }}</h3></li>
+    {{  result.roundnumber  }}
+    {{  result.racenumber  }}
+    {{  result.racedate  }}
+    <div id="dynamic{{  result.tagid  }}"></div>
+    
+{% endfor %}
+
