@@ -241,8 +241,9 @@ class SingleRace(object):
             carRaw = lineList[0]
             if (carRaw[0] != '#'):
                 raise Exception("Incorrect format for header data, execting a '#' in the car number, line: " + line)
-            car = carRaw[1:]
-            laps = lineList[1]
+            car = int(carRaw[1:])
+            
+            laps = int(lineList[1])
             
             # WARNING - it is possible to have a fast lap, but NO racetime.
             racetime = lineList[2]
@@ -414,8 +415,8 @@ class TestSingleRaceSimple(unittest.TestCase):
         
         self.assertEqual(self.SingleRace.raceHeaderData[-1], 
                          {"Driver":"TOM WAGGONER", 
-                          "Car#":"9", 
-                          "Laps":"26", 
+                          "Car#":9, 
+                          "Laps":26, 
                           "RaceTime":"8:07.943", 
                           "Fast Lap":"17.063", 
                           "Behind":"6.008",
@@ -460,8 +461,8 @@ class TestSingleRaceSimpleTextFile(unittest.TestCase):
         
         self.assertEqual(self.SingleRace.raceHeaderData[-1], 
                          {"Driver":"TOM WAGGONER", 
-                          "Car#":"9", 
-                          "Laps":"26", 
+                          "Car#":9, 
+                          "Laps":26, 
                           "RaceTime":"8:07.943", 
                           "Fast Lap":"17.063", 
                           "Behind":"6.008",
@@ -543,8 +544,8 @@ class TestSingleRaceModified(unittest.TestCase):
         
         self.assertEqual(self.SingleRace.raceHeaderData[-1], 
                          {"Driver":"MATESA, TANNER", 
-                          "Car#":"9", 
-                          "Laps":"4", 
+                          "Car#":9, 
+                          "Laps":4, 
                           "RaceTime":"1:20.392", 
                           "Fast Lap":"17.097", 
                           "Behind":"",
@@ -661,8 +662,8 @@ class TestSingleRaceBrokeRacer(unittest.TestCase):
         # Gilley, Tres            #10         1           21.675                      
         self.assertEqual(self.SingleRace.raceHeaderData[9], 
                          {"Driver":"Gilley, Tres", 
-                          "Car#":"10", 
-                          "Laps":"1", 
+                          "Car#":10, 
+                          "Laps":1, 
                           "RaceTime":"", 
                           "Fast Lap":"21.675", 
                           "Behind":"",
@@ -670,8 +671,8 @@ class TestSingleRaceBrokeRacer(unittest.TestCase):
         # SCHOETLER, MICHAEL            #1         23         6:15.854         15.552      
         self.assertEqual(self.SingleRace.raceHeaderData[0], 
                          {"Driver":"SCHOETLER, MICHAEL", 
-                          "Car#":"1", 
-                          "Laps":"23", 
+                          "Car#":1, 
+                          "Laps":23, 
                           "RaceTime":"6:15.854", 
                           "Fast Lap":"15.552", 
                           "Behind":"",
