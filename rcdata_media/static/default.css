@@ -36,6 +36,8 @@ hr {
 /* ############################ */
 /* General Template Class Rules */
 /* ############################ */
+.tab { margin-left: 40px; }
+
 .wrapOverall {
 	width:1016px;
 	margin: 0 auto;

@@ -94,7 +94,14 @@ def trackdata(request):
 
     return render_to_response('trackdata.html', {'track_list':tracklist})
 
-def trackdetail(request, track_id, time_frame='alltime'):
+def trackdetail(request, track_id):
+    p = get_object_or_404(SupportedTrackName, pk=track_id)
+    
+    ctx = Context({'trackname':p.trackkey})
+    return render_to_response('trackdatadetail.html', ctx)
+    
+
+def trackdetail_data(request, track_id, time_frame='alltime'):
     p = get_object_or_404(SupportedTrackName, pk=track_id)
     
     if (time_frame not in ('alltime', 'month', '6months')):
@@ -159,13 +166,108 @@ def trackdetail(request, track_id, time_frame='alltime'):
     cursor.execute(querytoplaps, {'trackkey':p.trackkey.id})
     toplaps = cursor.fetchall()
         
-    ctx = Context({'trackname':p.trackkey,
-                   'filterdate':filterdatestr,
+    ctx = Context({'filterdate':filterdatestr,
                    'topwins':topwins, 
                    'toplaps':toplaps})
-    return render_to_response('trackdatadetail.html', ctx)
+    return render_to_response('trackdatadetail_data.html', ctx)
+        
+        
+        
+        
+        
+def recentresults(request, track_id):
     
-
+    p = get_object_or_404(SupportedTrackName, pk=track_id)
+    
+    '''
+    Now I am faced with the problem of recreating the data that I already
+    extracted. I need the most recent race result for each class that ran.
+        What do I have to work with:
+            DO THEY HAVE A-Main in title?
+                brcr? - same as TRCR, at least for rcscoringpro data.
+                trcr? - "main" in racedata, and the largest round number.
+                    13.5 STOCK SHORT COURSE B Main  Round# 3, Race# 3
+            What about older race formats
+                    TACOMA R/C RACEWAY             08-22-2010                    
+                    Best Heat Lap/Time for 2WD Stock: 
+                       RYAN MATESA with    20/6:01.36                    
+                               -- 2WD Stock - A  Main -- 
+                    Pos Car Laps    time     name                id    avg.mph
+                      1   2  27     8:11.29 DERRY TIEDEMAN        4     13.11
+                      2   5  27     8:12.88 RYAN MATESA           6     13.07
+            THERE IS NO Round information, but there is a title with 'Main' in it.
+                    
+    '''
+    
+    raceresults = []
+    print "TRYING TO QUERY DEBUGGING"
+    cursor = connection.cursor()
+    sqlquery_raceids = '''SELECT rdetails.id, 
+                                 rdetails.racedata, 
+                                 rdetails.roundnumber, 
+                                 rdetails.racenumber, 
+                                 rdetails.racedate
+     FROM
+      rcdata_singleracedetails as rdetails,
+      (SELECT rdetails_date.racedate::date as racedate FROM
+        rcdata_singleracedetails as rdetails_date
+        WHERE rdetails_date.trackkey_id = %(trackkey)s AND      
+          rdetails_date.racedata ILIKE '%%main%%'
+        GROUP BY rdetails_date.racedate::date
+        ORDER BY rdetails_date.racedate::date desc
+        LIMIT 1
+      ) as recentracedate
+    WHERE rdetails.trackkey_id = %(trackkey)s AND
+      rdetails.racedata ILIKE '%%main%%' AND
+      rdetails.racedate::date = recentracedate.racedate;'''
+    
+    cursor.execute(sqlquery_raceids, {'trackkey':p.trackkey.id})
+    raceid_results = cursor.fetchall() 
+    
+    #print "raceid_results", raceid_results
+    # An example of the raceid_results
+    # raceid_results [
+    #    (1712, u'Stock Buggy B Main', 3, 1, datetime.datetime(2012, 4, 13, 17, 3, 23)), 
+    #    (1713, u'Modified Buggy B Main', 3, 2, datetime.datetime(20  .... ]
+    
+    for raceid in raceid_results:
+            
+        sqlquery = '''SELECT finalpos, rcdata_racerid.racerpreferredname, lapcount, racetime, fastlap, behind 
+          FROM rcdata_singleraceresults,
+              rcdata_racerid
+          WHERE raceid_id = %(trackkey)s AND
+              racerid_id = rcdata_racerid.id
+          ORDER BY finalpos
+          ;'''
+        cursor.execute(sqlquery, {'trackkey':raceid[0]})
+        individual_results = cursor.fetchall()
+        
+        formated_result = []
+        
+        for individual in individual_results:
+            formated_result.append([
+                                     individual[0], # final pos
+                                     individual[1], # id
+                                     individual[2], # lapcount
+                                     str(individual[3]), # racetime
+                                     str(individual[4]), #fastlap
+                                     str(individual[5]) # behind              
+                                     ])
+            
+                                
+        jsdata = simplejson.dumps(formated_result)
+        print "JSDATA", jsdata
+        # Going to do extra formating here, to simplify the template.
+        raceresults.append({'racedata':raceid[1],
+                            'roundnumber':raceid[2],
+                            'racenumber':raceid[3],
+                            'racedate':raceid[4],
+                            'tagid':raceid[0],
+                            'individual_results':jsdata})
+    
+    print "RACERESULTS", raceresults    
+    ctx = Context({'trackname':p.trackkey, 'raceresults':raceresults})
+    return render_to_response('recentresults_data.html', ctx)
 
 #def detail(request, poll_id):
 #    return HttpResponse("You're looking at poll %s." % poll_id)

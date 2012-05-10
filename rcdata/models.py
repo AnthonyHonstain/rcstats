@@ -18,8 +18,9 @@ class RacerId(models.Model):
 class SingleRaceDetails(models.Model):
     trackkey = models.ForeignKey(TrackName)
     racedata = models.CharField(max_length=200)
-    roundnumber = models.IntegerField()
-    racenumber = models.IntegerField()
+    # roundnumber and racenumber do not exist in older formats
+    roundnumber = models.IntegerField(null=True)
+    racenumber = models.IntegerField(null=True)
     racedate = models.DateTimeField('Date of the race')
     uploaddate = models.DateTimeField('Date the race was uploaded')
     racelength = models.IntegerField('Number of minutes for the race')

@@ -201,7 +201,7 @@ def _insertLapData(sql, raceHeaderData, raceDetailskey, lapRowsTime, lapRowsPosi
     for racer in raceHeaderData:
         
         # Upload each lap
-        index = int(racer['Car#']) - 1
+        index = racer['Car#'] - 1
         
         for row in range(0, len(lapRowsTime[index])):
             # print "Debug: ", racer
