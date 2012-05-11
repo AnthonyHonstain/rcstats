@@ -121,15 +121,12 @@ def trackdetail_data(request, track_id, time_frame='alltime'):
         sqltimefilter = "AND rdetails.racedate > '" + dbdate + "'"
     
     cursor = connection.cursor()
-    sqlquery = '''SELECT racedata.id, racedata.racerpreferredname, SUM(racedata.finalpos) FROM
+    sqlquery = '''SELECT SUM(racedata.finalpos), racedata.racerpreferredname  FROM
       (
-      SELECT rresults.raceid_id, racerids.id, racerids.racerpreferredname, rresults.finalpos FROM
-          /* Get all the racer ids */
-          (SELECT id, racerpreferredname FROM rcdata_racerid as rid 
-           ) as racerids,
-        /* Get all the races those racerids were in */
+      SELECT rresults.raceid_id, rid.racerpreferredname, rresults.finalpos FROM
+        rcdata_racerid as rid,
         rcdata_singleraceresults as rresults
-        WHERE rresults.racerid_id = racerids.id AND
+        WHERE rresults.racerid_id = rid.id AND
             rresults.finalpos = 1    
       ) as racedata,
     rcdata_singleracedetails as rdetails
@@ -137,38 +134,40 @@ def trackdetail_data(request, track_id, time_frame='alltime'):
       rdetails.trackkey_id = %(trackkey)s
       ''' + sqltimefilter + '''
     /* This is were we would filter out by track id and racelength */
-    GROUP BY racedata.id, racedata.racerpreferredname
+    GROUP BY racedata.racerpreferredname
     ORDER BY SUM(racedata.finalpos) desc
     LIMIT 30;'''
        
     cursor.execute(sqlquery, {'trackkey':p.trackkey.id})
     topwins = cursor.fetchall()
 
-    querytoplaps = '''SELECT racedata.id, racedata.racerpreferredname, SUM(racedata.lapcount) FROM
+    querytoplaps = '''SELECT SUM(racedata.lapcount), racedata.racerpreferredname  FROM
       (
-      SELECT rresults.raceid_id, racerids.id, racerids.racerpreferredname, rresults.lapcount FROM
-          /* Get all the racer ids */
-          (SELECT id, racerpreferredname FROM rcdata_racerid as rid 
-           ) as racerids,
-        /* Get all the races those racerids were in */
+      SELECT rresults.raceid_id, rid.racerpreferredname, rresults.lapcount FROM
+        rcdata_racerid as rid,
         rcdata_singleraceresults as rresults
-        WHERE rresults.racerid_id = racerids.id
+        WHERE rresults.racerid_id = rid.id
       ) as racedata,
     rcdata_singleracedetails as rdetails
     WHERE rdetails.id = racedata.raceid_id AND
       rdetails.trackkey_id = %(trackkey)s
       ''' + sqltimefilter + '''
     /* This is were we would filter out by track id and racelength */
-    GROUP BY racedata.id, racedata.racerpreferredname
+    GROUP BY racedata.racerpreferredname
     ORDER BY SUM(racedata.lapcount) desc
     LIMIT 30;'''
        
     cursor.execute(querytoplaps, {'trackkey':p.trackkey.id})
     toplaps = cursor.fetchall()
-        
+    
+    
+    topwins_jsdata = simplejson.dumps(topwins)
+    toplaps_jsdata = simplejson.dumps(toplaps)
+      
     ctx = Context({'filterdate':filterdatestr,
-                   'topwins':topwins, 
-                   'toplaps':toplaps})
+                   'tabid':time_frame, # For this to work with tabs, I need unique id's for each datatable
+                   'topwins':topwins_jsdata, 
+                   'toplaps':toplaps_jsdata})
     return render_to_response('trackdatadetail_data.html', ctx)
         
         

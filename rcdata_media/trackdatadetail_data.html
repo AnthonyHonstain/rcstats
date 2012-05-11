@@ -1,9 +1,55 @@
-<h2>Total number of wins since {{ filterdate }}</h2>
-{% for topwin in topwins %}
-    <li>{{ topwin.1 }} - {{ topwin.2 }}</li>	        
-{% endfor %}
 
-<h2>Total number of laps since {{ filterdate }}</h2>			
-{% for toplap in toplaps %}
-    <li>{{ toplap.1 }} - {{ toplap.2 }}</li>	        
-{% endfor %}
+<head>
+  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+  
+  <script src="static/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
+
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function() {
+	
+		//
+		// DataTable for the total number of race wins.
+		//
+	    $('#dynamic_topwins_{{  tabid }}').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="table_topwins_{{  tabid }}"></table>' );
+	    $('#table_topwins_{{  tabid }}').dataTable( {
+	    	"aaSorting": [[ 0, "desc" ]],
+	        "aaData": {% autoescape off %} {{  topwins  }} {% endautoescape %},
+	        "aoColumns": [	
+	        				{ "sTitle": "Total" , "sClass": "center" },
+	        				{ "sTitle": "Racer" , "sClass":"center" }
+						    
+	        ]
+	    } );	    
+		
+		// 
+		// DataTable for the Total number of race laps
+		//
+		$('#dynamic_toplaps_{{  tabid }}').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="table_toplaps_{{  tabid }}"></table>' );
+	    $('#table_toplaps_{{  tabid }}').dataTable( {
+	    	"aaSorting": [[ 0, "desc" ]],
+	        "aaData": {% autoescape off %} {{  toplaps  }} {% endautoescape %},
+	        "aoColumns": [
+	        				{ "sTitle": "Total" , "sClass":"center" },
+						    { "sTitle": "Racer" , "sClass": "center" }
+	        ]
+	    } );	
+	
+	} );
+				
+</script>
+</head>    
+
+
+
+<h2>Total number of wins since {{ filterdate }}</h2>
+<div class="tab">
+	<div id="dynamic_topwins_{{  tabid }}"></div>
+</div>
+
+<h2>Total number of laps since {{ filterdate }}</h2>	
+<div class="tab">
+	<div id="dynamic_toplaps_{{  tabid }}"></div>
+</div>
+
