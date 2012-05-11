@@ -203,6 +203,10 @@ def _insertLapData(sql, raceHeaderData, raceDetailskey, lapRowsTime, lapRowsPosi
         # Upload each lap
         index = racer['Car#'] - 1
         
+        # This would be a good place to check and see if there are enough laps, it
+        # has been observed that the parser can fail to get everyone's lap data (another
+        # pending bug).
+        
         for row in range(0, len(lapRowsTime[index])):
             # print "Debug: ", racer
             # print "Debug: ", lapRowsPosition[index]
