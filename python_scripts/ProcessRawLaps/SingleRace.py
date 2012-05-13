@@ -74,7 +74,6 @@ class SingleRace(object):
             _raceHeaderData_RAW            
             _columnHeaders            
             _lapRowsRaw            
-            _trailingLapRows - NOT CURRENTLY SUPPORTED
     
     [Stage 2] Process the raw laps data.
         lapRowsTime
@@ -105,7 +104,6 @@ class SingleRace(object):
         self._raceHeaderData_RAW = []
         self._columnHeaders = ""
         self._lapRowsRaw = []
-        self._trailingLapRows = []
         self._singleRaceLines = singleRaceLines
         
         self.filename = filename
@@ -175,14 +173,16 @@ class SingleRace(object):
          '',
         '''
         lapData = False
-        for line in self._singleRaceLines:
+        for index in range(len(self._singleRaceLines)):
                                         
+            line = self._singleRaceLines[index]
+            
             # Look for the column data
             if not lapData and (line.find('__10') != -1):
                 # ___1___ ___2___ ___3___ ___4___ ___5___ 
                 if not line.find('__1__'):
                     raise Exception("The column header data spilled into a new line")
-                self._columnHeaders = line
+                self._columnHeaders = line.strip('\r\n')
                 lapData = True
                 
                 # WARNING HACK TO MITIGATE LACK OF SUPPORT FOR OLDER RACE FORMATS
@@ -194,22 +194,44 @@ class SingleRace(object):
                     raise Exception("This file format not supported, cannot mix pace data in with lap times.")
                 
                 
-            # The trailing data is redundant
-            elif lapData and (line.find('-----') != -1):
-                #  ------- ------- ------- ------- 
-                break
-            
             # Get the laps in row format
             elif lapData:
+                # If we are the end of the lap data
+                if (line.find('-----') != -1):                    
+                    # Example: ' ------- ------- ------- ------- '
+                    index += 2 # WARNING - This is for additional laps logic below. 
+                    break
+ 
                 # Warning - we dont want to blanket strip this (white space matters)
-                self._lapRowsRaw.append(line.strip('\n'))
+                self._lapRowsRaw.append(line.strip('\r\n'))
                 
             # Get race header data.
             if not lapData:
                 # 3/17.20 2/20.37 10/18.1 1/20.19 
                 self._raceHeaderData_RAW.append(line)
-                   
-   
+        
+        
+        # Is there additional racer data?
+        # Starting at the index, lets look for another column row.
+        found_additional_laps = False
+        additional_lap_index = 0
+        
+        for trail_index in range(index, len(self._singleRaceLines)):
+            line = self._singleRaceLines[trail_index].strip('\r\n')
+            
+            if ((not found_additional_laps) and (line.find('__11__') != -1)):                
+                found_additional_laps = True
+                self._columnHeaders += line
+                
+            elif found_additional_laps:
+                if (line.find('-----') != -1):                    
+                    # Example: ' ------- ------- ------- ------- ' 
+                    break
+                
+                self._lapRowsRaw[additional_lap_index] += line
+                additional_lap_index += 1
+                
+            
     def _process_Raw_Lap_Rows(self):
         """
         Parse the _lawRowsRaw data to produce the lapRowsTime and lapRowsPosition data.  
@@ -227,7 +249,7 @@ class SingleRace(object):
         #     ['___1___', '___2___', '___3___', '___4___', '___5___', 
         #      '___6___', '___7___', '___8___', '___9___', '___10__']
         split_columns = self._columnHeaders.split()
-        
+          
         max_racers = len(split_columns)
         for index in range(len(split_columns)):
             self.lapRowsTime.append([])
@@ -255,20 +277,20 @@ class SingleRace(object):
         
                 print
                 print "Row:'" + row + "'"
-                print "raceIndex:" + str(racerIndex) + " lapWidth:" + str(lapWidth)
-                print "i:", i, "'" + row[i:i+lapWidth + 1] + "'" 
-                print "lapRowsTime:" + str(self.lapRowsTime[racerIndex])
-                print "lapRowsPos:" + str(self.lapRowsPosition[racerIndex])
+                print "racer_index:" + str(racer_index) + " lap_width:" + str(lap_width)
+                print "index:", index, "'" + row[index:index+lap_width + 1] + "'" 
+                print "lapRowsTime:" + str(self.lapRowsTime[racer_index])
+                print "lapRowsPos:" + str(self.lapRowsPosition[racer_index])
         '''
         # WARNING Special Code - we use the columnHeaders to identify the fixed with 
         #     that the columns are using.
         #     Explanation - Ignoring the first character [1:], find the next empty space.
         lap_width = self._columnHeaders[1:].find(' ') - 1
-                    
+        
         for row in self._lapRowsRaw:                        
             index = 1
             racer_index = 0
-            while index < len(row):  
+            while index < len(row):
                 if (racer_index >= max_racers):
                     raise Exception("Error in the _lapRowsRaw resulting in" +\
                                     " incorrect parsing (laps for more racers than expected")
@@ -376,20 +398,16 @@ class SingleRace(object):
     def _parse_Header_Date(self, rawDateLine):
         #Scoring Software by www.RCScoringPro.com                10:32:24 PM  8/13/2011
         trimmedDate = rawDateLine[41:].strip()
-        #print "trim" + trimmedDate
-        # TODO - get this in the correct format for the DB.   
         return trimmedDate
             
             
     def _parse_Class_And_Race_Data(self, rawClassData):
-        #Stock Buggy A Main                                            Round# 3, Race# 5
-        #print "RawClassData:" + rawClassData
+        #Stock Buggy A Main                                            Round# 3, Race# 5        
         roundIndex = rawClassData.find("Round#")    
         raceClass = rawClassData[:roundIndex].strip()
-        round = rawClassData[roundIndex:].split(',')[0].split()[1]
-        race = rawClassData[roundIndex:].split(',')[1].split()[1]
-#        print raceClass, round, race
-        return (raceClass, round, race)
+        round_num = rawClassData[roundIndex:].split(',')[0].split()[1]
+        race_num = rawClassData[roundIndex:].split(',')[1].split()[1]
+        return (raceClass, round_num, race_num)
          
             
     def _parse_Lap(self, rawLap):

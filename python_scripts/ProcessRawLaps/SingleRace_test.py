@@ -143,7 +143,28 @@ class TestSingleRaceSimpleTextFile(unittest.TestCase):
                           "Fast Lap":"17.063", 
                           "Behind":"6.008",
                           "Final Position":10})
+
+
+class TestMoreThanTenTextFile(unittest.TestCase):
+
+    def setUp(self):   
+        self.filename = "TestFile_12manrace.txt"
+        with open(self.filename) as f: 
+            content = f.readlines()     
+        self.singe_test_race = SingleRace.SingleRace(self.filename, content)
+
+    def test_filename(self):
+        self.assertEqual(self.filename, self.singe_test_race.filename)
+      
+    def test_columns(self):
+        expected_column_line = " ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__ ___11__ ___12__ ___13__ ___14__ ___15__ ___16__ ___17__ ___18__ ___19__ ___20__"
+        self.assertEqual(expected_column_line, self.singe_test_race._columnHeaders)
         
+    def test_racerTwelve(self):
+        expectedLaps = ["26.71",    "17.82",    "17.47",    "17.55",    "16.88",    "18.07",    "18.56",    "17.64",    "17.28",    "22.71",    "23.33",    "20.20",    "17.49",    "17.80",    "17.27",    "17.59",    "17.98",    "17.97",    "20.91",    "18.00",    "19.47",    "20.52",    "19.17",    "17.08",    "17.42",    "20.00",    "",    "",    "",]
+
+        self.assertEqual(expectedLaps, self.singe_test_race.lapRowsTime[11])
+    
 
 singleRaceModified ='''Scoring Software by www.RCScoringPro.com                10:36:55 PM  01/14/2012
 

@@ -40,13 +40,12 @@ Overivew and reference for this module.
   
 '''
 
-import SingleRace
 import pgdb
 import time
 import sys
 import traceback
 import logging
-import math
+
 
 
 # set up logging to file - see previous section for more details
