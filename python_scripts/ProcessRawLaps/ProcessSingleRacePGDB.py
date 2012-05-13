@@ -44,6 +44,7 @@ import SingleRace
 import pgdb
 import time
 import sys
+import traceback
 import logging
 import math
 
@@ -89,7 +90,7 @@ def ProcessSingleRacePGDB(singleRaceData, database_name, user_name, passwd):
     select and inserts to ensure the information for the race is stored in the 
     appropriate tables.
     """
-
+    
     try:
         trackName_selectcmd = "select * from " + _trackName_tblname +\
             " where " + _trackName_column_trackname +\
@@ -102,8 +103,7 @@ def ProcessSingleRacePGDB(singleRaceData, database_name, user_name, passwd):
         # I need to see if this is a known track, and if it is, grab the key
         # for the insert of the race data.
         trackKey = _insertRetrieveKey(sql, trackName_selectcmd, trackName_insertcmd)
-        logger1.debug("Processed trackName:{0} trackKey:{1}".format(singleRaceData.trackName, trackKey))
-      
+        
         # For each racer, we need to insert them if they are not already.
         for headerDict in singleRaceData.raceHeaderData:
             
@@ -116,9 +116,7 @@ def ProcessSingleRacePGDB(singleRaceData, database_name, user_name, passwd):
                 headerDict['Driver'] + "');"
         
             headerDict['racerKey'] = _insertRetrieveKey(sql, racerName_selectcmd, racerName_insertcmd)
-            #print "debugging - racerKey:", headerDict['racerKey']
-            logger1.debug("Processed racer:{0} raceKey:{1}".format(headerDict['Driver'], headerDict['racerKey']))
-
+            
         # We need to calculate the length of the race.
         racelength = _CalculateRaceLength(singleRaceData.raceHeaderData)
 
@@ -145,10 +143,13 @@ def ProcessSingleRacePGDB(singleRaceData, database_name, user_name, passwd):
         _insert_singleRaceResults(sql, racedetailskey, singleRaceData.raceHeaderData)
         
     except Exception as e:
-        errortxt = "Failed to upload file: {0} raceClass: {1} exception: {2}"
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        trace = traceback.format_exception(exc_type, exc_value, exc_traceback)
+        errortxt = "Failed to upload file: {0} raceClass: {1} exception: {2} {3}"
         logger1.error(errortxt.format(singleRaceData.filename, 
                                       singleRaceData.raceClass,
-                                      str(e)))
+                                      str(e),
+                                      trace))
     sql.close()
 
 
@@ -260,6 +261,8 @@ def _insertRetrieveKey(sql, selectcmd, insertcmd):
     results = cur.fetchall()
     cur.close()
     
+    logger1.debug("Processed new key:{0} insertcmd:{1}".format(results[0][0], insertcmd))
+
     '''
     # Logging
     print "="*40 + "\n" + "Logging - Retrieve the key for the track we inserted.\n" + "-"*40

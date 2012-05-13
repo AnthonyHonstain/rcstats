@@ -7,6 +7,7 @@ from optparse import OptionParser
 import SingleRace
 import ProcessSingleRacePGDB
 import sys
+import traceback
 import logging
 
 
@@ -66,10 +67,10 @@ def main():
             with open(filename) as f: 
 
                 content = f.readlines()
-            
+                
                 currentRaceStartIndex = 0
                 lastRace = ""
-            
+                
                 #Process the first race.
                 for i in range(1, len(content)):
                     if (content[i].find('www.RCScoringPro.com') != -1):
@@ -98,7 +99,7 @@ def main():
 
             
     # This triggers when we have found the final race in the file.
-                singleRace = SingleRace.SingleRace(filename, content[currentRaceStartIndex:i])
+                singleRace = SingleRace.SingleRace(filename, content[currentRaceStartIndex:len(content)])
                 # Put the results in the Postgres SQL server.
                 ProcessSingleRacePGDB.ProcessSingleRacePGDB(singleRace, 
                                                             options.database, 
@@ -108,8 +109,10 @@ def main():
         except IOError:
             logger1.error("Invalid filename=" + filename)
         except Exception as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            trace = traceback.format_exception(exc_type, exc_value, exc_traceback)
             logger1.error("Unable to process file: {0}".format(filename))
-            logger1.debug("exception:{0}".format(str(e)))
+            logger1.debug("exception:{0} \n {1}".format(str(e), trace))
 
 if __name__ == '__main__':        
     main()
