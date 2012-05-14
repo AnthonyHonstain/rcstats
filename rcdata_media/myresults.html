@@ -3,7 +3,10 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>RCRacePerformance</title>
-<link rel="stylesheet" type="text/css" href="default.css"/>
+<link rel="stylesheet" type="text/css" href="static/default.css"/>
+
+  <script type="text/javascript" src="/flot/jquery.js"></script>
+  <script type="text/javascript" src="/flot/jquery.flot.js"></script>
 </head>
 
 <body>
@@ -19,7 +22,7 @@
         	<div class="navMain">
             	
                 <ul>                    
-                    <!--<li><a href="MyResults">MyResults</a></li>-->
+					<li><a href="/rcdata/myresults">MyResults</a></li>
                     <li><a href="/rcdata/trackdata">TrackData</a></li>
                 </ul>
                 
@@ -42,7 +45,36 @@
             </div>
         -->
         </div> <!-- END content -->
+		
+		
+		
+		
+		<div id="placeholder" style="width:550px;height:200px;"></div>
+        <!--
+        <script type="text/javascript" src="/media/stacked_bar_ex.js"></script>
+        -->
+        <script type="text/javascript"> 
+          $(function (data) {
+          var css_id = "#placeholder";
+          var data = {% autoescape off %} {{ jsdata }} {% endautoescape %};    
 
+          var options = {
+              yaxis: {
+                  ticks: 10,
+                  min: 0,
+                  max: 10
+              },
+              xaxis: { mode: "time" }, 
+              series: {stack: 0,
+                       lines: {show: false, steps: false },
+                       bars: {show: true, barWidth: 0.9, align: 'center',},},                
+          };
+
+          $.plot($(css_id), data, options);
+          });
+        </script>
+		
+		
 	</div>
 
 </body>

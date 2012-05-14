@@ -8,12 +8,14 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^rcdata/$', 'rcdata.views.index'),
-    url(r'^rcdata/trackdata/$', 'rcdata.views.trackdata'),
     
-    url(r'^rcdata/trackdata/(?P<track_id>\d+)/$', 'rcdata.views.trackdetail'),
-    url(r'^rcdata/trackdata/(?P<track_id>\d+)/(?P<time_frame>month|6months|alltime)/$', 'rcdata.views.trackdetail_data'),
+    url(r'^rcdata/trackdata/$', 'trackdata.views.trackdata'),    
+    url(r'^rcdata/trackdata/(?P<track_id>\d+)/$', 'trackdata.views.trackdetail'),
+    url(r'^rcdata/trackdata/(?P<track_id>\d+)/(?P<time_frame>month|6months|alltime)/$', 'trackdata.views.trackdetail_data'),    
+    url(r'^rcdata/trackdata/(?P<track_id>\d+)/recentresults/$', 'trackdata.views.recentresults'),
     
-    url(r'^rcdata/trackdata/(?P<track_id>\d+)/recentresults/$', 'rcdata.views.recentresults'),
+    url(r'^rcdata/myresults/$', 'rcdata.views.myresults'),
+    
     #url(r'^polls/(?P<poll_id>\d+)/$', 'polls.views.detail'),
 
     # Example:

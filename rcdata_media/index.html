@@ -3,13 +3,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>RCRacePerformance</title>
-<link rel="stylesheet" type="text/css" href="static/default.css"/>
+<link rel="stylesheet" type="text/css" href="static/default.css"/>  
 
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <!--[if IE]><script language="javascript" type="text/javascript" src="flot/excanvas.min.js"></script><![endif]--> 
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-  <script type="text/javascript" src="/flot/jquery.flot.js"></script>
-  <script type="text/javascript" src="/flot/jquery.flot.stack.js"></script>
 </head>
 
 <body>
@@ -23,9 +18,9 @@
           <div class="navMain">
             	
               <ul>
-                    <!--<li><a href="MyResults">MyResults</a></li>-->
+                    <li><a href="/rcdata/myresults">MyResults</a></li>
                     <li><a href="/rcdata/trackdata">TrackData</a></li>
-                </ul>
+              </ul>
                 
             </div>
         		
@@ -47,30 +42,7 @@
         -->
       </div> <!-- END content -->
       
-        <div id="placeholder" style="width:550px;height:200px;"></div>
-        <!--
-        <script type="text/javascript" src="/media/stacked_bar_ex.js"></script>
-        -->
-        <script type="text/javascript"> 
-          $(function (data) {
-          var css_id = "#placeholder";
-          var data = {% autoescape off %} {{ jsdata }} {% endautoescape %};    
-
-          var options = {
-              yaxis: {
-                  ticks: 10,
-                  min: 0,
-                  max: 10
-              },
-              xaxis: { mode: "time" }, 
-              series: {stack: 0,
-                       lines: {show: false, steps: false },
-                       bars: {show: true, barWidth: 0.9, align: 'center',},},                
-          };
-
-          $.plot($(css_id), data, options);
-          });
-        </script>
+        
 	</div>
 
 </body>
