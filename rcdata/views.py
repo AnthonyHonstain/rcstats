@@ -38,7 +38,7 @@ def myresults(request):
     cursor = connection.cursor()
     
     #
-    # WARNING - the 'char '%' is interpreted as a symbold for place holder.
+    # WARNING - the 'char '%' is interpreted as a symbol for place holder.
     #     That is where we are getting the crazy error from.
     #
     sqlquery = '''SELECT rdetail.racedate, rresults.finalpos 

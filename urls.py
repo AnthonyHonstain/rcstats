@@ -12,9 +12,13 @@ urlpatterns = patterns('',
     url(r'^rcdata/trackdata/$', 'trackdata.views.trackdata'),    
     url(r'^rcdata/trackdata/(?P<track_id>\d+)/$', 'trackdata.views.trackdetail'),
     url(r'^rcdata/trackdata/(?P<track_id>\d+)/(?P<time_frame>month|6months|alltime)/$', 'trackdata.views.trackdetail_data'),    
-    url(r'^rcdata/trackdata/(?P<track_id>\d+)/recentresults/$', 'trackdata.views.recentresults'),
+    
+    url(r'^rcdata/trackdata/(?P<track_id>\d+)/recentresultshistory/$', 'trackdata.views.recentresultshistory'),
+    url(r'^rcdata/trackdata/(?P<track_id>\d+)/recentresultshistory/(?P<race_date>\d{4}-\d{1,2}-\d{2})/$', 'trackdata.views.recentresultshistory_data'),
     
     url(r'^rcdata/myresults/$', 'rcdata.views.myresults'),
+    
+    url(r'^processresults/$', 'processresults.views.index'),
     
     #url(r'^polls/(?P<poll_id>\d+)/$', 'polls.views.detail'),
 

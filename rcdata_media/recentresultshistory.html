@@ -1,0 +1,32 @@
+<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+ 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+  
+	<script>
+		var ajax_load = "<img class='loading' src='images/loadingGif.gif' alt='loading...' />";
+		
+		// load() functions 
+		{% for date in race_dates %}
+		var loadUrl_{{ date.id }} = "/rcdata/trackdata/{{ supportedtrack.id }}/recentresultshistory/{{ date.date }}/";
+		
+		$("#load_basic_{{ date.id }}").click(function(){
+			$("#result").html(ajax_load).load(loadUrl_{{ date.id }}); 
+		});
+		
+		{% endfor %}
+		
+		// Display the first results returned.
+		$("#result").html(ajax_load).load(loadUrl_{{ race_dates.0.id }}); 
+	</script>
+</head>    
+
+
+<h3>Select a date from the options below to see results from that race day.</h3>
+    
+{% for date in race_dates %}
+	<input type="submit" value="{{ date.display_date }}" id="load_basic_{{ date.id }}" />     
+{% endfor %}
+
+<div id="result"  class="functions">
+
+
