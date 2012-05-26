@@ -34,7 +34,7 @@ def trackdetail_data(request, track_id, time_frame='alltime'):
         For stats that calculated Per Racer, only a set number of results
         are returned (we dont want to do every single person). 
     
-    Current stats - Filtered by date, sorted by the count
+    Current stats - Filtered by date, sorted by the ct ount
         Total number of wins for the top racers
         Total number of laps for the top racers
     """

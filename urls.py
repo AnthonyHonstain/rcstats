@@ -16,7 +16,8 @@ urlpatterns = patterns('',
     url(r'^rcdata/trackdata/(?P<track_id>\d+)/recentresultshistory/$', 'trackdata.views.recentresultshistory'),
     url(r'^rcdata/trackdata/(?P<track_id>\d+)/recentresultshistory/(?P<race_date>\d{4}-\d{1,2}-\d{2})/$', 'trackdata.views.recentresultshistory_data'),
     
-    url(r'^rcdata/myresults/$', 'rcdata.views.myresults'),
+    url(r'^rcdata/myresults/$', 'myresults.views.myresults'),
+    url(r'^rcdata/myresults/(?P<racer_id>\d+)/$', 'myresults.views.generalstats'),
     
     url(r'^processresults/$', 'processresults.views.index'),
     

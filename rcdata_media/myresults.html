@@ -1,12 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>RCRacePerformance</title>
-<link rel="stylesheet" type="text/css" href="static/default.css"/>
-
-  <script type="text/javascript" src="/flot/jquery.js"></script>
-  <script type="text/javascript" src="/flot/jquery.flot.js"></script>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>RCRacePerformance</title>
+	<link rel="stylesheet" type="text/css" href="static/default.css"/>
 </head>
 
 <body>
@@ -29,53 +26,21 @@
             </div>
         		
         </div> <!-- END header -->
-        
-        <div class="content">
-        
-        <!--
-        	<div class="wrapLinks">
 
-            	<ul>
-                	<li><a href="#">Web Hosting</a></li>
-                    <li><a href="#">cPanel</a></li>
-                    <li><a href="#">Email</a></li>
-                    <li><a href="#">Reseller</a></li>
-                </ul>
-                
-            </div>
-        -->
-        </div> <!-- END content -->
+		<div class="content"></div>
 		
-		
-		
-		
-		<div id="placeholder" style="width:550px;height:200px;"></div>
-        <!--
-        <script type="text/javascript" src="/media/stacked_bar_ex.js"></script>
-        -->
-        <script type="text/javascript"> 
-          $(function (data) {
-          var css_id = "#placeholder";
-          var data = {% autoescape off %} {{ jsdata }} {% endautoescape %};    
-
-          var options = {
-              yaxis: {
-                  ticks: 10,
-                  min: 0,
-                  max: 10
-              },
-              xaxis: { mode: "time" }, 
-              series: {stack: 0,
-                       lines: {show: false, steps: false },
-                       bars: {show: true, barWidth: 0.9, align: 'center',},},                
-          };
-
-          $.plot($(css_id), data, options);
-          });
-        </script>
-		
+		<div>
+			{% if racer_names %}
+			    <ul>
+			    {% for racer in racer_names %}
+			        <li><a href="/rcdata/myresults/{{ racer.id }}/">{{ racer.racerpreferredname }}</a></li>		        
+			    {% endfor %}
+			    </ul>
+			{% else %}
+			    <p>No racers are available.</p>
+			{% endif %}	
+		</div>
 		
 	</div>
-
 </body>
 </html>
