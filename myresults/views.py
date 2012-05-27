@@ -1,5 +1,6 @@
 import time
 import datetime
+import re
 
 from dateutil.relativedelta import relativedelta
 
@@ -7,9 +8,11 @@ from django.template import Context, loader
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.db import connection
+from django.db.models import Count
 from django.utils import simplejson
 
 from rcdata.models import RacerId, SupportedTrackName, SingleRaceDetails, SingleRaceResults
+
 
 
 def myresults(request):
@@ -44,6 +47,7 @@ def generalstats(request, racer_id):
         formatedtime = time.mktime(race_detail.racedate.timetuple()) * 1000        
         graphdata.append([formatedtime, result.finalpos])
 
+    print 'graphdata', graphdata
     mylist =[
         {'label': racer_obj.racerpreferredname, 'data': graphdata},        
     ]
@@ -57,17 +61,46 @@ def generalstats(request, racer_id):
     # WARNING - PROTOTYPE CODE    
     for result in race_results:
         race_detail = SingleRaceDetails.objects.get(pk = result.raceid.id)
-        print race_detail.racedate, race_detail.racedata
+        print "racedata dump:", race_detail.racedate, race_detail.racedata
+
+    
+    # A dictionary of class names {u'MODIFIED SHORT COURSE': 4, u'STOCK BUGGY': 105,
+    unique_classes = {}
+
+    test = SingleRaceDetails.objects.filter(singleraceresults__racerid = racer_obj.id,
+                                            racedata__icontains = "main").values('racedata').\
+                                                annotate(dcount=Count('racedata')).\
+                                                order_by('dcount')[::-1]
         
-    # Not sure if a static table is going to
-    synonymes = {'mpd': ['mod', 'modified'],
-                 'stock': ['stock', '17.5',],
-                 'sc': ['short course', 'sc', ],
-                 'truck':['truck', 'stadium']
-                }
+    for t in test:    
+        # I am going to go through the list and remove 'duplicates'
+        # Example of the data befor I work with it:
+        #    [{'dcount': 86, 'racedata': u'STOCK BUGGY A Main'},
+        #    {'dcount': 56, 'racedata': u'STOCK TRUCK A Main'},
+        #    {'dcount': 51, 'racedata': u'13.5 STOCK SHORT COURSE A Main'}]
         
+        # I no longer care about the 'A','B', '1', 'main' etc. I am going to strip
+        # and trim the strings as I add them to a new master table.            
+        pattern = re.compile("[A-Z][1-9]? main", re.IGNORECASE)
         
-    ctx = Context({'racername':racer_obj.racerpreferredname, 'jsdata':jsdata})
+        start_index = pattern.search(t['racedata']).start(0)
+        
+        # We want to trim off the 'A main' part of the string and clean it up.
+        processed_classname = t['racedata'][:start_index].strip('+- ')
+        unique_classes[processed_classname] = unique_classes.get(processed_classname, 0) + t['dcount']
+    
+    # Now I have the unique class names and their count, I need to 
+    # display this information to the user. 
+        
+    class_frequency = unique_classes.items()
+    class_frequency.sort(key = lambda tup: tup[1], reverse = True)
+    # Example of class_frequency [(u'STOCK BUGGY', 105), (u'STOCK TRUCK', 62), 
+
+        
+    ctx = Context({'racername':racer_obj.racerpreferredname, 
+                   'jsdata':jsdata, 
+                   'class_frequency':class_frequency})
+    
     return render_to_response('generalstats.html', ctx)
 
 
