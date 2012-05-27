@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>RCRacePerformance</title>
+	<link rel="stylesheet" type="text/css" href="static/default.css"/>
+
+	<script type="text/javascript" src="/flot/jquery.js"></script>
+	<script type="text/javascript" src="/flot/jquery.flot.js"></script>
+	
+	<script type="text/javascript">
+		// Graph of the racers history and results over time.
+		$(function (data) {
+		var css_id = "#placeholder";
+		var data = {% autoescape off %} {{ jsdata }} {% endautoescape %};    
+		var options = {
+			yaxis: {
+		    	ticks: 10,
+		        min: 0,
+		        max: 10
+		    },
+		    xaxis: { mode: "time" }, 
+		    series: {color: '#0055bb',
+		    	stack: 0,
+		        lines: {show: false, steps: false },
+		        bars: {show: true, barWidth: 0.9, align: 'center',},},                
+		};
+		
+		$.plot($(css_id), data, options);
+		});
+    </script>	
+	
+</head>
+
+<body>
+
+    <div class="wrapOverall">
+    
+        <div class="header">
+        	
+        	<a href="/rcdata">
+          	<img class="logo" src="images/headerLogo.png" width="564" height="52" alt="RCRacePerformance"/>
+          	</a>
+          
+        	<div class="navMain">
+            	
+                <ul>                    
+					<li><a href="/rcdata/myresults">MyResults</a></li>
+                    <li><a href="/rcdata/trackdata">TrackData</a></li>
+                </ul>
+                
+            </div>
+        		
+        </div> <!-- END header -->
+
+		<div class="content"></div>
+		
+		<h3>General race statistics for {{ racername }}</h3>
+		
+		<div>
+			<h4>The total number of main events organized by race class.</h4>
+			<p>This is filtered by races that marked as 'main' events.</p>
+			
+			{% if class_frequency %}
+			    <ul>
+			    {% for class in class_frequency %}
+			        <li>{{ class.0 }} {{ class.1 }}</li>		        
+			    {% endfor %}
+			    </ul>
+			{% else %}
+			    <p>No main event race information available.</p>
+			{% endif %}	
+		</div>
+		
+		<div>
+			<h4>Total race history organized by the date of the race.</h4>
+		
+			<p>
+			Race results graphed by time (shorter bars are better). The 
+			x-axis uses time as a scale, so you can	see periods of 
+			inactivity or more frequent racing. The y-axis (height of 
+			the bar) indicates how you finished the race, 1 being first
+			place.
+			</p>  
+					
+			<div id="placeholder" style="width:950px;height:300px;"></div>
+
+		</div>		
+        <!--
+        <script type="text/javascript" src="/media/stacked_bar_ex.js"></script>
+        -->
+
+		
+	</div>
+
+</body>
+</html>
