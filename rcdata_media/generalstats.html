@@ -8,6 +8,7 @@
 	<script type="text/javascript" src="/flot/jquery.js"></script>
 	<script type="text/javascript" src="/flot/jquery.flot.js"></script>
 	
+	
 	<script type="text/javascript">
 		// Graph of the racers history and results over time.
 		$(function (data) {
@@ -29,6 +30,45 @@
 		$.plot($(css_id), data, options);
 		});
     </script>	
+    
+    
+	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+  	<!--
+  	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+  	-->
+  	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+	    
+	<!-- Script for the tabs -->
+	<script type="text/javascript"  charset="utf-8">
+		{% if recent_race_data %}			    
+			{% for track in recent_race_data %}			
+			  	$(document).ready(function() {
+				    $("#tracktabs_{{ track.js_id }}").tabs();
+			  	});			  	
+	  		{% endfor %}
+	  	{% else %}
+	  		// Warning - no race data for recent races.	  	
+	  	{% endif %}	  	
+  	
+  	
+  	<!-- Script for the buttons -->
+  	$(document).ready(function() {
+  	var ajax_load = "<img class='loading' src='images/loadingGif.gif' alt='loading...' />";
+		
+  	{% for track in recent_race_data %}
+  	{% for class in track.classes %}
+  	{% for race in class.individual_racedata %}
+		$("#load_basic_{{ track.js_id }}_{{ class.js_id }}_{{ race.js_id }}").click(function(){
+			$("#result_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/{{ race.id }}/"); 
+		});		
+	{% endfor %}
+	// Display the first results returned.
+	$("#result_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/{{ class.individual_racedata.0.id }}/"); 
+	{% endfor %}
+	{% endfor %}
+	
+	});
+  	</script>
 	
 </head>
 
@@ -90,6 +130,74 @@
         <script type="text/javascript" src="/media/stacked_bar_ex.js"></script>
         -->
 
+
+		<!-- Overview of the object from the view we are going to work with:
+		    [
+		        {
+		         "js_id": <>
+		         "trackname": <>,
+		         "classes": [
+		                    {"js_id":<>
+		                     "classname": <>,
+		                     "individual_racedata": [
+		                                             {'date':<>, 'id':<>, "js_id":<>}, 
+		                                             ...
+		                                            ]
+		                    }
+		                    ... Multiple classes
+		                   ]
+		         }
+		         ... Multiple tracks 
+		    ]
+		
+		-->
+		
+		{% if recent_race_data %}
+			    
+			
+			{% for track in recent_race_data %}
+			<!-- ************************************************* -->
+			<!-- Track Section -->
+			<!-- ************************************************* -->
+			<h4>{{ track.trackname }}</h4>
+		    
+		    <div id="tracktabs_{{ track.js_id }}"> <! -- Recent race history -->
+			    <ul>			    
+			    	{% for class in track.classes %}
+					<!-- ************************************************* -->
+					<!-- Class Tabs Section -->
+					<!-- ************************************************* -->
+		        	<li><a href="#classtabs_{{ track.js_id }}_{{ class.js_id }}">
+		        		<span>{{ class.classname }}</span>
+		        	</a></li>
+			        {% endfor %}
+			        
+			    </ul>
+			    
+			    {% for class in track.classes %}				    	
+				<!-- ************************************************* -->
+				<!-- Class Tab CONTENT Section -->
+				<!-- ************************************************* -->
+		    	<div id="classtabs_{{ track.js_id }}_{{ class.js_id }}">		    	
+		    		<p>{{ class.classname }} General race statistics that can be filtered by time.</p>
+					<!-- ************************************************* -->
+					<!-- Race Date BUTTON Section -->
+					<!-- ************************************************* -->		    		
+		    		{% for race in class.individual_racedata %}
+					<input type="submit" value="{{ race.date }}" id="load_basic_{{ track.js_id }}_{{ class.js_id }}_{{ race.js_id }}" />     
+					{% endfor %}					
+					<div id="result_{{ track.js_id }}_{{ class.js_id }}"  class="functions"></div> 
+	    		</div>
+	    		
+		    	{% endfor %}
+			</div> <!-- END tabs -->  	    
+			{% endfor %}
+			    
+		{% else %}
+			    <p>No recent race history available.</p>
+		{% endif %}	
+		
+			
 		
 	</div>
 

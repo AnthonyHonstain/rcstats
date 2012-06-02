@@ -177,8 +177,7 @@ def recentresultshistory_data(request, track_id, race_date):
     
     # Note Format (year, month, date)
     # Note - the range (date1, date2) works like date1 <= x < date2
-    race_details = SingleRaceDetails.objects.filter(racedate__range=(date, 
-                                                                     date + relativedelta(days=+1)),
+    race_details = SingleRaceDetails.objects.filter(racedate__range=(date, date + relativedelta(days=+1)),
                                                     trackkey=supported_track.trackkey).order_by('racedate')
     
     results_template_format = []
@@ -188,7 +187,7 @@ def recentresultshistory_data(request, track_id, race_date):
                 
         formated_result = []     
             
-        race_results = SingleRaceResults.objects.filter(raceid = race_detail.id)
+        race_results = SingleRaceResults.objects.filter(raceid=race_detail.id)
         for individual_result in race_results:
     
             formated_result.append([

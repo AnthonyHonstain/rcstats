@@ -21,6 +21,8 @@ urlpatterns = patterns('',
     
     url(r'^processresults/$', 'processresults.views.index'),
     
+    url(r'^rcdata/displayresults/(?P<race_detail>\d+)/$', 'displayresults.views.singleraceresult'),
+    
     #url(r'^polls/(?P<poll_id>\d+)/$', 'polls.views.detail'),
 
     # Example:
