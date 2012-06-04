@@ -1,0 +1,47 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Single Racer Lap Times</title>
+
+	<!--
+	<script language="javascript" type="text/javascript" src="/flot/jquery.js"></script>
+	<script language="javascript" type="text/javascript" src="/flot/jquery.flot.js"></script>
+	-->
+	
+	<script type="text/javascript">
+		//$(document).ready(function() {
+		$(function () {
+    		var datasets = {% autoescape off %} {{ jsdata }} {% endautoescape %};
+   
+            $.plot($("#singleracerlaptimes_placeholder_{{ laps_id_js }}"), datasets, {
+                //yaxis: { min: 0 },
+                xaxis: { tickDecimals: 0 },
+                stack: 0,
+                lines: {show: false, steps: false },
+                bars: {show: true, barWidth: 0.8, align: 'center',},
+            });
+    
+		});
+		//});
+    </script>	
+    
+</head>
+
+<body>
+
+		<div>
+			<h4>Lap times</h4>
+		
+			<p>
+			A graph of the lap times from the race (smaller is better, and consistency is ideal).
+			</p>  
+			Average - Top 5: {{ top5_avg }} Top 10: {{ top10_avg }} Top 20: {{ top20_avg }} 
+			Standard Deviation: {{ std_dev }} Median: {{ median }}
+					
+			<div id="singleracerlaptimes_placeholder_{{ laps_id_js }}" style="width:950px;height:300px;"></div>
+			
+		</div>	
+		
+</body>

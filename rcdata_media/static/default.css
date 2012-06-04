@@ -38,6 +38,11 @@ hr {
 /* ############################ */
 .tab { margin-left: 40px; }
 
+.ui-tabs .ui-tabs-hide {
+    position: absolute;
+    left: -10000px;
+}
+
 .wrapOverall {
 	width:1016px;
 	margin: 0 auto;

@@ -11,7 +11,7 @@ class SupportedTrackName(models.Model):
     # I am going to pass on this for now, this seems like alot of work.
     #trackimage = models.FilePathField(path="//home/asymptote/Desktop/RCRacePerformance/rcdata_media/images")
 
-# The a single racer, their name (probably not going be be unique by default)
+# A single racer, their name (probably not going be be unique by default)
 class RacerId(models.Model):
     racerpreferredname = models.CharField(max_length=200)
     

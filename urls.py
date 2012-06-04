@@ -23,15 +23,8 @@ urlpatterns = patterns('',
     
     url(r'^rcdata/displayresults/(?P<race_detail>\d+)/$', 'displayresults.views.singleraceresult'),
     
-    #url(r'^polls/(?P<poll_id>\d+)/$', 'polls.views.detail'),
+    url(r'^rcdata/displayresults/singleracerlaps/(?P<race_detail>\d+)/(?P<racer_id>\d+)/$', 'displayresults.views.singleracerlaps'),
 
-    # Example:
-    # (r'^mysite/', include('mysite.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )
 

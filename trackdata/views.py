@@ -3,22 +3,32 @@ import datetime
 
 from dateutil.relativedelta import relativedelta
 
-from django.template import Context, loader
+from django.template import Context
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponse, Http404
+from django.http import Http404
 from django.db import connection
 from django.utils import simplejson
 
 from rcdata.models import SupportedTrackName, SingleRaceDetails, SingleRaceResults
 
 
-
 def trackdata(request):
+    """
+    This view will display a list of the supported race tracks. It
+    is the main entry point for the track specific scenario. 
+    
+    This is not a raw view of all POSSIBLE tracks, just a set that
+    has been manually selected by an admin.
+    """
     tracklist = SupportedTrackName.objects.all()
 
     return render_to_response('trackdata.html', {'track_list':tracklist})
 
+
 def trackdetail(request, track_id):
+    """
+    This view is the initial page once a track has been selected.
+    """
     supported_track = get_object_or_404(SupportedTrackName, pk=track_id)
     
     ctx = Context({'trackname':supported_track.trackkey})
@@ -39,7 +49,7 @@ def trackdetail_data(request, track_id, time_frame='alltime'):
         Total number of laps for the top racers
     """
     
-    # I am not assuming that the track_id provided is actually valid.
+    # Need to verify track is still supported.
     supported_track = get_object_or_404(SupportedTrackName, pk=track_id)
     
     if (time_frame not in ('alltime', 'month', '6months')):
@@ -49,7 +59,12 @@ def trackdetail_data(request, track_id, time_frame='alltime'):
     
     #
     # This is where we set the time period to filter by.
-    #    If the filter is "All Time" there is no need to filter at all.
+    #    If the filter is "All Time" there is no need to filter.
+    #
+    # WARNING - I am manually inserting the sql_time_filter into the raw
+    # query because it does NOT come from the user. If this is changed
+    # the method of executing the queries should be updated.
+    #
     sql_time_filter = ''
     filterdatestr = 'All Time'
     
@@ -111,7 +126,6 @@ def _get_Total_Wins(track_key_id, sql_time_filter, row_limit):
         
 
 def _get_Total_Lap(track_key_id, sql_time_filter, row_limit):
-        
     #
     # This query does the work to find the total number of laps races.
     #
@@ -142,8 +156,7 @@ def recentresultshistory(request, track_id):
     """
     Main page to organize and display the recent race results from the track.
     
-    The race date is processed using the format '%Y-%m-%d'
-    
+    The race date is processed using the format '%Y-%m-%d'    
     """    
     NUMBER_OF_RESULTS_FOR_HISTORY = 5
     
@@ -159,8 +172,7 @@ def recentresultshistory(request, track_id):
                           
     ctx = Context({'supportedtrack':supported_track, 'race_dates':race_dates})
                                                              
-    return render_to_response('recentresultshistory.html', ctx)
-    
+    return render_to_response('recentresultshistory.html', ctx)    
 
 
 def recentresultshistory_data(request, track_id, race_date):

@@ -4,32 +4,42 @@ import re
 
 from dateutil.relativedelta import relativedelta
 
-from django.template import Context, loader
+from django.template import Context
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponse, Http404
-from django.db import connection
 from django.db.models import Count
 from django.db.models import Q
 from django.utils import simplejson
 
-from rcdata.models import RacerId, TrackName, SupportedTrackName, SingleRaceDetails, SingleRaceResults
-
+from rcdata.models import RacerId, TrackName, SingleRaceDetails, SingleRaceResults
 
 
 def myresults(request):
+    """
+    This view is the main entry point into individual racer results scenario.
     
+    It gives a listing of all tracked race names, and links to their respective
+    profile pages.
+    """
     racer_names = RacerId.objects.all()
 
     return render_to_response('myresults.html', {'racer_names':racer_names})
 
+
 def generalstats(request, racer_id):
+    """
+    This view displays the current stats for an individual racer. 
+    
+    WARNING - this is currently a wall of code as I am prototyping 
+    out the features that we want to display. Portions have already
+    been refactored or pushed into a different view, but additional c
+    cleanup is needed.
+    """
     racer_obj = get_object_or_404(RacerId, pk=racer_id)
     
-    
-    # -----------------------------------------------------------
+    # ===========================================================
     # Get the data for the timeline of all race results.
-    # -----------------------------------------------------------
-    
+    # ===========================================================
+        
     # This is every race result for this racer.
     race_results = SingleRaceResults.objects.filter(racerid = racer_obj.id)        
     '''
@@ -56,9 +66,9 @@ def generalstats(request, racer_id):
     ]
     jsdata = simplejson.dumps(mylist)
             
-    # -----------------------------------------------------------
+    # ===========================================================
     # Identify and group the race classes
-    # -----------------------------------------------------------     
+    # ===========================================================
     # A dictionary of class names {u'MODIFIED SHORT COURSE': 4, u'STOCK BUGGY': 105,
     unique_classes = {}
 
@@ -76,9 +86,9 @@ def generalstats(request, racer_id):
     # Example of class_frequency [(u'STOCK BUGGY', 105), (u'STOCK TRUCK', 62), 
 
 
-    # -----------------------------------------------------------
+    # ===========================================================
     # Find last 5 races for each class and track.
-    # -----------------------------------------------------------    
+    # ===========================================================
     '''
     There are a couple of issues to work through here.
         TO START WITH - I WILL FILTER BY LAST 2 Months to find
@@ -189,7 +199,8 @@ def generalstats(request, racer_id):
     print recent_race_data
         
     
-    ctx = Context({'racername':racer_obj.racerpreferredname, 
+    ctx = Context({'racerid':racer_obj.id,
+                   'racername':racer_obj.racerpreferredname, 
                    'jsdata':jsdata, 
                    'class_frequency':class_frequency,
                    'recent_race_data':recent_race_data})
@@ -235,67 +246,3 @@ def _display_Date_User(datetime_object):
     Take the datetime object and generate the string to display to users.
     """
     return datetime_object.strftime('%a, %d %b %Y')
-
-"""
-def myresults(request):
-    
-    '''
-     TESTING -
-    Going to try and inject json here, this is what was in the .js file.
-    var data = [
-        {label: 'foo', data: [[1,300], [2,300], [3,300], [4,300], [5,300]]},
-        {label: 'bar', data: [[1,800], [2,600], [3,400], [4,200], [5,0]]},
-        {label: 'baz', data: [[1,100], [2,200], [3,300], [4,400], [5,500]]},
-    ];
-    '''    
-#    mylist ='''[
-#        {'label': 'foo', 'data': [[1,300], [2,300], [3,300], [4,300], [5,300]]},
-#        {'label': 'bar', 'data': [[1,800], [2,600], [3,400], [4,200], [5,0]]},
-#        {'label': 'baz', 'data': [[1,100], [2,200], [3,300], [4,400], [5,500]]},
-#    ]'''    
-    cursor = connection.cursor()
-    
-    #
-    # WARNING - the 'char '%' is interpreted as a symbol for place holder.
-    #     That is where we are getting the crazy error from.
-    #
-    sqlquery = '''SELECT rdetail.racedate, rresults.finalpos 
-FROM (
-    (rcdata_singleraceresults as rresults INNER JOIN rcdata_racerid as rid ON rresults.racerid_id = rid.id)
-        INNER JOIN rcdata_singleracedetails as rdetail ON rdetail.id = rresults.raceid_id)        
-WHERE (racerpreferredname ILIKE '%%anthony%%' AND 
-       racerpreferredname ILIKE '%%honstain%%' AND
-       rdetail.racelength = 8 AND
-       rdetail.trackkey_id = 1 AND
-       rdetail.racedata ILIKE '%%Mod Short Course A Main%%')
-ORDER BY rdetail.racedate DESC
-LIMIT 100;'''
-    
-    
-    # Data retrieval operation - no commit required
-    #cursor.execute("SELECT racerpreferredname FROM polls_racerid WHERE id = %s", ['1'])
-    
-    cursor.execute(sqlquery)
-    results = cursor.fetchall()
-    
-    '''
-    The timestamps must be specified as Javascript timestamps, as
-      milliseconds since January 1, 1970 00:00. This is like Unix
-      timestamps, but in milliseconds instead of seconds (remember to
-      multiply with 1000!)
-    '''
-    graphdata = []
-    for result in results:        
-        # Convert to milliseconds
-        formatedtime = time.mktime(result[0].timetuple()) * 1000        
-        graphdata.append([formatedtime, result[1]])
-                          
-    print "GRAPHDATA", graphdata
-    
-    mylist =[
-        {'label': 'Anthony Honstain', 'data': graphdata},        
-    ]
-    jsdata = simplejson.dumps(mylist)
-    
-    return render_to_response('myresults.html', {'jsdata':jsdata})
-"""
