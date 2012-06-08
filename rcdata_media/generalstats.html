@@ -5,9 +5,16 @@
 	<title>RCRacePerformance</title>
 	<link rel="stylesheet" type="text/css" href="static/default.css"/>
 
+	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+	<!--
 	<script type="text/javascript" src="/flot/jquery.js"></script>
+	-->
 	<script type="text/javascript" src="/flot/jquery.flot.js"></script>
 		
+ 	<script src="static/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
+ 	
 	<script type="text/javascript">
 		// Graph of the racers history and results over time.
 		$(function (data) {
@@ -105,21 +112,6 @@
 			{% endif %}	
 		</div>
 		
-		<div>
-			<h4>Total race history organized by the date of the race.</h4>
-		
-			<p>
-			Race results graphed by time (shorter bars are better). The 
-			x-axis uses time as a scale, so you can	see periods of 
-			inactivity or more frequent racing. The y-axis (height of 
-			the bar) indicates how you finished the race, 1 being first
-			place.
-			</p>  
-					
-			<div id="placeholder" style="width:950px;height:300px;"></div>
-
-		</div>	
-
 		<!-- Overview of the js object from the view we are going to work with:
 		    [
 		        {
@@ -176,7 +168,7 @@
 					<input type="submit" value="{{ race.date }}" id="load_basic_{{ track.js_id }}_{{ class.js_id }}_{{ race.js_id }}" />     
 					{% endfor %}					
 					<div id="result_{{ track.js_id }}_{{ class.js_id }}"  class="functions"></div> 
-					<div id="lap_graph_{{ track.js_id }}_{{ class.js_id }}"  class="functions" style="width:950px;height:1000px;"></div> 
+					<div id="lap_graph_{{ track.js_id }}_{{ class.js_id }}"  class="functions" style="width:950px;height:500px;"></div> 
 					
 	    		</div>
 	    		
@@ -187,6 +179,22 @@
 		{% else %}
 			    <p>No recent race history available.</p>
 		{% endif %}	
+		
+		<div>
+		
+			<h4>Total race history organized by the date of the race.</h4>
+		
+			<p>
+			Race results graphed by time (shorter bars are better). The 
+			x-axis uses time as a scale, so you can	see periods of 
+			inactivity or more frequent racing. The y-axis (height of 
+			the bar) indicates how you finished the race, 1 being first
+			place.
+			</p>  
+					
+			<div id="placeholder" style="width:950px;height:300px;"></div>
+
+		</div>	
 		
 	</div>
 </body>
