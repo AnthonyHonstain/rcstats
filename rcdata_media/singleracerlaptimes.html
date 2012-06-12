@@ -14,7 +14,7 @@
                 xaxis: { tickDecimals: 0 },
                 stack: 0,
                 lines: {show: false, steps: false },
-                bars: {show: true, barWidth: 0.8, align: 'center',},
+                bars: {show: true, barWidth: 0.8, align: 'center',},                
             });
     
 		});
@@ -31,15 +31,15 @@
 			A graph of the lap times from the race (smaller is better, and consistency is ideal) and general race statistics.
 			</p>  
 			<ul>
-				<li>Top 5 Avg: {{ top5_avg }}</li>
-				<li>Top 10 Avg: {{ top10_avg }}</li>
-				<li>Top 20 Avg: {{ top20_avg }}</li>
-				<li>Standard Deviation: {{ std_dev }}</li> 
-				<li>Median: {{ median }}</li>
+				Top 5 Avg: {{ top5_avg }}<br />
+				Top 10 Avg: {{ top10_avg }}<br />
+				Top 20 Avg: {{ top20_avg }}<br />
+				Standard Deviation: {{ std_dev }}<br /> 
+				Median: {{ median }}
             </ul>
 			
 					
-			<div id="singleracerlaptimes_placeholder_{{ laps_id_js }}" style="width:950px;height:300px;"></div>
+			<div id="singleracerlaptimes_placeholder_{{ laps_id_js }}" style="width:900px;height:320px;"></div>
 			
 		</div>	
 		

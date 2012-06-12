@@ -1,103 +1,64 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>RCRacePerformance</title>
-	<link rel="stylesheet" type="text/css" href="static/default.css"/>
+<!doctype html>
 
-	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-	<!--
-	<script type="text/javascript" src="/flot/jquery.js"></script>
-	-->
-	<script type="text/javascript" src="/flot/jquery.flot.js"></script>
-		
- 	<script src="static/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
- 	
-	<script type="text/javascript">
-		// Graph of the racers history and results over time.
-		$(function (data) {
-		var css_id = "#placeholder";
-		var data = {% autoescape off %} {{ jsdata }} {% endautoescape %};    
-		var options = {
-			yaxis: {
-		    	ticks: 10,
-		        min: 0,
-		        max: 10
-		    },
-		    xaxis: { mode: "time" }, 
-		    series: {color: '#0055bb',
-		    	stack: 0,
-		        lines: {show: false, steps: false },
-		        bars: {show: true, barWidth: 0.9, align: 'center',},
-		    },                
-		};
-		
-		$.plot($(css_id), data, options);
-		});
-    </script>		
-	    
-	<!-- Script for the tabs -->
-	<script type="text/javascript"  charset="utf-8">
-		{% if recent_race_data %}			    
-			{% for track in recent_race_data %}			
-			  	$(document).ready(function() {
-				    $("#tracktabs_{{ track.js_id }}").tabs();
-			  	});			  	
-	  		{% endfor %}
-	  	{% else %}
-	  		// Warning - no race data for recent races.	  	
-	  	{% endif %}	  	  	
-  	
-  	<!-- Script for the buttons -->
-  	$(document).ready(function() {
-  	var ajax_load = "<img class='loading' src='images/loadingGif.gif' alt='loading...' />";
-		
-  	{% for track in recent_race_data %}
-  	{% for class in track.classes %}
-  	{% for race in class.individual_racedata %}
-		$("#load_basic_{{ track.js_id }}_{{ class.js_id }}_{{ race.js_id }}").click(function(){
-			$("#result_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/{{ race.id }}/"); 
-			$("#lap_graph_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/singleracerlaps/{{ race.id }}/{{ racerid }}/");
-		});		
-	{% endfor %}
-	// Display the first results returned.
-	$("#result_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/{{ class.individual_racedata.0.id }}/"); 
-	$("#lap_graph_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/singleracerlaps/{{ class.individual_racedata.0.id }}/{{ racerid }}/"); 
-	
-	{% endfor %}
-	{% endfor %}
-	
-	});
-  	</script>
-	
+  <meta charset="utf-8"> 
+  
+  <title>Rc-Stats to track your race performance</title>
+  <meta name="description" content="Rc-stats is dedicated to providing detailed analysis and actionable data
+to help rc racers of all skill level improve their performance.">
+
+  
+  
+  <!-- The script prevents links from opening in mobile safari. https://gist.github.com/1042026 -->
+  <!-- <script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script> -->
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/superfish.css" media="screen"  />
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/flexslider.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="css/prettyPhoto.css" type="text/css" media="screen" title="prettyPhoto main stylesheet" />
+  <link rel="stylesheet" href="css/custom-rebuild.css" media="screen"  />
+  
+  <link href='http://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+  
 </head>
 
 <body>
 
-    <div class="wrapOverall">
+<div id="container">
+    <header>
+    	<section class="header_fix">
+            <a class="logo" href="/rcdata/"></a><!-- /.logo --> 
+        </section><!-- /.header_fix --> 
+    </header><!-- /header -->
     
-        <div class="header">
-        	
-        	<a href="/rcdata">
-          	<img class="logo" src="images/headerLogo.png" width="564" height="52" alt="RCRacePerformance"/>
-          	</a>
-          
-        	<div class="navMain">
-            	
-                <ul>                    
-					<li><a href="/rcdata/myresults">MyResults</a></li>
-                    <li><a href="/rcdata/trackdata">TrackData</a></li>
-                </ul>
-                
-            </div>
-        		
-        </div> <!-- END header -->
+    <nav>
+    	<section class="nav_fix">
+            <section class="nav_fix_in">
+            <ul class="main-menu">
+                <li><a href="/rcdata/">Home</a></li>
+                <li class="current_page_item"><a href="/rcdata/myresults">MyResults</a></li>
+                <li><a href="/rcdata/trackdata">TrackData</a></li>
+                <li><a href="/rcdata/faq">FAQ</a></li>
+            </ul>
+        	</section><!-- /.nav_fix_in -->
+        </section><!-- /.nav_fix -->
+    </nav><!-- /nav -->
+ 
+    
+	<section id="content-container">
+    	<section class="content_container_fix">
+                 
+        <section class="page_title">
+          <h1>MyResults</h1>
+          <h2>Results for individual racers. Select a name from below. </h2>
+        </section><!-- /.page_title -->
+        
+
+        <section class="full_width">
+        		<h3>General race statistics for {{ racername }}</h3>
 		
-		<h3>General race statistics for {{ racername }}</h3>
-		
-		<div>
+
 			<h4>The total number of main events organized by race class.</h4>
 			<p>This is filtered by races that marked as 'main' events.</p>
 			
@@ -110,10 +71,17 @@
 			{% else %}
 			    <p>No main event race information available.</p>
 			{% endif %}	
-		</div>
+
+
+        </section><!-- /.full_width -->         
+        <section class="clear_full"></section><!-- /.clear_full --> 
+
 		
-		<!-- Overview of the js object from the view we are going to work with:
+        <section class="full_width">
+        
+        		<!-- Overview of the js object from the view we are going to work with:
 		    [
+
 		        {
 		         "js_id": <>
 		         "trackname": <>,
@@ -121,6 +89,7 @@
 		                    {"js_id":<>
 		                     "classname": <>,
 		                     "individual_racedata": [
+
 		                                             {'date':<>, 'id':<>, "js_id":<>}, 
 		                                             ...
 		                                            ]
@@ -128,6 +97,7 @@
 		                    ... Multiple classes
 		                   ]
 		         }
+
 		         ... Multiple tracks 
 		    ]
 		
@@ -178,24 +148,180 @@
 			    
 		{% else %}
 			    <p>No recent race history available.</p>
-		{% endif %}	
-		
-		<div>
-		
-			<h4>Total race history organized by the date of the race.</h4>
-		
-			<p>
-			Race results graphed by time (shorter bars are better). The 
-			x-axis uses time as a scale, so you can	see periods of 
-			inactivity or more frequent racing. The y-axis (height of 
-			the bar) indicates how you finished the race, 1 being first
-			place.
-			</p>  
-					
-			<div id="placeholder" style="width:950px;height:300px;"></div>
+		{% endif %}
 
-		</div>	
+        </section><!-- /.full_width -->         
+        <section class="clear_full"></section><!-- /.clear_full --> 
+	
+
+
+
+        <section class="full_width">
+          <h4>Total race history organized by the date of the race.</h4>
 		
-	</div>
+			    <p>
+			    Race results graphed by time (shorter bars are better). The 
+			    x-axis uses time as a scale, so you can	see periods of 
+			    inactivity or more frequent racing. The y-axis (height of 
+			    the bar) indicates how you finished the race, 1 being first
+			    place.
+			    </p>  
+					
+			    <div id="placeholder" style="width:950px;height:300px;"></div>
+        </section><!-- /.full_width -->         
+        <section class="clear_full"></section><!-- /.clear_full --> 
+        
+        </section><!-- /.content_container_fix --> 
+    </section><!-- /#content-container -->   
+
+
+    <footer>
+    	<section class="footer_fix">
+            <section class="footer_widgets">
+            
+            	<section class="footer_widget_12">
+                	<h3>About rc-stats.com</h3>
+                    <article>
+                    
+                    <p>rc-stats.com is dedicated to the rc racing community. This is a site to store race results so that they can be easily organized and reviewed. Whether your goals are doing a statistical analysis of race or just taking your bench racing to the next level, rc-stats will have the tools for you.
+                    </p>
+                    <img src="images/icons/retina-icons/globe_64.png" class="float-left" alt="globe" />
+                    <p>This site was designed to be extensible, so you if you want your track or event included please contact an admin. Created by a club racer in Pacific Northwest, I hope you can find the site useful. Created by racers for racers.  
+					</p>
+                    </article>
+                </section><!-- /.footer_widget_12 -->
+                
+                <section class="footer_widget_14">
+                	<h3>Contact Information</h3>
+                    <article>
+                          <p>
+                          <strong><em>How To Contact Us</em></strong><br>
+                          Email: info@yourdomain.com<br>
+                          </p>
+                    </article>
+                </section><!-- /.footer_widget_14 -->
+            
+            </section><!-- /.footer_widgets --> 
+            
+            <section class="footer_meta">
+                <ul class="footer_menu">
+                  <li><a href="/rcdata/">Home</a></li>
+                  <li class="current_page_item"><a href="/rcdata/myresults">MyResults</a></li>
+                  <li><a href="/rcdata/trackdata">TrackData</a></li>
+                  <li><a href="/rcdata/faq">FAQ</a></li>                   
+                </ul><!-- /.footer_menu --> 
+            </section><!-- /.footer_meta --> 
+            
+        </section><!-- /.footer_fix --> 
+    </footer><!-- /footer -->
+</div> <!-- /#container -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>
+  
+  <script type="text/javascript">
+   
+/*-------------------------------
+* jQuery Plugin: Super Fish Menu
+-------------------------------*/
+
+    jQuery(document).ready(function($){ 
+        $("ul.main-menu").supersubs({ 
+            minWidth:    12,   // minimum width of sub-menus in em units 
+            maxWidth:    150,   // maximum width of sub-menus in em units 
+            extraWidth:  1     // extra width can ensure lines don't sometimes turn over 
+                               // due to slight rounding differences and font-family 
+        }).superfish({ 
+            delay:       300,                            // one second delay on mouseout 
+            animation:   {opacity:'show',height:'show'},  // fade-in and slide-down animation 
+            speed:       'normal',                          // faster animation speed 
+            autoArrows:  false,                           // disable generation of arrow mark-up 
+            dropShadows: true                            // disable drop shadows 
+        });  // call supersubs first, then superfish, so that subs are 
+                         // not display:none when measuring. Call before initialising 
+                         // containing tabs for same reason. 
+    }); 
+  </script>
+  
+   	<script src="static/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
+  	<script type="text/javascript" src="/flot/jquery.flot.js"></script>    
+
+  	<script type="text/javascript">
+		// Graph of the racers history and results over time.
+		$(function (data) {
+		var css_id = "#placeholder";
+		var data = {% autoescape off %} {{ jsdata }} {% endautoescape %};    
+		var options = {
+			yaxis: {
+		    	ticks: 10,
+		        min: 0,
+		        max: 10
+		    },
+		    xaxis: { mode: "time" }, 
+		    series: {color: '#0055bb',
+		    	stack: 0,
+		        lines: {show: false, steps: false },
+		        bars: {show: true, barWidth: 0.9, align: 'center',},
+		    },                
+		};
+		
+		$.plot($(css_id), data, options);
+		});
+    </script>		
+	    
+	<!-- Script for the tabs -->
+	<script type="text/javascript"  charset="utf-8">
+    $(document).ready(function() {
+		{% if recent_race_data %}			    
+			{% for track in recent_race_data %}			
+			  	$(document).ready(function() {
+				    $("#tracktabs_{{ track.js_id }}").tabs();
+			  	});			  	
+	  		{% endfor %}
+	  	{% else %}
+	  		// Warning - no race data for recent races.	  	
+	  	{% endif %}	  	  	
+  	});
+
+  	<!-- Script for the buttons -->
+  	$(document).ready(function() {
+  	var ajax_load = "<img class='loading' src='images/loadingGif.gif' alt='loading...' />";
+		
+  	{% for track in recent_race_data %}
+  	{% for class in track.classes %}
+  	{% for race in class.individual_racedata %}
+		$("#load_basic_{{ track.js_id }}_{{ class.js_id }}_{{ race.js_id }}").click(function(){
+			$("#result_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/{{ race.id }}/"); 
+			$("#lap_graph_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/singleracerlaps/{{ race.id }}/{{ racerid }}/");
+		});		
+	{% endfor %}
+	// Display the first results returned.
+	$("#result_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/{{ class.individual_racedata.0.id }}/"); 
+	$("#lap_graph_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/singleracerlaps/{{ class.individual_racedata.0.id }}/{{ racerid }}/"); 
+	
+	{% endfor %}
+	{% endfor %}
+	
+	});
+ 	</script>
+
+  <script src="js/libs/ui/jquery.ui.core.js"></script>
+  <script src="js/libs/ui/jquery.ui.widget.js"></script>
+  <script src="js/libs/ui/jquery.ui.accordion.js"></script>
+  <script src="js/libs/ui/jquery.ui.tabs.js"></script>
+  <script src="js/libs/superfish/hoverIntent.js"></script> 
+  <script src="js/libs/superfish/superfish.js"></script> 
+  <script src="js/libs/superfish/supersubs.js"></script>
+  <script src="js/libs/jquery.flexslider-min.js"></script>
+  <script type="text/javascript" src="js/libs/jquery.easing.1.3.js"></script>
+  <script src="js/libs/slides.min.jquery.js"></script>
+  <script src="js/libs/jquery.prettyPhoto.js" type="text/javascript" charset="utf-8"></script>
+   
+  <script src="js/scripts.js"></script>
+  <!-- scripts concatenated and minified via ant build script-->
+  <script src="js/helper.js"></script>
+  <!-- end scripts-->
+
 </body>
 </html>

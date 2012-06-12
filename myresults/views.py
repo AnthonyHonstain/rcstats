@@ -20,7 +20,7 @@ def myresults(request):
     It gives a listing of all tracked race names, and links to their respective
     profile pages.
     """
-    racer_names = RacerId.objects.all()
+    racer_names = RacerId.objects.all().order_by('racerpreferredname')
 
     return render_to_response('myresults.html', {'racer_names':racer_names})
 

@@ -13,6 +13,7 @@
 		        "bFilter": false,				        
 		        "bInfo": false,
 		        "aaData": {% autoescape off %} {{  result.individual_results  }} {% endautoescape %},
+		        "sScrollX": "100%",
 		        "aoColumns": [
 		        				{ "sTitle": "Finish" },
 							    { "sTitle": "Racer" , "sClass": "center" },
@@ -27,13 +28,12 @@
 </head>    
 
 
-<li><h3>{{  result.racedata  }}</h3></li>
-<div class="tab">
-<li>RoundNumber:{{  result.roundnumber  }}</li>
-<li>RaceNumber:{{  result.racenumber  }}</li>
-<li>RaceDate:{{  result.racedate  }}</li>
+<h3>{{  result.racedata  }}</h3>
+RoundNumber:{{  result.roundnumber  }}<br />
+RaceNumber:{{  result.racenumber  }}<br />
+RaceDate:{{  result.racedate  }}<br />
 <div id="dynamic{{  result.tagid  }}"></div>
-</div>
+
 
 
 

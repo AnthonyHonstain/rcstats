@@ -1,0 +1,12 @@
+
+#container {
+	display:block;
+	position:relative;
+	min-width:1000px;
+	max-width:1100px;
+	background:#FAFAFA;
+	margin:0px auto;
+    -moz-box-shadow: #000 0 0 5px;
+    -webkit-box-shadow: #000 0 0 5px;
+    box-shadow: #000 0 0 5px;
+	}

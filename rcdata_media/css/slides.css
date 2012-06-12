@@ -1,0 +1,129 @@
+/*
+ *  Slides  - slideshow plugin for jQuery
+ *  http://slidesjs.com/
+ *  Main Slider Styles
+ */
+ 
+.banner_container_fix .slides_container {
+	 		display:block;
+			position:relative;
+			margin:0px auto;
+			width:940px;
+			display:none;
+		}
+
+.banner_container_fix .slides_container div {
+			width:940px;
+			display:block;
+			padding:0px;
+		}	
+
+/*
+	Next/prev buttons
+*/
+
+.banner_container_fix .prev {
+	position:absolute;
+	top:40%;
+	left:-20px;
+	width:49px;
+	height:49px;
+	display:block;
+	z-index:101;
+	text-indent:-99px;
+	overflow:hidden;
+	background:0px -49px no-repeat url(../images/nav-big-arrows.png);
+	opacity:0.3; filter: alpha(opacity=30); ;-moz-opacity:0.3; 
+}
+
+.banner_container_fix .next {
+	position:absolute;
+	top:40%;
+	right:-20px;
+	width:49px;
+	height:49px;
+	display:block;
+	z-index:101;
+	text-indent:-99px;
+	overflow:hidden;
+	background:-49px -49px no-repeat url(../images/nav-big-arrows.png);
+	opacity:0.3; filter: alpha(opacity=30); ;-moz-opacity:0.3; 
+    -webkit-transition: all 0.4s ease-in-out; 
+	-moz-transition: all 0.4s ease-in-out; 
+	-o-transition: all 0.4s ease-in-out; 
+	-ms-transition: all 0.4s ease-in-out;
+}
+.banner_container_fix .prev:hover, .banner_container_fix .next:hover{ 
+	opacity:1; filter: alpha(opacity=100); ;-moz-opacity:1; 
+    -webkit-transition: all 0.4s ease-in-out; 
+	-moz-transition: all 0.4s ease-in-out; 
+	-o-transition: all 0.4s ease-in-out; 
+	-ms-transition: all 0.4s ease-in-out;
+	}
+	
+
+	
+/*
+	Pagination
+*/
+
+
+.banner_container_fix .pagination {
+	position:absolute;
+	bottom:18px;
+	right:40px;
+	width:100px;
+	height:19px;
+	z-index:101;
+}
+
+.banner_container_fix .pagination li {
+	float:right;
+	margin:0 2px;
+	list-style:none;
+}
+
+.banner_container_fix .pagination li a {
+	display:block;
+	width:18px;
+	height:18px;
+	background-image:url(../images/pagination-white.png);
+	background-position:0 0;
+	float:left;
+	overflow:hidden;
+	text-indent:-30px;
+    -webkit-transition: all 0s ease-in-out; 
+	-moz-transition: all 0s ease-in-out; 
+	-o-transition: all 0s ease-in-out; 
+	-ms-transition: all 0s ease-in-out;
+}
+
+.banner_container_fix .pagination li.current a {
+	background-position:0 -18px;
+    -webkit-transition: all 0s ease-in-out; 
+	-moz-transition: all 0s ease-in-out; 
+	-o-transition: all 0s ease-in-out; 
+	-ms-transition: all 0s ease-in-out;
+}
+
+
+/*
+	Caption
+*/
+
+.caption {
+	z-index:500;
+	position:absolute;
+	bottom:-45px;
+	left:0;
+	height:40px;
+	padding:13px 20px 0 20px!important;
+	background:#000;
+	background:rgba(0,0,0,.5);
+	width:900px;
+	font-size:1.5em;
+	line-height:1.33;
+	color:#fff;
+	border-top:1px solid #000;
+	text-shadow:none;
+}

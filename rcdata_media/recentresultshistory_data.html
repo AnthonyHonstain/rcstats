@@ -1,45 +1,40 @@
-<head>
- 	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
- 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
- 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-    
- 	<script src="static/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="static/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
 
-	<script type="text/javascript" charset="utf-8">
-		$(document).ready(function() {
-		
-		{% for result in raceresults %}
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function() {
 	
-		    $('#dynamic{{  result.tagid  }}').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="table{{  result.tagid  }}"></table>' );
-		    $('#table{{  result.tagid  }}').dataTable( {
-		    	"bPaginate": false,
-		        "bLengthChange": false,
-		        "bFilter": false,				        
-		        "bInfo": false,
-		        "aaData": {% autoescape off %} {{  result.individual_results  }} {% endautoescape %},
-		        "aoColumns": [
-		        				{ "sTitle": "Finish" },
-							    { "sTitle": "Racer" , "sClass": "center" },
-								{ "sTitle": "LapCount" },
-								{ "sTitle": "RaceTime" },
-								{ "sTitle": "FastLap" },
-								{ "sTitle": "Behind" }
-		        ]
-		    } );		    
-		{% endfor %}
-		
-		} );					
-	</script>
-</head>    
+	{% for result in raceresults %}
 
+	    $('#dynamic{{  result.tagid  }}').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="table{{  result.tagid  }}"></table>' );
+	    $('#table{{  result.tagid  }}').dataTable( {
+	    	"bPaginate": false,
+	        "bLengthChange": false,
+	        "bFilter": false,				        
+	        "bInfo": false,
+	        "aaData": {% autoescape off %} {{  result.individual_results  }} {% endautoescape %},
+	        "sScrollX": "100%",
+	        "aoColumns": [
+	        				{ "sTitle": "Finish" },
+						    { "sTitle": "Racer" , "sClass": "center" },
+							{ "sTitle": "LapCount" },
+							{ "sTitle": "RaceTime" },
+							{ "sTitle": "FastLap" },
+							{ "sTitle": "Behind" }
+	        ]
+	    } );		    
+	{% endfor %}		
+	} );
+</script>
 
 <p>Race results from race day {{ display_date }}, this will include all qualifiers and main events currently being tracked. Not all tracks record qualifying races.</p>
 {% for result in raceresults %}
-    <li><h3>{{  result.racedata  }}</h3></li>
-    <div class="tab">
-    <li>RoundNumber:{{  result.roundnumber  }}</li>
-    <li>RaceNumber:{{  result.racenumber  }}</li>
-    <li>RaceDate:{{  result.racedate  }}</li>
+    <p>
+    <h3>{{  result.racedata  }}</h3><br />
+    RoundNumber:{{  result.roundnumber  }}<br />
+    RaceNumber:{{  result.racenumber  }}<br />
+    RaceDate:{{  result.racedate  }}
+    </p>
     <div id="dynamic{{  result.tagid  }}"></div>
     </div>
 {% endfor %}

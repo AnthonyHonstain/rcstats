@@ -7,7 +7,7 @@
   <script src="static/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
 
 <script type="text/javascript" charset="utf-8">
-	$(document).ready(function() {
+
 	
 		//
 		// DataTable for the total number of race wins.
@@ -16,6 +16,7 @@
 	    $('#table_topwins_{{  tabid }}').dataTable( {
 	    	"aaSorting": [[ 0, "desc" ]],
 	        "aaData": {% autoescape off %} {{  topwins  }} {% endautoescape %},
+	        "sScrollX": "100%",
 	        "aoColumns": [	
 	        				{ "sTitle": "Total" , "sClass": "center" },
 	        				{ "sTitle": "Racer" , "sClass":"center" }
@@ -30,26 +31,32 @@
 	    $('#table_toplaps_{{  tabid }}').dataTable( {
 	    	"aaSorting": [[ 0, "desc" ]],
 	        "aaData": {% autoescape off %} {{  toplaps  }} {% endautoescape %},
+	        "sScrollX": "100%",
 	        "aoColumns": [
 	        				{ "sTitle": "Total" , "sClass":"center" },
 						    { "sTitle": "Racer" , "sClass": "center" }
 	        ]
 	    } );	
 	
-	} );
+
 				
 </script>
 </head>    
 
 
-
-<h2>Total number of wins since {{ filterdate }}</h2>
+<section class="full_width">
+<p>Current stats are restricted to races since: {{ filterdate }}</p>
+<section class="one_half">
+<h4>Total number of wins</h4>
 <div class="tab">
 	<div id="dynamic_topwins_{{  tabid }}"></div>
 </div>
+</section>
 
-<h2>Total number of laps since {{ filterdate }}</h2>	
+<section class="one_half last">
+<h4>Total number of laps</h4>	
 <div class="tab">
 	<div id="dynamic_toplaps_{{  tabid }}"></div>
 </div>
-
+</section>
+</section>
