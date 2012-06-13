@@ -1,15 +1,15 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>
+<script>window.jQuery || document.write('<script src="/media/js/libs/jquery-1.7.2.min.js"><\/script>')</script>
  	
- <script src="js/datatables/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
+ <script src="/media/js/datatables/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
  	
 <script type="text/javascript" charset="utf-8">
 	
-	var ajax_load = "<img class='loading' src='images/loadingGif.gif' alt='loading...' />";
+	var ajax_load = "<img class='loading' src='/media/images/loadingGif.gif' alt='loading...' />";
 	
 	// load() functions 
 	{% for date in race_dates %}
-	var loadUrl_{{ date.id }} = "/rcdata/trackdata/{{ supportedtrack.id }}/recentresultshistory/{{ date.date }}/";
+	var loadUrl_{{ date.id }} = "/trackdata/{{ supportedtrack.id }}/recentresultshistory/{{ date.date }}/";
 	
 	$("#load_basic_{{ date.id }}").click(function(){
 		$("#result").html(ajax_load).load(loadUrl_{{ date.id }}); 

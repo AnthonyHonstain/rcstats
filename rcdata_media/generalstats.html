@@ -12,14 +12,14 @@ to help rc racers of all skill level improve their performance.">
   <!-- <script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script> -->
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="css/superfish.css" media="screen"  />
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/flexslider.css" type="text/css" media="screen" />
-  <link rel="stylesheet" href="css/prettyPhoto.css" type="text/css" media="screen" title="prettyPhoto main stylesheet" />
-  <link rel="stylesheet" href="css/custom-rebuild.css" media="screen"  />
+  <link rel="stylesheet" href="/media/css/superfish.css" media="screen"  />
+  <link rel="stylesheet" href="/media/css/style.css">
+  <link rel="stylesheet" href="/media/css/flexslider.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="/media/css/prettyPhoto.css" type="text/css" media="screen" title="prettyPhoto main stylesheet" />
+  <link rel="stylesheet" href="/media/css/custom-rebuild.css" media="screen"  />
   
   <link href='http://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
-  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+  <script src="/media/js/libs/modernizr-2.0.6.min.js"></script>
   
 </head>
 
@@ -28,7 +28,7 @@ to help rc racers of all skill level improve their performance.">
 <div id="container">
     <header>
     	<section class="header_fix">
-            <a class="logo" href="/rcdata/"></a><!-- /.logo --> 
+            <a class="logo" href="/"></a><!-- /.logo --> 
         </section><!-- /.header_fix --> 
     </header><!-- /header -->
     
@@ -36,10 +36,10 @@ to help rc racers of all skill level improve their performance.">
     	<section class="nav_fix">
             <section class="nav_fix_in">
             <ul class="main-menu">
-                <li><a href="/rcdata/">Home</a></li>
-                <li class="current_page_item"><a href="/rcdata/myresults">MyResults</a></li>
-                <li><a href="/rcdata/trackdata">TrackData</a></li>
-                <li><a href="/rcdata/faq">FAQ</a></li>
+                <li><a href="/">Home</a></li>
+                <li class="current_page_item"><a href="/myresults">MyResults</a></li>
+                <li><a href="/trackdata">TrackData</a></li>
+                <li><a href="/faq">FAQ</a></li>
             </ul>
         	</section><!-- /.nav_fix_in -->
         </section><!-- /.nav_fix -->
@@ -185,7 +185,7 @@ to help rc racers of all skill level improve their performance.">
                     
                     <p>rc-stats.com is dedicated to the rc racing community. This is a site to store race results so that they can be easily organized and reviewed. Whether your goals are doing a statistical analysis of race or just taking your bench racing to the next level, rc-stats will have the tools for you.
                     </p>
-                    <img src="images/icons/retina-icons/globe_64.png" class="float-left" alt="globe" />
+                    <img src="/media/images/icons/retina-icons/globe_64.png" class="float-left" alt="globe" />
                     <p>This site was designed to be extensible, so you if you want your track or event included please contact an admin. Created by a club racer in Pacific Northwest, I hope you can find the site useful. Created by racers for racers.  
 					</p>
                     </article>
@@ -205,10 +205,10 @@ to help rc racers of all skill level improve their performance.">
             
             <section class="footer_meta">
                 <ul class="footer_menu">
-                  <li><a href="/rcdata/">Home</a></li>
-                  <li class="current_page_item"><a href="/rcdata/myresults">MyResults</a></li>
-                  <li><a href="/rcdata/trackdata">TrackData</a></li>
-                  <li><a href="/rcdata/faq">FAQ</a></li>                   
+                  <li><a href="/">Home</a></li>
+                  <li class="current_page_item"><a href="/myresults">MyResults</a></li>
+                  <li><a href="/trackdata">TrackData</a></li>
+                  <li><a href="/faq">FAQ</a></li>                   
                 </ul><!-- /.footer_menu --> 
             </section><!-- /.footer_meta --> 
             
@@ -218,7 +218,7 @@ to help rc racers of all skill level improve their performance.">
 
   <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary -->
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>
+  <script>window.jQuery || document.write('<script src="/media/js/libs/jquery-1.7.2.min.js"><\/script>')</script>
   
   <script type="text/javascript">
    
@@ -244,8 +244,8 @@ to help rc racers of all skill level improve their performance.">
     }); 
   </script>
   
-   	<script src="js/datatables/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
-  	<script type="text/javascript" src="js/flot/jquery.flot.js"></script>    
+   	<script src="/media/js/datatables/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
+  	<script type="text/javascript" src="/media/js/flot/jquery.flot.js"></script>    
 
   	<script type="text/javascript">
 		// Graph of the racers history and results over time.
@@ -286,19 +286,19 @@ to help rc racers of all skill level improve their performance.">
 
   	<!-- Script for the buttons -->
   	$(document).ready(function() {
-  	var ajax_load = "<img class='loading' src='images/loadingGif.gif' alt='loading...' />";
+  	var ajax_load = "<img class='loading' src='/media/images/loadingGif.gif' alt='loading...' />";
 		
   	{% for track in recent_race_data %}
   	{% for class in track.classes %}
   	{% for race in class.individual_racedata %}
 		$("#load_basic_{{ track.js_id }}_{{ class.js_id }}_{{ race.js_id }}").click(function(){
-			$("#result_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/{{ race.id }}/"); 
-			$("#lap_graph_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/singleracerlaps/{{ race.id }}/{{ racerid }}/");
+			$("#result_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/displayresults/{{ race.id }}/"); 
+			$("#lap_graph_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/displayresults/singleracerlaps/{{ race.id }}/{{ racerid }}/");
 		});		
 	{% endfor %}
 	// Display the first results returned.
-	$("#result_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/{{ class.individual_racedata.0.id }}/"); 
-	$("#lap_graph_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/rcdata/displayresults/singleracerlaps/{{ class.individual_racedata.0.id }}/{{ racerid }}/"); 
+	$("#result_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/displayresults/{{ class.individual_racedata.0.id }}/"); 
+	$("#lap_graph_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/displayresults/singleracerlaps/{{ class.individual_racedata.0.id }}/{{ racerid }}/"); 
 	
 	{% endfor %}
 	{% endfor %}
@@ -306,21 +306,21 @@ to help rc racers of all skill level improve their performance.">
 	});
  	</script>
 
-  <script src="js/libs/ui/jquery.ui.core.js"></script>
-  <script src="js/libs/ui/jquery.ui.widget.js"></script>
-  <script src="js/libs/ui/jquery.ui.accordion.js"></script>
-  <script src="js/libs/ui/jquery.ui.tabs.js"></script>
-  <script src="js/libs/superfish/hoverIntent.js"></script> 
-  <script src="js/libs/superfish/superfish.js"></script> 
-  <script src="js/libs/superfish/supersubs.js"></script>
-  <script src="js/libs/jquery.flexslider-min.js"></script>
-  <script type="text/javascript" src="js/libs/jquery.easing.1.3.js"></script>
-  <script src="js/libs/slides.min.jquery.js"></script>
-  <script src="js/libs/jquery.prettyPhoto.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/media/js/libs/ui/jquery.ui.core.js"></script>
+  <script src="/media/js/libs/ui/jquery.ui.widget.js"></script>
+  <script src="/media/js/libs/ui/jquery.ui.accordion.js"></script>
+  <script src="/media/js/libs/ui/jquery.ui.tabs.js"></script>
+  <script src="/media/js/libs/superfish/hoverIntent.js"></script> 
+  <script src="/media/js/libs/superfish/superfish.js"></script> 
+  <script src="/media/js/libs/superfish/supersubs.js"></script>
+  <script src="/media/js/libs/jquery.flexslider-min.js"></script>
+  <script type="text/javascript" src="/media/js/libs/jquery.easing.1.3.js"></script>
+  <script src="/media/js/libs/slides.min.jquery.js"></script>
+  <script src="/media/js/libs/jquery.prettyPhoto.js" type="text/javascript" charset="utf-8"></script>
    
-  <script src="js/scripts.js"></script>
+  <script src="/media/js/scripts.js"></script>
   <!-- scripts concatenated and minified via ant build script-->
-  <script src="js/helper.js"></script>
+  <script src="/media/js/helper.js"></script>
   <!-- end scripts-->
 
 </body>
