@@ -56,30 +56,20 @@ to help rc racers of all skill levels improve their performance.">
         
 
         <section class="full_width">
-        		<h3>General race statistics for {{ racername }}</h3>
-		
+        	<h3>General race statistics for {{ racername }}</h3>		
 
 			<h4>The total number of main events organized by race class.</h4>
 			<p>This is filtered by races that marked as 'main' events.</p>
 			
-			{% if class_frequency %}
-			    <ul>
-			    {% for class in class_frequency %}
-			        <li>{{ class.0 }} {{ class.1 }}</li>		        
-			    {% endfor %}
-			    </ul>
-			{% else %}
-			    <p>No main event race information available.</p>
-			{% endif %}	
-
-
+			<div id="classhistory_graph" style="width:950px;height:500px;"></div>
+						
         </section><!-- /.full_width -->         
         <section class="clear_full"></section><!-- /.clear_full --> 
 
 		
         <section class="full_width">
         
-        		<!-- Overview of the js object from the view we are going to work with:
+        <!-- Overview of the js object from the view we are going to work with:
 		    [
 
 		        {
@@ -129,8 +119,10 @@ to help rc racers of all skill levels improve their performance.">
 				<!-- ************************************************* -->
 				<!-- Class Tab CONTENT Section -->
 				<!-- ************************************************* -->
-		    	<div id="classtabs_{{ track.js_id }}_{{ class.js_id }}">		    	
-		    		<p>{{ class.classname }} General race statistics that can be filtered by time.</p>
+		    	<div id="classtabs_{{ track.js_id }}_{{ class.js_id }}">	
+		    		
+		    		<section class="divider_line"></section>
+		    		<h6>The most recent results for {{ class.classname }}.</h6>
 					<!-- ************************************************* -->
 					<!-- Race Date BUTTON Section -->
 					<!-- ************************************************* -->		    		
@@ -245,13 +237,43 @@ to help rc racers of all skill levels improve their performance.">
   </script>
   
    	<script src="/media/js/datatables/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
-  	<script type="text/javascript" src="/media/js/flot/jquery.flot.js"></script>    
-
-  	<script type="text/javascript">
-		// Graph of the racers history and results over time.
+  	<script type="text/javascript" src="/media/js/flot/jquery.flot.js"></script> 
+  	<script type="text/javascript" src="/media/js/flot/jquery.flot.pie.min.js"></script>    
+	
+	<script type="text/javascript" charset="utf-8">
+		// Flot Graph of the class history/frequency PIE CHART
+		$(function (data) {
+		var css_id = "#classhistory_graph";
+		var data = {% autoescape off %} {{ classfreq_jsdata }} {% endautoescape %};    
+		var options = {
+			yaxis: {
+		    	ticks: 10,
+		        min: 0,
+		        max: 10
+		    },
+		    xaxis: { mode: "time" }, 
+		    series: {
+       			pie: {
+         			show: true,
+         			label: { show: true, 
+         				threshold: 0.04
+         				//radius: 3/4,        					
+                   		//background: { opacity: 0.5, color: '#000' }
+         			}
+         			
+     			}
+		    },                
+		};
+		
+		$.plot($(css_id), data, options);
+		});
+    </script>		
+		
+  	<script type="text/javascript" charset="utf-8">
+		// Flot Graph of the racers history and results over time.
 		$(function (data) {
 		var css_id = "#placeholder";
-		var data = {% autoescape off %} {{ jsdata }} {% endautoescape %};    
+		var data = {% autoescape off %} {{ racehistory_jsdata }} {% endautoescape %};    
 		var options = {
 			yaxis: {
 		    	ticks: 10,

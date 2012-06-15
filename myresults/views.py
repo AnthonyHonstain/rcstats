@@ -20,9 +20,16 @@ def myresults(request):
     It gives a listing of all tracked race names, and links to their respective
     profile pages.
     """
-    racer_names = RacerId.objects.all().order_by('racerpreferredname')
-
-    return render_to_response('myresults.html', {'racer_names':racer_names})
+    racer_names = RacerId.objects.all().order_by('racerpreferredname').values_list('racerpreferredname', 'id')
+    
+    # BUG - Why cant the simplejson dump the results from the ORM, I could save another
+    # loop on the data if it could serialize correctly.
+    manual_format = []
+    for name in racer_names:
+        manual_format.append( list(name) )
+    jsdata = simplejson.dumps(manual_format)
+        
+    return render_to_response('myresults.html', {'racer_names':jsdata})
 
 
 def generalstats(request, racer_id):
@@ -31,7 +38,7 @@ def generalstats(request, racer_id):
     
     WARNING - this is currently a wall of code as I am prototyping 
     out the features that we want to display. Portions have already
-    been refactored or pushed into a different view, but additional c
+    been refactored or pushed into a different view, but additional
     cleanup is needed.
     """
     racer_obj = get_object_or_404(RacerId, pk=racer_id)
@@ -84,7 +91,16 @@ def generalstats(request, racer_id):
     class_frequency = cleaned_classnames.items()
     class_frequency.sort(key = lambda tup: tup[1], reverse = True)
     # Example of class_frequency [(u'STOCK BUGGY', 105), (u'STOCK TRUCK', 62), 
-
+    
+    piechartdata = []
+    for single_class_freq in class_frequency:
+        piechartdata.append({'label': single_class_freq[0] + ": " + str(single_class_freq[1]), 
+                             'data': single_class_freq[1]})
+        
+    # This is an example of what I need for the pie chart.
+    #  [ { label: "This",  data: 44 }, ...
+    
+    classfreq_jsdata = simplejson.dumps(piechartdata)
 
     # ===========================================================
     # Find last 5 races for each class and track.
@@ -131,6 +147,10 @@ def generalstats(request, racer_id):
     #           'trackname': u'Bremerton R/C Raceway'}]
     recent_race_data = []
         
+        
+    # I am going to remove this functionality, since I think most people just want to see the last results.
+    # Right now it is to common to go to a profile, and find they have no results because of this.
+    '''
     # Get the date from 2 months ago.
     filterdate = datetime.datetime.now() + relativedelta(months=-2)
     filterdatestr = time.strftime('%a, %d %b %Y', filterdate.timetuple())
@@ -139,6 +159,8 @@ def generalstats(request, racer_id):
     
     racetracks = SingleRaceDetails.objects.filter(racedate__gte=dbdate,
                                                   singleraceresults__racerid=racer_obj.id).values('trackkey').annotate()
+    '''
+    racetracks = SingleRaceDetails.objects.filter(singleraceresults__racerid=racer_obj.id).values('trackkey').annotate()
     
     js_id_track = 0
                                                   
@@ -149,12 +171,20 @@ def generalstats(request, racer_id):
         recent_race_data.append({'trackname': trackname.trackname, 'classes': [], 'js_id':js_id_track})
         js_id_track += 1
 
+        '''
         # We need the class names as they will be present to the user.
         test = SingleRaceDetails.objects.filter(trackkey=track['trackkey'], # track
                                                 racedate__gte=dbdate, # date
                                                 singleraceresults__racerid=racer_obj.id, # racer
                                                 racedata__icontains = "main" # class name
                                                 ).values('racedata').annotate(dcount=Count('racedata')).order_by('dcount')[::-1]
+        '''
+        test = SingleRaceDetails.objects.filter(trackkey=track['trackkey'], # track
+                                                singleraceresults__racerid=racer_obj.id, # racer
+                                                racedata__icontains = "main" # class name
+                                                ).values('racedata').annotate(dcount=Count('racedata')).order_by('dcount')[::-1]
+        
+        
         
         cleaned_classnames = _get_Cleaned_Class_Names(test)
         
@@ -201,8 +231,8 @@ def generalstats(request, racer_id):
     
     ctx = Context({'racerid':racer_obj.id,
                    'racername':racer_obj.racerpreferredname, 
-                   'jsdata':jsdata, 
-                   'class_frequency':class_frequency,
+                   'classfreq_jsdata':classfreq_jsdata,
+                   'racehistory_jsdata':jsdata, 
                    'recent_race_data':recent_race_data})
     
     return render_to_response('generalstats.html', ctx)
