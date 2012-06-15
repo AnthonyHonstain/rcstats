@@ -1,4 +1,4 @@
-from rcdata.models import SingleRaceDetails, RacerId, SupportedTrackName
+from rcstats.rcdata.models import SingleRaceDetails, RacerId, SupportedTrackName
 from django.contrib import admin
 
 

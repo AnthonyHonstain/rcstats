@@ -4,7 +4,7 @@ from django.template import Context
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 
-from rcdata.models import SingleRaceDetails, SingleRaceResults, RacerId, LapTimes
+from rcstats.rcdata.models import SingleRaceDetails, SingleRaceResults, RacerId, LapTimes
 
 
 def singleraceresult(request, race_detail):

@@ -7,23 +7,23 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', 'rcdata.views.index'),
+    url(r'^$', 'rcstats.rcdata.views.index'),
     
-    url(r'^faq$', 'faq.views.faq'),
+    url(r'^faq$', 'rcstats.faq.views.faq'),
     
-    url(r'^trackdata/$', 'trackdata.views.trackdata'),    
-    url(r'^trackdata/(?P<track_id>\d+)/$', 'trackdata.views.trackdetail'),
-    url(r'^trackdata/(?P<track_id>\d+)/(?P<time_frame>month|6months|alltime)/$', 'trackdata.views.trackdetail_data'),    
+    url(r'^trackdata/$', 'rcstats.trackdata.views.trackdata'),    
+    url(r'^trackdata/(?P<track_id>\d+)/$', 'rcstats.trackdata.views.trackdetail'),
+    url(r'^trackdata/(?P<track_id>\d+)/(?P<time_frame>month|6months|alltime)/$', 'rcstats.trackdata.views.trackdetail_data'),    
     
-    url(r'^trackdata/(?P<track_id>\d+)/recentresultshistory/$', 'trackdata.views.recentresultshistory'),
-    url(r'^trackdata/(?P<track_id>\d+)/recentresultshistory/(?P<race_date>\d{4}-\d{1,2}-\d{2})/$', 'trackdata.views.recentresultshistory_data'),
+    url(r'^trackdata/(?P<track_id>\d+)/recentresultshistory/$', 'rcstats.trackdata.views.recentresultshistory'),
+    url(r'^trackdata/(?P<track_id>\d+)/recentresultshistory/(?P<race_date>\d{4}-\d{1,2}-\d{2})/$', 'rcstats.trackdata.views.recentresultshistory_data'),
     
-    url(r'^myresults/$', 'myresults.views.myresults'),
-    url(r'^myresults/(?P<racer_id>\d+)/$', 'myresults.views.generalstats'),
+    url(r'^myresults/$', 'rcstats.myresults.views.myresults'),
+    url(r'^myresults/(?P<racer_id>\d+)/$', 'rcstats.myresults.views.generalstats'),
         
-    url(r'^displayresults/(?P<race_detail>\d+)/$', 'displayresults.views.singleraceresult'),
+    url(r'^displayresults/(?P<race_detail>\d+)/$', 'rcstats.displayresults.views.singleraceresult'),
     
-    url(r'^displayresults/singleracerlaps/(?P<race_detail>\d+)/(?P<racer_id>\d+)/$', 'displayresults.views.singleracerlaps'),
+    url(r'^displayresults/singleracerlaps/(?P<race_detail>\d+)/(?P<racer_id>\d+)/$', 'rcstats.displayresults.views.singleracerlaps'),
 
     url(r'^admin/', include(admin.site.urls)),
 )

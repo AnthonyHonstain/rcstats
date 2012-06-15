@@ -10,7 +10,7 @@ from django.db.models import Count
 from django.db.models import Q
 from django.utils import simplejson
 
-from rcdata.models import RacerId, TrackName, SingleRaceDetails, SingleRaceResults
+from rcstats.rcdata.models import RacerId, TrackName, SingleRaceDetails, SingleRaceResults
 
 
 def myresults(request):

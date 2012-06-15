@@ -9,7 +9,7 @@ from django.http import Http404
 from django.db import connection
 from django.utils import simplejson
 
-from rcdata.models import SupportedTrackName, SingleRaceDetails, SingleRaceResults
+from rcstats.rcdata.models import SupportedTrackName, SingleRaceDetails, SingleRaceResults
 
 
 def trackdata(request):
@@ -168,7 +168,8 @@ def recentresultshistory(request, track_id):
     for index in range(NUMBER_OF_RESULTS_FOR_HISTORY):
         race_dates.append({'id':"button_" + str(index), 
                            'display_date': _display_Date_User(raw_race_dates[index]),
-                           'date': raw_race_dates[index].strftime('%Y-%m-%d')})
+                           'date': raw_race_dates[index].strftime('%Y-%m-%d'), # This is for url.
+                           })
                           
     ctx = Context({'supportedtrack':supported_track, 'race_dates':race_dates})
                                                              
@@ -250,7 +251,7 @@ def _get_Recent_Race_Dates(supported_track, number_races):
     """
     Retrieve a list of python datetime objects for the most recent races.
     
-    WARNING - Only considers race dats with a main event (racedata contains the token 'main')
+    WARNING - Only considers race dates with a main event (racedata contains the token 'main')
     
     Note - I spent a fair bit of time trying to figure out how
     to do this type of query using the orm, but I have been unable
@@ -275,6 +276,7 @@ def _get_Recent_Race_Dates(supported_track, number_races):
     #  (datetime.date(2012, 5, 5),), (datetime.date(2012, 5, 4),)]
     #print 'racedates', racedates
     
+    # List flatten - src http://stackoverflow.com/questions/952914/making-a-flat-list-out-of-list-of-lists-in-python
     racedates_flat = [item for sublist in racedates for item in sublist]    
     return racedates_flat
 
