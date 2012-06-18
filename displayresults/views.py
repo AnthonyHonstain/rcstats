@@ -1,6 +1,7 @@
 import math
 
 from django.template import Context
+from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 
@@ -62,7 +63,7 @@ def singleraceresult(request, race_detail):
     #print "DEBUG", results_template_format
     ctx = Context({'result':results_template_format})
     
-    return render_to_response('singleraceresult.html', ctx)
+    return render_to_response('singleraceresult.html', ctx, context_instance=RequestContext(request))
 
 
 def singleracerlaps(request, race_detail, racer_id):

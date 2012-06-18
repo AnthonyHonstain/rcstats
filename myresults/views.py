@@ -5,6 +5,7 @@ import re
 from dateutil.relativedelta import relativedelta
 
 from django.template import Context
+from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Count
 from django.db.models import Q
@@ -29,7 +30,7 @@ def myresults(request):
         manual_format.append( list(name) )
     jsdata = simplejson.dumps(manual_format)
         
-    return render_to_response('myresults.html', {'racer_names':jsdata})
+    return render_to_response('myresults.html', {'racer_names':jsdata}, context_instance=RequestContext(request))
 
 
 def generalstats(request, racer_id):
@@ -235,7 +236,7 @@ def generalstats(request, racer_id):
                    'racehistory_jsdata':jsdata, 
                    'recent_race_data':recent_race_data})
     
-    return render_to_response('generalstats.html', ctx)
+    return render_to_response('generalstats.html', ctx, context_instance=RequestContext(request))
 
 
 def _get_Cleaned_Class_Names(raw_racedata_list):

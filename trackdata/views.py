@@ -4,6 +4,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 from django.template import Context
+from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import Http404
 from django.db import connection
@@ -22,7 +23,7 @@ def trackdata(request):
     """
     tracklist = SupportedTrackName.objects.all()
 
-    return render_to_response('trackdata.html', {'track_list':tracklist})
+    return render_to_response('trackdata.html', {'track_list':tracklist}, context_instance=RequestContext(request))
 
 
 def trackdetail(request, track_id):
@@ -32,7 +33,7 @@ def trackdetail(request, track_id):
     supported_track = get_object_or_404(SupportedTrackName, pk=track_id)
     
     ctx = Context({'trackname':supported_track.trackkey})
-    return render_to_response('trackdatadetail.html', ctx)
+    return render_to_response('trackdatadetail.html', ctx, context_instance=RequestContext(request))
     
 
 def trackdetail_data(request, track_id, time_frame='alltime'):
@@ -93,7 +94,7 @@ def trackdetail_data(request, track_id, time_frame='alltime'):
                    'tabid':time_frame, # For this to work with tabs, I need unique id's for each datatable
                    'topwins':topwins_jsdata, 
                    'toplaps':toplaps_jsdata})
-    return render_to_response('trackdatadetail_data.html', ctx)
+    return render_to_response('trackdatadetail_data.html', ctx, context_instance=RequestContext(request))
         
         
 def _get_Total_Wins(track_key_id, sql_time_filter, row_limit):
@@ -173,7 +174,7 @@ def recentresultshistory(request, track_id):
                           
     ctx = Context({'supportedtrack':supported_track, 'race_dates':race_dates})
                                                              
-    return render_to_response('recentresultshistory.html', ctx)    
+    return render_to_response('recentresultshistory.html', ctx, context_instance=RequestContext(request))    
 
 
 def recentresultshistory_data(request, track_id, race_date):
@@ -244,7 +245,7 @@ def recentresultshistory_data(request, track_id, race_date):
                    'display_date':_display_Date_User(date), 
                    'raceresults':results_template_format})
     
-    return render_to_response('recentresultshistory_data.html', ctx)
+    return render_to_response('recentresultshistory_data.html', ctx, context_instance=RequestContext(request))
 
 
 def _get_Recent_Race_Dates(supported_track, number_races):
