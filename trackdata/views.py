@@ -166,7 +166,8 @@ def recentresultshistory(request, track_id):
     raw_race_dates = _get_Recent_Race_Dates(supported_track, NUMBER_OF_RESULTS_FOR_HISTORY)
     
     race_dates = []
-    for index in range(NUMBER_OF_RESULTS_FOR_HISTORY):
+    # Need to keep in mind there may be less races than expected for special events.
+    for index in range(min(len(raw_race_dates), NUMBER_OF_RESULTS_FOR_HISTORY)):
         race_dates.append({'id':"button_" + str(index), 
                            'display_date': _display_Date_User(raw_race_dates[index]),
                            'date': raw_race_dates[index].strftime('%Y-%m-%d'), # This is for url.
