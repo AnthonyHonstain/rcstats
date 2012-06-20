@@ -1,41 +1,31 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Single Race Results</title>
-	
-	<script type="text/javascript" charset="utf-8">
-		$(document).ready(function() {
-		    $('#dynamic{{  result.tagid  }}').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="table{{  result.tagid  }}"></table>' );
-		    $('#table{{  result.tagid  }}').dataTable( {
-		    	"bPaginate": false,
-		        "bLengthChange": false,
-		        "bFilter": false,				        
-		        "bInfo": false,
-		        "aaData": {% autoescape off %} {{  result.individual_results  }} {% endautoescape %},
-		        "sScrollX": "100%",
-		        "aoColumns": [
-		        				{ "sTitle": "Finish" },
-							    { "sTitle": "Racer" , "sClass": "center" },
-								{ "sTitle": "LapCount" },
-								{ "sTitle": "RaceTime" },
-								{ "sTitle": "FastLap" },
-								{ "sTitle": "Behind" }
-		        ]
-		    } );			
-		} );					
-	</script>
-	
-	{{ analytics_code }}
-</head>    
 
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function() {
+	    $('#dynamic{{  result.race_detail_id  }}').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="table{{  result.race_detail_id  }}"></table>' );
+	    $('#table{{  result.race_detail_id  }}').dataTable( {
+	    	"bPaginate": false,
+	        "bLengthChange": false,
+	        "bFilter": false,				        
+	        "bInfo": false,
+	        "aaData": {% autoescape off %} {{  result.individual_results  }} {% endautoescape %},
+	        "sScrollX": "100%",
+	        "aoColumns": [
+	        				{ "sTitle": "Finish" },
+						    { "sTitle": "Racer" , "sClass": "center" },
+							{ "sTitle": "LapCount" },
+							{ "sTitle": "RaceTime" },
+							{ "sTitle": "FastLap" },
+							{ "sTitle": "Behind" }
+	        ]
+	    } );			
+	} );					
+</script>
 
-<h3>{{  result.racedata  }}</h3>
+<h5>
+<a href="/displayresults/singleracedetailed/{{ result.race_detail_id }}/"><span>{{  result.racedata  }}</span></a><br />
+</h5>
+<a href="/displayresults/singleracedetailed/{{ result.race_detail_id }}/" class="button button-small white" target="_self"><span>Detailed Results</span></a><br />
 RoundNumber:{{  result.roundnumber  }}<br />
 RaceNumber:{{  result.racenumber  }}<br />
 RaceDate:{{  result.racedate  }}<br />
-<div id="dynamic{{  result.tagid  }}"></div>
-
-
-
-
+<div id="dynamic{{  result.race_detail_id  }}"></div>

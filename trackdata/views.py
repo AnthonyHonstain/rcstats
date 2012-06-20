@@ -219,12 +219,12 @@ def recentresultshistory_data(request, track_id, race_date):
         jsdata = simplejson.dumps(formated_result)
         
         # Going to do extra formating here, to simplify the template.
-        results_template_format.append({'racedata':race_detail.racedata,
-                            'roundnumber':race_detail.roundnumber,
-                            'racenumber':race_detail.racenumber,
-                            'racedate':race_detail.racedate,
-                            'tagid':race_detail.id,
-                            'individual_results':jsdata})
+        results_template_format.append({'racedetail_id':race_detail.id,
+                                        'racedata':race_detail.racedata,
+                                        'roundnumber':race_detail.roundnumber,
+                                        'racenumber':race_detail.racenumber,
+                                        'racedate':race_detail.racedate,                            
+                                        'individual_results':jsdata})
     
     # EXAMPLE results_template_format    
     # [

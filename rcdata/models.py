@@ -14,6 +14,8 @@ class SupportedTrackName(models.Model):
 # A single racer, their name (probably not going be be unique by default)
 class RacerId(models.Model):
     racerpreferredname = models.CharField(max_length=200)
+    def __str__(self):
+        return str(self.racerpreferredname)
     
 class SingleRaceDetails(models.Model):
     trackkey = models.ForeignKey(TrackName)

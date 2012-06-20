@@ -6,8 +6,8 @@
 	
 	{% for result in raceresults %}
 
-	    $('#dynamic{{  result.tagid  }}').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="table{{  result.tagid  }}"></table>' );
-	    $('#table{{  result.tagid  }}').dataTable( {
+	    $('#racedetails_tableplaceholder{{  result.racedetail_id  }}').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="racedetails_table{{  result.racedetail_id  }}"></table>' );
+	    $('#racedetails_table{{  result.racedetail_id  }}').dataTable( {
 	    	"bPaginate": false,
 	        "bLengthChange": false,
 	        "bFilter": false,				        
@@ -30,12 +30,15 @@
 <p>Race results from race day {{ display_date }}, this will include all qualifiers and main events currently being tracked. Not all tracks record qualifying races.</p>
 {% for result in raceresults %}
     <p>
-    <h3>{{  result.racedata  }}</h3><br />
+    <h5>
+	<a href="/displayresults/singleracedetailed/{{ result.racedetail_id }}/"><span>{{  result.racedata  }}</span></a><br />
+	</h5>
+	<a href="/displayresults/singleracedetailed/{{ result.racedetail_id }}/" class="button button-small white" target="_self"><span>Detailed Results</span></a><br />	
     RoundNumber:{{  result.roundnumber  }}<br />
     RaceNumber:{{  result.racenumber  }}<br />
     RaceDate:{{  result.racedate  }}
     </p>
-    <div id="dynamic{{  result.tagid  }}"></div>
+    <div id="racedetails_tableplaceholder{{  result.racedetail_id  }}"></div>
     </div>
 {% endfor %}
 

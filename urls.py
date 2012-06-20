@@ -21,7 +21,8 @@ urlpatterns = patterns('',
     url(r'^myresults/$', 'rcstats.myresults.views.myresults'),
     url(r'^myresults/(?P<racer_id>\d+)/$', 'rcstats.myresults.views.generalstats'),
         
-    url(r'^displayresults/(?P<race_detail>\d+)/$', 'rcstats.displayresults.views.singleraceresult'),
+    url(r'^displayresults/(?P<race_detail_id>\d+)/$', 'rcstats.displayresults.views.singleraceresult'),
+    url(r'^displayresults/singleracedetailed/(?P<race_detail_id>\d+)/$', 'rcstats.displayresults.views.singleracedetailed'),
     
     url(r'^displayresults/singleracerlaps/(?P<race_detail>\d+)/(?P<racer_id>\d+)/$', 'rcstats.displayresults.views.singleracerlaps'),
 

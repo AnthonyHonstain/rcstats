@@ -62,13 +62,36 @@ to help rc racers of all skill levels improve their performance.">
 	        <h5>Select a name from below.</h5>
 	        <p>Your name may appear more than once or have misspellings, this is because we are extracting the information the track has recorded (if they get it wrong we get it wrong).</p>
 	        <div class="message-box green">
-	          <p>We are working on a system to give you more control over the results you want to track, but in the mean time working with your race director to ensure your correct name is used is the best option.</p>
+	          <p>We are working on a system to give you more control over the results you want to track. In the mean time, working with your race director to set the correct name in the scoring system is the best option.</p>
 	        </div><!-- /.message-box -->
 	        
-			<div id="myresults_raceid_table"></div>
+			<div id="myresults_racerid_table" class="ex_highlight"></div>
 	         
 	        </section><!-- /.two_third -->         
         
+        	<section class="one_third last">
+                 
+                 	<section class="widget">
+                    	<h3>Featured Racers</h3>
+                        <ul class="menu">
+                        {% if featured_racers %}
+					        {% for featured_racer in featured_racers %}
+					        <li><a href="/myresults/{{ featured_racer.racerid.id }}/">{{ featured_racer.racerid.racerpreferredname }}</a></li>
+					        {% endfor %}
+					        </ul>
+						      {% else %}
+						      <p>No racers currently featured.</p>
+						      {% endif %}	       
+                        	
+                        </ul>
+                    </section><!-- /.widget -->
+                 
+                 	<section class="widget">
+                    	<h3>Get Featured</h3>
+                        <p>Want someone added (including yourself)? Just ask!</p>                        
+                    </section><!-- /.widget -->	
+        
+        	</section><!-- /.one_third last -->
         </section><!-- /.full_width -->         
         
         <section class="clear_full"></section><!-- /.clear_full -->             
@@ -151,8 +174,8 @@ to help rc racers of all skill levels improve their performance.">
 -------------------------------*/
 
 		$(document).ready(function() {
-		    $('#myresults_raceid_table').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="table{{  result.tagid  }}"></table>' );
-		    var oTable = $('#table{{  result.tagid  }}').dataTable( {
+		    $('#myresults_racerid_table').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="racerid_table"></table>' );
+		    var oTable = $('#racerid_table').dataTable( {
 		    			        			        
 		        "aaData": {% autoescape off %} {{  racer_names  }} {% endautoescape %},
 		        "sScrollX": "80%",
@@ -163,22 +186,14 @@ to help rc racers of all skill levels improve their performance.">
 		        ]
 		    } );			
 
-			$("#table{{  result.tagid  }}").delegate("tr", "click", function() {
+			$("#racerid_table").delegate("tr", "click", function() {
 				var iPos = oTable.fnGetPosition( this );
 				if(iPos!=null){
-				    //couple of example on what can be done with the clicked row...
 				    var aData = oTable.fnGetData( iPos );//get data of the clicked row
 				    window.location.href = '/myresults/' + aData[1]
-				}
-				
+				}				
 			} );
-
-			
-			
-			
 		} );
-		
- 
 					
   </script>
   <script src="/media/js/libs/ui/jquery.ui.core.js"></script>

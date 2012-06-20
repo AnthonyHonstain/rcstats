@@ -1,46 +1,74 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Single Racer Lap Times</title>
 	
-	<script type="text/javascript">
-		//$(document).ready(function() {
-		$(function () {
-    		var datasets = {% autoescape off %} {{ jsdata }} {% endautoescape %};
-   
-            $.plot($("#singleracerlaptimes_placeholder_{{ laps_id_js }}"), datasets, {
-                //yaxis: { min: 0 },
-                xaxis: { tickDecimals: 0 },
-                stack: 0,
-                lines: {show: false, steps: false },
-                bars: {show: true, barWidth: 0.8, align: 'center',},                
-            });
-    
-		});
-		//});
-    </script>    
-</head>
+{% if jsdata %}
+<script type="text/javascript">
+	$(function () {
+   		var datasets = {% autoescape off %} {{ jsdata }} {% endautoescape %};
+  
+           $.plot($("#singleracerlaptimes_placeholder_{{ laps_id_js }}"), datasets, {
+               //yaxis: { min: 0 },
+               xaxis: { tickDecimals: 0 },
+               stack: 0,
+               lines: {show: false, steps: false },
+               bars: {show: true, barWidth: 0.8, align: 'center',},   
+               grid: {hoverable: true, },             
+           });    		
+   		
+    	function showTooltip(x, y, contents) {
+	        $('<div id="flot-tooltip">' + contents + '</div>').css( {
+	        	'font-size': '15px',
+	        	'color': 'white',
+	            position: 'absolute',
+	            display: 'none',
+	            top: y + 5,
+	            left: x + 5,
+	            border: '2px solid #000000',
+	            padding: '2px',
+	            'background-color': '#EF5D1C', //'#fee',
+	            opacity: 0.95
+	        }).appendTo("body").fadeIn(200);
+	    }
+	    
+	    var previousPoint = null;	    
+	    
+   		$("#singleracerlaptimes_placeholder_{{ laps_id_js }}").bind("plothover", function (event, pos, item) {
+   			if (item) {
+	            if (previousPoint != item.datapoint) {
+	                previousPoint = item.datapoint;
+	                $("#flot-tooltip").remove();
+	 
+	                y = item.datapoint[1];
+	 
+	                showTooltip(item.pageX, item.pageY,
+	                    y);
+	            }
+	        } else {
+	            $("#flot-tooltip").remove();
+	            previousPoint = null;
+	        }   		
+   		});
+	});
+  </script>  
+   {% endif %}	 
 
-<body>
 
-		<div>
-			<h4>Lap times</h4>
-		
-			<p>
-			A graph of the lap times from the race (smaller is better, and consistency is ideal) and general race statistics.
-			</p>  
-			<ul>
-				Top 5 Avg: {{ top5_avg }}<br />
-				Top 10 Avg: {{ top10_avg }}<br />
-				Top 20 Avg: {{ top20_avg }}<br />
-				Standard Deviation: {{ std_dev }}<br /> 
-				Median: {{ median }}
-            </ul>
+<div style="width:900px;">
+<h4>Lap times</h4>
+<p>
+A graph of the lap times from the race (smaller is better, and consistency is ideal) and general race statistics. The first lap is automatically removed before these values are calculated.
+</p>  
+
+{% if jsdata %}
+<ul>
+	Top 5 Avg: {{ top5_avg }}<br />
+	Top 10 Avg: {{ top10_avg }}<br />
+	Top 20 Avg: {{ top20_avg }}<br />
+	Standard Deviation: {{ std_dev }}<br /> 
+	Median: {{ median }}
+         </ul>
+         {% else %}
+         	<h5>No lap data available for this race.</h5>
+{% endif %}	
+</div>	
+	
+<div id="singleracerlaptimes_placeholder_{{ laps_id_js }}" style="width:900px;height:320px;"></div>
 			
-					
-			<div id="singleracerlaptimes_placeholder_{{ laps_id_js }}" style="width:900px;height:320px;"></div>
-			
-		</div>	
-		
-</body>

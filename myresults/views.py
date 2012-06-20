@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.utils import simplejson
 
 from rcstats.rcdata.models import RacerId, TrackName, SingleRaceDetails, SingleRaceResults
+from rcstats.myresults.models import FeaturedRacer
 
 
 def myresults(request):
@@ -22,15 +23,19 @@ def myresults(request):
     profile pages.
     """
     racer_names = RacerId.objects.all().order_by('racerpreferredname').values_list('racerpreferredname', 'id')
-    
+        
     # BUG - Why cant the simplejson dump the results from the ORM, I could save another
     # loop on the data if it could serialize correctly.
     manual_format = []
     for name in racer_names:
         manual_format.append( list(name) )
     jsdata = simplejson.dumps(manual_format)
+    
+    featured_racers = FeaturedRacer.objects.select_related("racerid__racerpreferredname")
+    
         
-    return render_to_response('myresults.html', {'racer_names':jsdata}, context_instance=RequestContext(request))
+    return render_to_response('myresults.html', {'racer_names':jsdata,
+                                                 'featured_racers': featured_racers}, context_instance=RequestContext(request))
 
 
 def generalstats(request, racer_id):
@@ -225,10 +230,6 @@ def generalstats(request, racer_id):
        
             
             recent_race_data[-1]['classes'].append(class_dict)
-            
-            
-    print recent_race_data
-        
     
     ctx = Context({'racerid':racer_obj.id,
                    'racername':racer_obj.racerpreferredname, 

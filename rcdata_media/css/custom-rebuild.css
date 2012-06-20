@@ -19,3 +19,20 @@ WHY USE THIS FILE:
    General Styles
    ========================================== */
 
+
+
+.ex_highlight #racerid_table tbody tr.even:hover, #racerid_table tbody tr.even td.highlighted {
+	background-color: #90EE90;
+}
+
+.ex_highlight #racerid_table tbody tr.odd:hover, #racerid_table tbody tr.odd td.highlighted {
+	background-color: #90EE90;
+}
+
+.ex_highlight_row #racerid_table tr.even:hover {
+	background-color: #90EE90;
+}
+
+.ex_highlight_row #racerid_table tr.odd:hover {
+	background-color: #90EE90;
+}

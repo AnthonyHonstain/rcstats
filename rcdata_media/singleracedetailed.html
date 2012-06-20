@@ -51,119 +51,39 @@ to help rc racers of all skill levels improve their performance.">
     	<section class="content_container_fix">
                  
         <section class="page_title">
-          <h1>MyResults - {{ racername }}</h1>
-          <h2>Recent results and statistics.</h2>
+          <h1>SingleRace</h1>
+          <h2>Detailed information for a single race. </h2>
         </section><!-- /.page_title -->
         
 
         <section class="full_width">
-			<h4>The total number of main events organized by race class.</h4>
-			<p>This is filtered by races that marked as 'main' events.</p>
+        	
+			<h5>{{  racedetails.racedata  }}</h5>
+			RoundNumber:{{  racedetails.roundnumber  }}<br />
+			RaceNumber:{{  racedetails.racenumber  }}<br />
+			RaceDate:{{  racedetails.racedate  }}<br />
+			<div id="racedetails_placeholder"></div>
 			
-			<div id="classhistory_graph" style="width:950px;height:500px;"></div>
-						
-        </section><!-- /.full_width -->         
-        <section class="clear_full"></section><!-- /.clear_full --> 
-
-		
-        <section class="full_width">
-        	<h4>Recent race results organized by track and class.</h4>
-		        <!-- Overview of the js object from the view we are going to work with:
-				    [
-		
-				        {
-				         "js_id": <>
-				         "trackname": <>,
-				         "classes": [
-				                    {"js_id":<>
-				                     "classname": <>,
-				                     "individual_racedata": [
-		
-				                                             {'date':<>, 'id':<>, "js_id":<>}, 
-				                                             ...
-				                                            ]
-				                    }
-				                    ... Multiple classes
-				                   ]
-				         }
-		
-				         ... Multiple tracks 
-				    ]
-				
-				-->
-		
-		{% if recent_race_data %}			    
-			
-			{% for track in recent_race_data %}
-			<!-- ************************************************* -->
-			<!-- Track Section -->
-			<!-- ************************************************* -->
 			<section class="content_heading">
             	<a class="gotop" href="#"></a>
-                <h3>{{ track.trackname }}</h3>
+                <h3>Lap Time Table</h3>
 		    </section> <!--  END content_heading -->
 		    
-		    <div id="tracktabs_{{ track.js_id }}"> <!-- Recent race history -->
-			    <ul>			    
-			    	{% for class in track.classes %}
-					<!-- ************************************************* -->
-					<!-- Class Tabs Section -->
-					<!-- ************************************************* -->
-		        	<li><a href="#classtabs_{{ track.js_id }}_{{ class.js_id }}">
-		        		<span>{{ class.classname }}</span>
-		        	</a></li>
-			        {% endfor %}
-			        
-			    </ul>
-			    
-			    {% for class in track.classes %}				    	
-				<!-- ************************************************* -->
-				<!-- Class Tab CONTENT Section -->
-				<!-- ************************************************* -->
-		    	<div id="classtabs_{{ track.js_id }}_{{ class.js_id }}">	
-		    		
-		    		<section class="divider_line"></section>
-		    		<h6>The most recent results for {{ class.classname }}.</h6>
-					<!-- ************************************************* -->
-					<!-- Race Date BUTTON Section -->
-					<!-- ************************************************* -->		    		
-		    		{% for race in class.individual_racedata %}
-					<input type="submit" class="button button-small white" value="{{ race.date }}" id="load_basic_{{ track.js_id }}_{{ class.js_id }}_{{ race.js_id }}" />     
-					{% endfor %}					
+			<div id="laptimestable_placeholder" class="functions"></div>
+			
+			
+			<section class="content_heading">
+            	<a class="gotop" href="#"></a>
+                <h3>Lap Time Graph</h3>
+		    </section> <!--  END content_heading -->
+								
+			<div id="laptimegraph_placeholder" style="width:950px;height:600px;"></div>
+			<p id="choices">Show:</p>
 					
-					<div id="result_{{ track.js_id }}_{{ class.js_id }}"  class="functions"></div> 
-					<div id="lap_graph_{{ track.js_id }}_{{ class.js_id }}"  class="functions" style="width:950px;height:500px;"></div> 
-					
-	    		</div>
-	    		
-		    	{% endfor %}
-			</div> <!-- END tabs --> 
-			{% endfor %}
-			    
-		{% else %}
-			    <p>No recent race history available.</p>
-		{% endif %}
-
+				
         </section><!-- /.full_width -->         
         <section class="clear_full"></section><!-- /.clear_full --> 
-	
-
-
-
-        <section class="full_width">
-          <h4>Total race history organized by the date of the race.</h4>
-		
-			    <p>
-			    Race results graphed by time (shorter bars are better). The 
-			    x-axis uses time as a scale, so you can	see periods of 
-			    inactivity or more frequent racing. The y-axis (height of 
-			    the bar) indicates how you finished the race, 1 being first
-			    place.
-			    </p>  
-					
-			    <div id="placeholder" style="width:950px;height:300px;"></div>
-        </section><!-- /.full_width -->         
-        <section class="clear_full"></section><!-- /.clear_full --> 
+           
         
         </section><!-- /.content_container_fix --> 
     </section><!-- /#content-container -->   
@@ -241,91 +161,91 @@ to help rc racers of all skill levels improve their performance.">
   	<script type="text/javascript" src="/media/js/flot/jquery.flot.pie.min.js"></script>    
 	
 	<script type="text/javascript" charset="utf-8">
-		// Flot Graph of the class history/frequency PIE CHART
-		$(function (data) {
-		var css_id = "#classhistory_graph";
-		var data = {% autoescape off %} {{ classfreq_jsdata }} {% endautoescape %};    
-		var options = {
-			yaxis: {
-		    	ticks: 10,
-		        min: 0,
-		        max: 10
-		    },
-		    xaxis: { mode: "time" }, 
-		    series: {
-       			pie: {
-         			show: true,
-         			label: { show: true, 
-         				threshold: 0.04
-         				//radius: 3/4,        					
-                   		//background: { opacity: 0.5, color: '#000' }
-         			}
-         			
-     			}
-		    },                
-		};
-		
-		$.plot($(css_id), data, options);
-		});
-    </script>		
-		
-  	<script type="text/javascript" charset="utf-8">
-		// Flot Graph of the racers history and results over time.
-		$(function (data) {
-		var css_id = "#placeholder";
-		var data = {% autoescape off %} {{ racehistory_jsdata }} {% endautoescape %};    
-		var options = {
-			yaxis: {
-		    	ticks: 10,
-		        min: 0,
-		        max: 10
-		    },
-		    xaxis: { mode: "time" }, 
-		    series: {color: '#0055bb',
-		    	stack: 0,
-		        lines: {show: false, steps: false },
-		        bars: {show: true, barWidth: 0.9, align: 'center',},
-		    },                
-		};
-		
-		$.plot($(css_id), data, options);
-		});
-    </script>		
+		$(document).ready(function() {
+		    $('#racedetails_placeholder').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="racedetails_table"></table>' );
+		    $('#racedetails_table').dataTable( {
+		    	"bPaginate": false,
+		        "bLengthChange": false,
+		        "bFilter": false,				        
+		        "bInfo": false,
+		        "aaData": {% autoescape off %} {{  racedetails.individual_results  }} {% endautoescape %},
+		        "sScrollX": "100%",
+		        "aoColumns": [
+		        				{ "sTitle": "Finish" },
+							    { "sTitle": "Racer" , "sClass": "center" },
+								{ "sTitle": "LapCount" },
+								{ "sTitle": "RaceTime" },
+								{ "sTitle": "FastLap" },
+								{ "sTitle": "Behind" }
+		        ]
+		    } );			
+		} );					
+	</script>
+ 	
+ 	<script type="text/javascript" charset="utf-8">
+		$(document).ready(function() {
+		    $('#laptimestable_placeholder').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="laptimetable"></table>' );
+		    $('#laptimetable').dataTable( {
+		    	"bPaginate": false,
+		        "bLengthChange": false,
+		        "bFilter": false,				        
+		        "bInfo": false,
+		        "aaData": {% autoescape off %} {{  laptime_jsdata  }} {% endautoescape %},
+		        
+		        "aoColumns": [ { "sTitle": "Lap" },
+		        				{% for name in column_names %}
+			        				{ "sTitle": "{{ name }}" },
+								{% endfor %}
+		        ]		
+		    } );			
+		} );					
+	</script>
+ 	
+ 	<script type="text/javascript" charset="utf-8">
+ 	 									
+		$(function () {
+	    	var datasets = {% autoescape off %} {{ laptime_graph_jsdata }} {% endautoescape %};    
+		    // hard-code color indices to prevent them from shifting as
+		    // countries are turned on/off
+		    var i = 0;
+		    $.each(datasets, function(key, val) {
+		        val.color = i;
+		        ++i;
+		    });
 	    
-	<!-- Script for the tabs -->
-	<script type="text/javascript"  charset="utf-8">
-    $(document).ready(function() {
-		{% if recent_race_data %}			    
-			{% for track in recent_race_data %}				  	
-				$("#tracktabs_{{ track.js_id }}").tabs();			  			  	
-	  		{% endfor %}
-	  	{% else %}
-	  		// Warning - no race data for recent races.	  	
-	  	{% endif %}	  	  	
-  	});
-
-  	<!-- Script for the buttons -->
-  	$(document).ready(function() {
-  	var ajax_load = "<img class='loading' src='/media/images/loadingGif.gif' alt='loading...' />";
+		    // insert checkboxes 
+		    var choiceContainer = $("#choices");
+		    $.each(datasets, function(key, val) {
+		        choiceContainer.append('<br/><input type="checkbox" name="' + key +
+		                               '" checked="checked" id="id' + key + '">' +
+		                               '<label for="id' + key + '">'
+		                                + val.label + '</label>');
+		    });
+		    choiceContainer.find("input").click(plotAccordingToChoices);
+		    
+		    function plotAccordingToChoices() {
+		        var data = [];
 		
-  	{% for track in recent_race_data %}
-  	{% for class in track.classes %}
-  	{% for race in class.individual_racedata %}
-		$("#load_basic_{{ track.js_id }}_{{ class.js_id }}_{{ race.js_id }}").click(function(){
-			$("#result_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/displayresults/{{ race.id }}/"); 
-			$("#lap_graph_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/displayresults/singleracerlaps/{{ race.id }}/{{ racerid }}/");
-		});		
-	{% endfor %}
-	// Display the first results returned.
-	$("#result_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/displayresults/{{ class.individual_racedata.0.id }}/"); 
-	$("#lap_graph_{{ track.js_id }}_{{ class.js_id }}").html(ajax_load).load("/displayresults/singleracerlaps/{{ class.individual_racedata.0.id }}/{{ racerid }}/"); 
-	
-	{% endfor %}
-	{% endfor %}
-	
-	});
+		        choiceContainer.find("input:checked").each(function () {
+		            var key = $(this).attr("name");
+		            if (key && datasets[key])
+		                data.push(datasets[key]);
+		        });
+		
+		        if (data.length > 0)
+		            $.plot($("#laptimegraph_placeholder"), data, {
+		                //yaxis: { min: 0 },
+		                xaxis: { tickDecimals: 0 },
+		                lines: {show:true},
+		                points: {show:true},
+		            });
+		    }
+		
+		    plotAccordingToChoices();
+		});
+ 	
  	</script>
-
+ 	
   <script src="/media/js/libs/ui/jquery.ui.core.js"></script>
   <script src="/media/js/libs/ui/jquery.ui.widget.js"></script>
   <script src="/media/js/libs/ui/jquery.ui.accordion.js"></script>
