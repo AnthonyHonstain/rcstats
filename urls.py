@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     url(r'^$', 'rcstats.rcdata.views.index'),
     
     url(r'^faq$', 'rcstats.faq.views.faq'),
+    url(r'^ranking$', 'rcstats.ranking.views.ranking'),
     
     url(r'^trackdata/$', 'rcstats.trackdata.views.trackdata'),    
     url(r'^trackdata/(?P<track_id>\d+)/$', 'rcstats.trackdata.views.trackdetail'),

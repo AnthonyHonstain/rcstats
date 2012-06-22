@@ -1,0 +1,821 @@
+<!doctype html>
+
+  <meta charset="utf-8"> 
+  
+  <title>Rc-Stats to track your race performance</title>
+  <meta name="description" content="Rc-stats is dedicated to providing detailed analysis and actionable data
+to help rc racers of all skill levels improve their performance.">
+
+  
+  
+  <!-- The script prevents links from opening in mobile safari. https://gist.github.com/1042026 -->
+  <!-- <script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script> -->
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/media/css/superfish.css" media="screen"  />
+  <link rel="stylesheet" href="/media/css/style.css">
+  <link rel="stylesheet" href="/media/css/flexslider.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="/media/css/prettyPhoto.css" type="text/css" media="screen" title="prettyPhoto main stylesheet" />
+  <link rel="stylesheet" href="/media/css/custom-rebuild.css" media="screen"  />
+  
+  <link href='http://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+  <script src="/media/js/libs/modernizr-2.0.6.min.js"></script>
+  
+  {{ analytics_code }}
+</head>
+
+<body>
+
+<div id="container">
+    <header>
+    	<section class="header_fix">
+            <a class="logo" href="/"></a><!-- /.logo --> 
+        </section><!-- /.header_fix --> 
+    </header><!-- /header -->
+    
+    <nav>
+    	<section class="nav_fix">
+            <section class="nav_fix_in">
+            <ul class="main-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/myresults">MyResults</a></li>
+                <li><a href="/trackdata">TrackData</a></li>
+                <li class="current_page_item"><a href="/ranking">Ranking</a></li>
+                <li><a href="/faq">FAQ</a></li>
+            </ul>
+        	</section><!-- /.nav_fix_in -->
+        </section><!-- /.nav_fix -->
+    </nav><!-- /nav -->
+    
+	<section id="content-container">
+    	<section class="content_container_fix">
+        
+        <section class="page_title">
+          <h1>Ranking</h1>
+          <h2>Current ranking. </h2>
+        </section><!-- /.page_title -->
+  
+        <section class="full_width">
+
+			
+<body lang=EN-US link=blue vlink=purple style='tab-interval:.5in'>
+
+<div class=WordSection1>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>&nbsp;<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><b><span style='font-size:13.0pt;mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri;color:#366092'>Overview</span></b><span
+style='font-size:13.0pt;mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;
+color:#366092'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Ranking
+systems are used in many other competitive sports, like chess and online games.
+I have used the race results that I collected (2011-current) in combination
+with an open source implementation based on trueskill to create an initial
+ranking for Stock Buggy racers. This is not the finished implementation, this
+is a trial run.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>I
+highly recommend reading - <a
+href="http://www.moserware.com/2010/03/computing-your-skill.html">http://www.moserware.com/2010/03/computing-your-skill.html</a>
+<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l15 level1 lfo1;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>The ranking system is only an estimate of your
+skill.<span style='mso-spacerun:yes'>  </span>It is possible that you are
+changing faster than the algorithm can account for; it may take several events
+for the algorithm to get a better approximation of your skill.</span><span
+style='font-size:12.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l2 level1 lfo2;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>Your ranking should not be decrease if you lose
+to higher ranked racers. </span><span style='font-size:12.0pt;font-family:"Times New Roman","serif";
+mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l1 level1 lfo3;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>If you were destroying the field in 2011, but you
+have only driven a bit in 2012, your rank might not be a very good estimate of
+your skill level.</span><span style='font-size:12.0pt;font-family:"Times New Roman","serif";
+mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l4 level1 lfo4;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>I am still going through the algorithm and the
+implementation for calculating the ranking may change significantly.</span><span
+style='font-size:12.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l0 level1 lfo5;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>I am unsure of what the implications are of
+having multiple tracks that do not co-mingle often. It is possible that I may
+give additional weight to more important events.</span><span style='font-size:
+12.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>What
+is the difference between this and counting win/losses etc? This system starts
+with an estimate of your ability relative to your competitors and a confidence
+value for the estimate. As new race results are processed, the estimate in your
+ability<span style='mso-spacerun:yes'>  </span>will change and the system can
+become more confident in its estimation. <o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>&nbsp;<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><b><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;
+color:#366092'>Possible Features.</span></b><span style='mso-ascii-font-family:
+Calibri;mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri;color:#366092'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l3 level1 lfo6;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>Implement a page to have real time rank upgrades
+with a graph to track progress.</span><span style='font-size:12.0pt;font-family:
+"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l13 level1 lfo7;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>Implement<span style='mso-spacerun:yes'> 
+</span>rank decay to keep the ranks moving.</span><span style='font-size:12.0pt;
+font-family:"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l11 level1 lfo8;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>Keep track ranking separate.</span><span
+style='font-size:12.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l7 level1 lfo9;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>Reset scores several times a year.</span><span
+style='font-size:12.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>&nbsp;<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><b><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;
+color:#366092'>Goals</span></b><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri;color:#366092'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>My
+goals for the ranking system are simple: for the system to be a positive
+influence on the racing community.<span style='mso-spacerun:yes'>  </span>I
+find this kind of information very valuable in evaluating if changes in my kit
+or extra practice are having an impact.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>&nbsp;<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><b><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;
+color:#366092'>Transparency</span></b><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri;color:#366092'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Source
+code can be viewed here: <a href="https://github.com/iteratorrc/trueskill">https://github.com/iteratorrc/trueskill</a>
+If you would like to run the calculations yourself, please contact me and I
+will get you a dataset. I welcome any feedback or recommendations.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>&nbsp;<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><b><span style='font-size:13.0pt;mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri;color:#366092'>References</span></b><span
+style='font-size:13.0pt;mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;
+color:#366092'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l12 level1 lfo10;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>A good read to familiarize yourself with some of
+the concepts is (allot of the required background and math involved is covered
+here).</span><span style='font-size:12.0pt;font-family:"Times New Roman","serif";
+mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:.75in;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l12 level2 lfo10;tab-stops:list 1.0in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:"Courier New";
+mso-fareast-font-family:"Courier New"'><span style='mso-list:Ignore'>o<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:12.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+"Times New Roman"'><a
+href="http://www.moserware.com/2010/03/computing-your-skill.html"><span
+style='font-size:11.0pt;font-family:"Calibri","sans-serif"'>http://www.moserware.com/2010/03/computing-your-skill.html</span></a></span><span
+style='mso-ascii-font-family:Calibri;mso-fareast-font-family:"Times New Roman";
+mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'> </span><span
+style='font-size:12.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l9 level1 lfo11;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:12.0pt;font-family:"Times New Roman","serif";
+mso-fareast-font-family:"Times New Roman"'><a
+href="http://en.wikipedia.org/wiki/Elo_rating_system"><span style='font-size:
+11.0pt;font-family:"Calibri","sans-serif"'>http://en.wikipedia.org/wiki/Elo_rating_system</span></a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l5 level1 lfo12;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:12.0pt;font-family:"Times New Roman","serif";
+mso-fareast-font-family:"Times New Roman"'><a
+href="http://www.codinghorror.com/blog/2007/09/slaying-mighty-dragons-competitive-ranking-and-matching-systems.html"><span
+style='font-size:11.0pt;font-family:"Calibri","sans-serif"'>http://www.codinghorror.com/blog/2007/09/slaying-mighty-dragons-competitive-ranking-and-matching-systems.html</span></a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l8 level1 lfo13;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:12.0pt;font-family:"Times New Roman","serif";
+mso-fareast-font-family:"Times New Roman"'><a
+href="http://sradack.blogspot.com/2008/06/elo-rating-system-multiple-players.html"><span
+style='font-size:11.0pt;font-family:"Calibri","sans-serif"'>http://sradack.blogspot.com/2008/06/elo-rating-system-multiple-players.html</span></a><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>&nbsp;<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><b><span style='font-size:13.0pt;mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri;color:#366092'>Assumptions and Details</span></b><span
+style='font-size:13.0pt;mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;
+color:#366092'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l14 level1 lfo14;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>The initial results are restricted to stock buggy
+main events. No qualifiers. I can do other classes, but stock buggy has the
+most consistent turn out. </span><span style='font-size:12.0pt;font-family:
+"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l14 level1 lfo14;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>I have grouped B,C,D, … main events into a single
+race with the A-main to get a single event to calculate ranking off of.</span><span
+style='font-size:12.0pt;font-family:"Times New Roman","serif";mso-fareast-font-family:
+"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l6 level1 lfo15;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>I am only displaying competitors with <b>10</b>
+or more race results.</span><span style='font-size:12.0pt;font-family:"Times New Roman","serif";
+mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-top:0in;margin-right:0in;margin-bottom:0in;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-.25in;line-height:normal;
+mso-list:l10 level1 lfo16;tab-stops:list .5in;vertical-align:middle'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri'>I am only displaying the top half of the ranking
+(if you are not in here, you might be in the bottom half or you may not have 10
+races in the database yet).</span><span style='font-size:12.0pt;font-family:
+"Times New Roman","serif";mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>&nbsp;<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><b><span style='font-size:13.0pt;mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri;color:#366092'>Ranking For TRCR and BRCR - Total
+Races: 286</span></b><span style='font-size:13.0pt;mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri;color:#366092'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>SHIRK,
+DALTON<span style='mso-spacerun:yes'>        </span>Rank:29.43<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>AUTRY,
+BRIAN<span style='mso-spacerun:yes'>         </span>Rank:25.08<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Woods,
+Doug<span style='mso-spacerun:yes'>          </span>Rank:23.54<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>MARGESON,
+EVAN<span style='mso-spacerun:yes'>       </span>Rank:23.06<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Radford,
+Ian<span style='mso-spacerun:yes'>         </span>Rank:22.97<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>STERLING,
+JON<span style='mso-spacerun:yes'>        </span>Rank:22.95<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Cantrell,
+Jonathon<span style='mso-spacerun:yes'>   </span>Rank:22.81<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Collins,
+Brandon<span style='mso-spacerun:yes'>     </span>Rank:22.10<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>TIEDEMAN,
+DERRY<span style='mso-spacerun:yes'>      </span>Rank:21.66<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>SHIRK,
+MIKE<span style='mso-spacerun:yes'>          </span>Rank:21.53<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>DONLIN,
+TONY<span style='mso-spacerun:yes'>         </span>Rank:21.27<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>WEIDEMANN,
+TIM<span style='mso-spacerun:yes'>       </span>Rank:20.48<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>blood,tyson<span
+style='mso-spacerun:yes'>          </span>Rank:20.47<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>WOOD,
+JAMES<span style='mso-spacerun:yes'>          </span>Rank:20.22<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>BRANDON,
+CHRIS<span style='mso-spacerun:yes'>       </span>Rank:20.10<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Duncan,
+Darin<span style='mso-spacerun:yes'>        </span>Rank:19.73<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>MOLOSEAU,
+MIKE<span style='mso-spacerun:yes'>       </span>Rank:19.15<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Frank,
+Jon<span style='mso-spacerun:yes'>           </span>Rank:18.82<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Honstain,
+Anthony<span style='mso-spacerun:yes'>    </span>Rank:18.39<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Behlen,
+kyle<span style='mso-spacerun:yes'>         </span>Rank:18.21<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>MATESA,
+JEFF<span style='mso-spacerun:yes'>         </span>Rank:18.14<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Courtway,
+Zane<span style='mso-spacerun:yes'>       </span>Rank:17.93<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>FUNG,
+ZACH<span style='mso-spacerun:yes'>           </span>Rank:17.88<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>JOHNSON,
+JAMES<span style='mso-spacerun:yes'>       </span>Rank:17.80<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>JOHNSON,
+JC<span style='mso-spacerun:yes'>          </span>Rank:17.38<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>WOODS,
+CHRIS<span style='mso-spacerun:yes'>         </span>Rank:15.96<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>correnti,
+daniel<span style='mso-spacerun:yes'>     </span>Rank:15.42<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>SABIN,
+JEREMY<span style='mso-spacerun:yes'>        </span>Rank:15.32<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Eckor,
+Branden<span style='mso-spacerun:yes'>       </span>Rank:15.19<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Smith,
+Steve<span style='mso-spacerun:yes'>         </span>Rank:15.17<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Clark,
+Mark<span style='mso-spacerun:yes'>          </span>Rank:14.92<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Fabie,
+Edwin<span style='mso-spacerun:yes'>         </span>Rank:14.68<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Frankowski,
+Evan<span style='mso-spacerun:yes'>     </span>Rank:14.59<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>MOREHEAD,
+PATRICK<span style='mso-spacerun:yes'>    </span>Rank:14.38<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>ERICKSON,
+JOHN<span style='mso-spacerun:yes'>       </span>Rank:14.13<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Jermey,
+Glance<span style='mso-spacerun:yes'>       </span>Rank:13.85<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>&nbsp;<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><b><span style='font-size:13.0pt;mso-ascii-font-family:Calibri;
+mso-fareast-font-family:"Times New Roman";mso-hansi-font-family:Calibri;
+mso-bidi-font-family:Calibri;color:#366092'>Ranking for TRCR - Total Races: 176</span></b><span
+style='font-size:13.0pt;mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;
+color:#366092'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>SHIRK,
+DALTON<span style='mso-spacerun:yes'>        </span>Rank:29.60<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>AUTRY,
+BRIAN<span style='mso-spacerun:yes'>         </span>Rank:25.31<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Woods,
+Doug<span style='mso-spacerun:yes'>          </span>Rank:23.52<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>TIEDEMAN,
+DERRY<span style='mso-spacerun:yes'>      </span>Rank:23.22<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>STERLING,
+JON<span style='mso-spacerun:yes'>        </span>Rank:22.98<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>MARGESON,
+EVAN<span style='mso-spacerun:yes'>       </span>Rank:22.88<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>SHIRK,
+MIKE<span style='mso-spacerun:yes'>          </span>Rank:22.36<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>DONLIN,
+TONY<span style='mso-spacerun:yes'>         </span>Rank:22.04<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Duncan,
+Darin<span style='mso-spacerun:yes'>        </span>Rank:21.18<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>WEIDEMANN,
+TIM<span style='mso-spacerun:yes'>       </span>Rank:20.52<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>BRANDON,
+CHRIS<span style='mso-spacerun:yes'>       </span>Rank:19.80<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>WOOD,
+JAMES<span style='mso-spacerun:yes'>          </span>Rank:19.70<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>MOLOSEAU,
+MIKE<span style='mso-spacerun:yes'>       </span>Rank:19.44<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Frank,
+Jon<span style='mso-spacerun:yes'>           </span>Rank:18.21<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>MATESA,
+JEFF<span style='mso-spacerun:yes'>         </span>Rank:18.01<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>JOHNSON,
+JAMES<span style='mso-spacerun:yes'>       </span>Rank:17.91<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>FUNG,
+ZACH<span style='mso-spacerun:yes'>           </span>Rank:17.45<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>JOHNSON,
+JC<span style='mso-spacerun:yes'>          </span>Rank:17.25<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>WOODS,
+CHRIS<span style='mso-spacerun:yes'>         </span>Rank:15.70<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>Honstain,
+Anthony<span style='mso-spacerun:yes'>    </span>Rank:15.31<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>SABIN,
+JEREMY<span style='mso-spacerun:yes'>        </span>Rank:14.77<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>ERICKSON,
+JOHN<span style='mso-spacerun:yes'>       </span>Rank:14.58<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal'><span style='mso-ascii-font-family:Calibri;mso-fareast-font-family:
+"Times New Roman";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri'>MOREHEAD,
+PATRICK<span style='mso-spacerun:yes'>    </span>Rank:14.29<o:p></o:p></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+</div>
+
+</body>		
+        
+
+         </section><!-- /.full_width -->
+         
+         <section class="clear_full"></section><!-- /.clear_full --> 
+            
+        </section><!-- /.content_container_fix --> 
+    </section><!-- /#content-container -->   
+
+
+    <footer>
+    	<section class="footer_fix">
+            <section class="footer_widgets">
+            
+            	<section class="footer_widget_12">
+                	<h3>About rc-stats.com</h3>
+                    <article>
+                    
+                    <p>rc-stats.com is dedicated to the rc racing community. This is a site to store race results so that they can be easily organized and reviewed. Whether your goal is improving your lap times or just taking your bench racing to the next level, rc-stats will have the tools for you.</p>
+                    <img src="/media/images/icons/retina-icons/globe_64.png" class="float-left" alt="globe" />
+                    <p>This site was designed to be extensible, so you if you want your track or event included please contact an admin. Created by racers for racers.  </p>
+                    </article>
+                </section><!-- /.footer_widget_12 -->
+                
+                <section class="footer_widget_14">
+                	<h3>Contact Information</h3>
+                    <article>
+                          <p>
+                          <strong><em>How To Contact Us</em></strong><br>
+                          Email: rcstats.site@gmail.com<br>
+                          </p>
+                    </article>
+                </section><!-- /.footer_widget_14 -->
+            
+            </section><!-- /.footer_widgets --> 
+            
+            <section class="footer_meta">
+                <ul class="footer_menu">
+                  <li><a href="/">Home</a></li>
+                  <li><a href="/myresults">MyResults</a></li>
+                  <li><a href="/trackdata">TrackData</a></li>
+                  <li class="current_page_item"><a href="/ranking">Ranking</a></li>
+                  <li><a href="/faq">FAQ</a></li>                   
+                </ul><!-- /.footer_menu --> 
+            </section><!-- /.footer_meta --> 
+            
+        </section><!-- /.footer_fix --> 
+    </footer><!-- /footer -->
+</div> <!-- /#container -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="/media/js/libs/jquery-1.7.2.min.js"><\/script>')</script>
+  
+  <script type="text/javascript">
+   
+/*-------------------------------
+* jQuery Plugin: Super Fish Menu
+-------------------------------*/
+
+    jQuery(document).ready(function($){ 
+        $("ul.main-menu").supersubs({ 
+            minWidth:    12,   // minimum width of sub-menus in em units 
+            maxWidth:    150,   // maximum width of sub-menus in em units 
+            extraWidth:  1     // extra width can ensure lines don't sometimes turn over 
+                               // due to slight rounding differences and font-family 
+        }).superfish({ 
+            delay:       300,                            // one second delay on mouseout 
+            animation:   {opacity:'show',height:'show'},  // fade-in and slide-down animation 
+            speed:       'normal',                          // faster animation speed 
+            autoArrows:  false,                           // disable generation of arrow mark-up 
+            dropShadows: true                            // disable drop shadows 
+        });  // call supersubs first, then superfish, so that subs are 
+                         // not display:none when measuring. Call before initialising 
+                         // containing tabs for same reason. 
+    }); 
+  </script>
+  
+  <script src="/media/js/libs/ui/jquery.ui.core.js"></script>
+  <script src="/media/js/libs/ui/jquery.ui.widget.js"></script>
+  <script src="/media/js/libs/ui/jquery.ui.accordion.js"></script>
+  <script src="/media/js/libs/ui/jquery.ui.tabs.js"></script>
+  <script src="/media/js/libs/superfish/hoverIntent.js"></script> 
+  <script src="/media/js/libs/superfish/superfish.js"></script> 
+  <script src="/media/js/libs/superfish/supersubs.js"></script>
+  <script src="/media/js/libs/jquery.flexslider-min.js"></script>
+  <script type="text/javascript" src="/media/js/libs/jquery.easing.1.3.js"></script>
+  <script src="/media/js/libs/slides.min.jquery.js"></script>
+  <script src="/media/js/libs/jquery.prettyPhoto.js" type="text/javascript" charset="utf-8"></script>
+    
+  <script src="/media/js/scripts.js"></script>
+  <!-- scripts concatenated and minified via ant build script-->
+  <script src="/media/js/helper.js"></script>
+  <!-- end scripts-->
+
+</body>
+</html>
