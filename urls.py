@@ -7,10 +7,13 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', 'rcstats.rcdata.views.index'),
-    
-    url(r'^faq$', 'rcstats.faq.views.faq'),
+    url(r'^$', 'rcstats.rcdata.views.index'),    
+    url(r'^faq$', 'rcstats.rcdata.views.faq'),
     url(r'^ranking$', 'rcstats.ranking.views.ranking'),
+    url(r'^login/$', 'rcstats.uploadresults.views.login_user'),    
+    url(r'^upload_start/$', 'rcstats.uploadresults.views.upload_start'),
+    
+    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
     
     url(r'^trackdata/$', 'rcstats.trackdata.views.trackdata'),    
     url(r'^trackdata/(?P<track_id>\d+)/$', 'rcstats.trackdata.views.trackdetail'),

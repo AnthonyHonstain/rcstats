@@ -22,7 +22,7 @@ def myresults(request):
     It gives a listing of all tracked race names, and links to their respective
     profile pages.
     """
-    racer_names = RacerId.objects.all().order_by('racerpreferredname').values_list('racerpreferredname', 'id')
+    racer_names = _get_racer_for_main_table()
         
     # BUG - Why cant the simplejson dump the results from the ORM, I could save another
     # loop on the data if it could serialize correctly.
@@ -37,6 +37,81 @@ def myresults(request):
     return render_to_response('myresults.html', {'racer_names':jsdata,
                                                  'featured_racers': featured_racers}, context_instance=RequestContext(request))
 
+def _get_racer_for_main_table():
+    """
+    Get a sorted list of racers currently being tracked. These are the raw names.
+    """
+    return RacerId.objects.all().order_by('racerpreferredname').values_list('racerpreferredname', 'id')
+
+
+def _get_RaceTimeline_JSData(racer_obj):
+    '''
+    Get the data for the timeline of all race results for the racer. This
+    data will be converted to JSON and formated for use in the FLOT graph.
+        This will have special formating for the time (FLOT requires this),
+        so the axis is correct.    
+    '''
+    # This is every race result for this racer.
+    race_results = SingleRaceResults.objects.filter(racerid=racer_obj.id)
+    '''
+    IMPORTANT FOR FLOT GRAPHS
+    
+    The timestamps must be specified as Javascript timestamps, as
+      milliseconds since January 1, 1970 00:00. This is like Unix
+      timestamps, but in milliseconds instead of seconds (remember to
+      multiply with 1000!)
+    '''
+    
+    graphdata = []
+    # Example graphdata
+    #     [[1330727163000.0, 1], [1330727881000.0, 7], [1313339287000.0, 5], ... ]
+    for result in race_results:
+        race_detail = SingleRaceDetails.objects.get(pk=result.raceid.id)
+        # Convert to milliseconds
+        formatedtime = time.mktime(race_detail.racedate.timetuple()) * 1000
+        graphdata.append([formatedtime, result.finalpos])
+    
+    #print 'graphdata', graphdata
+    mylist = [{'label':racer_obj.racerpreferredname, 'data':graphdata}]
+    jsdata = simplejson.dumps(mylist)
+    
+    return jsdata
+
+
+def _get_Group_Race_Classes(racer_obj):
+    '''
+    Identify and group the race classes for the racer_obj
+    
+    WARNING - This only tracks main events. The racedata must contain the 
+    token: "main"
+    ''' 
+        
+    # Warning - requires the racedata to contain the token 'main'
+    racedetails_allmains = SingleRaceDetails.objects.filter(singleraceresults__racerid=racer_obj.id, 
+                                                            racedata__icontains="main")\
+                                                            .values('racedata')\
+                                                            .annotate(dcount=Count('racedata'))\
+                                                            .order_by('dcount')[::-1]
+    
+    cleaned_classnames = _get_Cleaned_Class_Names(racedetails_allmains)
+    
+    # Now I have the unique class names and their count, I need to
+    # display this information to the user.
+    class_frequency = cleaned_classnames.items()
+    class_frequency.sort(key=lambda tup:tup[1], reverse=True) # Example of class_frequency [(u'STOCK BUGGY', 105), (u'STOCK TRUCK', 62),
+    
+    # This is special formating for the FLOT graph.
+    pie_chart_data = []
+    for single_class_freq in class_frequency:
+        pie_chart_data.append({'label':single_class_freq[0] + ": " + str(single_class_freq[1]), 
+                               'data':single_class_freq[1]})
+    
+    # This is an example of what I need for the pie chart.
+    #  [ { label: "This",  data: 44 }, ...
+    classfreq_jsdata = simplejson.dumps(pie_chart_data)
+    
+    return cleaned_classnames, classfreq_jsdata
+
 
 def generalstats(request, racer_id):
     """
@@ -49,73 +124,19 @@ def generalstats(request, racer_id):
     """
     racer_obj = get_object_or_404(RacerId, pk=racer_id)
     
-    # ===========================================================
-    # Get the data for the timeline of all race results.
-    # ===========================================================
-        
-    # This is every race result for this racer.
-    race_results = SingleRaceResults.objects.filter(racerid = racer_obj.id)        
-    '''
-    IMPORTANT FOR FLOT GRAPHS
-    
-    The timestamps must be specified as Javascript timestamps, as
-      milliseconds since January 1, 1970 00:00. This is like Unix
-      timestamps, but in milliseconds instead of seconds (remember to
-      multiply with 1000!)
-    '''    
-    graphdata = []
-    # Example graphdata
-    #     [[1330727163000.0, 1], [1330727881000.0, 7], [1313339287000.0, 5], ... ]
-    for result in race_results:
-        race_detail = SingleRaceDetails.objects.get(pk = result.raceid.id)
-        
-        # Convert to milliseconds
-        formatedtime = time.mktime(race_detail.racedate.timetuple()) * 1000        
-        graphdata.append([formatedtime, result.finalpos])
-
-    #print 'graphdata', graphdata
-    mylist =[
-        {'label': racer_obj.racerpreferredname, 'data': graphdata},        
-    ]
-    jsdata = simplejson.dumps(mylist)
+    # Get the data for the flot graph of race history over time. 
+    timeline_jsdata = _get_RaceTimeline_JSData(racer_obj)
             
-    # ===========================================================
-    # Identify and group the race classes
-    # ===========================================================
-    # A dictionary of class names {u'MODIFIED SHORT COURSE': 4, u'STOCK BUGGY': 105,
-    unique_classes = {}
-
-    racedetails_allmains = SingleRaceDetails.objects.filter(singleraceresults__racerid = racer_obj.id,
-                                            racedata__icontains = "main").values('racedata').\
-                                                annotate(dcount=Count('racedata')).\
-                                                order_by('dcount')[::-1]
-        
-    cleaned_classnames = _get_Cleaned_Class_Names(racedetails_allmains)
-        
-    # Now I have the unique class names and their count, I need to 
-    # display this information to the user.           
-    class_frequency = cleaned_classnames.items()
-    class_frequency.sort(key = lambda tup: tup[1], reverse = True)
-    # Example of class_frequency [(u'STOCK BUGGY', 105), (u'STOCK TRUCK', 62), 
-    
-    piechartdata = []
-    for single_class_freq in class_frequency:
-        piechartdata.append({'label': single_class_freq[0] + ": " + str(single_class_freq[1]), 
-                             'data': single_class_freq[1]})
-        
-    # This is an example of what I need for the pie chart.
-    #  [ { label: "This",  data: 44 }, ...
-    
-    classfreq_jsdata = simplejson.dumps(piechartdata)
+    # Get the data for the flot pie graph of the classes races.
+    cleaned_classnames, classfreq_jsdata = _get_Group_Race_Classes(racer_obj)
 
     # ===========================================================
     # Find last 5 races for each class and track.
     # ===========================================================
     '''
     There are a couple of issues to work through here.
-        TO START WITH - I WILL FILTER BY LAST 2 Months to find
-        the tracks and classes. Then once I have filtered by
-        that I will show the last 5 races (how ever old they are).
+        TO START WITH - find the tracks and classes. Then once I have filtered by
+        that, I will show the last 5 races (how ever old they are).
         
     1. Find the tracks they have raced at.
     2. Find the classes they have raced in at each track.
@@ -155,7 +176,7 @@ def generalstats(request, racer_id):
         
         
     # I am going to remove this functionality, since I think most people just want to see the last results.
-    # Right now it is to common to go to a profile, and find they have no results because of this.
+    # Right now it is common to go to a profile, and find they have no results because of this.
     '''
     # Get the date from 2 months ago.
     filterdate = datetime.datetime.now() + relativedelta(months=-2)
@@ -234,7 +255,7 @@ def generalstats(request, racer_id):
     ctx = Context({'racerid':racer_obj.id,
                    'racername':racer_obj.racerpreferredname, 
                    'classfreq_jsdata':classfreq_jsdata,
-                   'racehistory_jsdata':jsdata, 
+                   'racehistory_jsdata':timeline_jsdata, 
                    'recent_race_data':recent_race_data})
     
     return render_to_response('generalstats.html', ctx, context_instance=RequestContext(request))

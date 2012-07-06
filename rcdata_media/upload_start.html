@@ -2,7 +2,7 @@
 
   <meta charset="utf-8"> 
   
-  <title>Rc-Stats to track your race performance</title>
+  <title>Rc-Stats Upload Race Results</title>
   <meta name="description" content="Rc-stats is dedicated to providing detailed analysis and actionable data
 to help rc racers of all skill levels improve their performance.">
 
@@ -21,7 +21,7 @@ to help rc racers of all skill levels improve their performance.">
   <link href='http://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
   <script src="/media/js/libs/modernizr-2.0.6.min.js"></script>
   
-  {{ analytics_code }}
+    {{ analytics_code }}
 </head>
 
 <body>
@@ -37,63 +37,40 @@ to help rc racers of all skill levels improve their performance.">
     	<section class="nav_fix">
             <section class="nav_fix_in">
             <ul class="main-menu">
-                <li class="current_page_item"><a href="/">Home</a></li>
+                <li><a href="/">Home</a></li>
                 <li><a href="/myresults">MyResults</a></li>
                 <li><a href="/trackdata">TrackData</a></li>
                 <li><a href="/ranking">Ranking</a></li>
                 <li><a href="/faq">FAQ</a></li>
-                <li><a href="/upload_start">Upload</a></li>
+            	<li class="current_page_item"><a href="/upload_start">Upload</a></li>
             </ul>
         	</section><!-- /.nav_fix_in -->
         </section><!-- /.nav_fix -->
     </nav><!-- /nav -->
-    
-    <section id="banner-container">
-    	<section class="full_banner_line"></section><!-- /.full_banner_line -->
-    	<section class="banner_container_fix">
-             
-            <div class="flexslider">
-            <ul class="slides">
-	    	<li>
-	    		<img src="/media/images/banner/IMG_4785.JPG"  alt="image" />
-	    		<span class="flex-caption-bgfull"></span>
-	    		<span class="flex-caption-bg"></span>
-	    		<div class="flex-caption">
-                	<h2>RC-Stats - tracking rc race results.</h2>
-                    <p>All your race results in a single location for easy comparison and analysis.</p>
-                </div>
-	    	</li>
-	    	<li>
-	    		<img src="/media/images/banner/IMG_4780.JPG" alt="image" />
-	    		<span class="flex-caption-bgfull"></span>
-	    		<span class="flex-caption-bg"></span>
-	    		<div class="flex-caption">
-                	<h2>Race results &amp; performance stats.</h2>
-                    <p>Results organized by racer, track, and race class.<br /> Helping you make informed decisions on setup changes. </p>
-                </div>
-	    	</li>
-            </ul><!-- /.slides -->
-            </div><!-- /.flexslider -->
-        
-        </section><!-- /.banner_container_fix --> 
-    </section><!-- /#banner-container -->   
-
+ 
     
 	<section id="content-container">
     	<section class="content_container_fix">
-                          
-        <section class="full_width">
+                 
+        <section class="page_title">
+          <h1>Upload Race Results</h1>
+          <h2>Upload race results from the scoring system.</h2>
+        </section><!-- /.page_title -->
+         
+        <section class="full_width">      
+        	<h2>{{ error_status }}</h2>   
+        	<form action="/upload_start/" method="post" enctype="multipart/form-data">
+        		{% csrf_token %}
+			    <input type="file" name="file" />
+			    <input type="submit" name="submit" value="Upload" />
+			</form>        
+			{{ form.errors }}
+			{{ form.non_field_errors }}
+			
+		
+        </section><!-- /.full_width -->
         
-        	<div class="message-box green">
-	        <h5>A message from the site creator</h5>
-	        <p>Thank you for taking the time to visit rc-stats. I created this site in my free time to help contribute back to the sport I enjoy so much. I have been working hard to incorporate feedback throughout the development process and I want to continue to refine and improve the site. If you have a suggestion on how the site could be easier to use, or a feature that would be useful, I will do my best to help.</p>
-			<p>I am working to make sure this site it is supported across the popular browsers and devices, but if you spot a bug or you are unable to use certain site functionality on a given device, please let me know. </p>
-			<p>I look forward to racing with you, thanks! </p>
-	    	</div><!-- /.message-box -->
-        
-        </section><!-- /.full_width -->         
-        <section class="clear_full"></section><!-- /.clear_full --> 
-            
+        <section class="clear_full"></section><!-- /.clear_full -->             
         </section><!-- /.content_container_fix --> 
     </section><!-- /#content-container -->   
 
@@ -126,11 +103,11 @@ to help rc racers of all skill levels improve their performance.">
             
             <section class="footer_meta">
                 <ul class="footer_menu">
-                  <li class="current_page_item"><a href="/rcdata/">Home</a></li>
-                  <li><a href="/rcdata/myresults">MyResults</a></li>
-                  <li><a href="/rcdata/trackdata">TrackData</a></li>
+                  <li><a href="/">Home</a></li>
+                  <li class="current_page_item"><a href="/myresults">MyResults</a></li>
+                  <li><a href="/trackdata">TrackData</a></li>
                   <li><a href="/ranking">Ranking</a></li>
-                  <li><a href="/rcdata/faq">FAQ</a></li>                  
+                  <li><a href="/faq">FAQ</a></li>                  
                 </ul><!-- /.footer_menu --> 
             </section><!-- /.footer_meta --> 
             
@@ -166,6 +143,36 @@ to help rc racers of all skill levels improve their performance.">
     }); 
   </script>
   
+  
+  <script src="/media/js/datatables/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
+  <script type="text/javascript" charset="utf-8">  	
+/*-------------------------------
+* Datatables to display the racerids
+-------------------------------*/
+
+		$(document).ready(function() {
+		    $('#myresults_racerid_table').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="racerid_table"></table>' );
+		    var oTable = $('#racerid_table').dataTable( {
+		    			        			        
+		        "aaData": {% autoescape off %} {{  racer_names  }} {% endautoescape %},
+		        "sScrollX": "80%",
+		        "aoColumns": [
+		        				{ "sTitle": "Racer Name" },
+							    { "sTitle": "id",
+							      "bVisible": false }
+		        ]
+		    } );			
+
+			$("#racerid_table").delegate("tr", "click", function() {
+				var iPos = oTable.fnGetPosition( this );
+				if(iPos!=null){
+				    var aData = oTable.fnGetData( iPos );//get data of the clicked row
+				    window.location.href = '/myresults/' + aData[1]
+				}				
+			} );
+		} );
+					
+  </script>
   <script src="/media/js/libs/ui/jquery.ui.core.js"></script>
   <script src="/media/js/libs/ui/jquery.ui.widget.js"></script>
   <script src="/media/js/libs/ui/jquery.ui.accordion.js"></script>
