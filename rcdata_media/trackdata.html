@@ -1,172 +1,31 @@
-<!doctype html>
+{% extends "base.html" %}
 
-  <meta charset="utf-8"> 
+
+{% block pagetitle %}TrackData{% endblock %}
+{% block pagetitle_description %}Individual tracks are organized below. Select a track to get stats and race data.{% endblock %}
   
-  <title>Rc-Stats to track your race performance</title>
-  <meta name="description" content="Rc-stats is dedicated to providing detailed analysis and actionable data
-to help rc racers of all skill levels improve their performance.">
+ 
+{% block content %}
 
-  
-  
-  <!-- The script prevents links from opening in mobile safari. https://gist.github.com/1042026 -->
-  <!-- <script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script> -->
+<section class="full_width">
+<section class="widget">
+	<h3>Supported Tracks</h3>
+	<ul class="menu">
+		{% if track_list %} 
+		{% for track in track_list %}
+		<li><a href="/trackdata/{{ track.id }}/">{{ track.trackkey }}</a></li>
+		{% endfor %}
+	</ul>
+		{% else %}
+		<p>No tracks are available.</p>
+		{% endif %}
+	</ul>
+</section><!-- /.widget -->
 
-  <!-- Stylesheet -->
-  <link rel="stylesheet" href="/media/css/superfish.css" media="screen"  />
-  <link rel="stylesheet" href="/media/css/style.css">
-  <link rel="stylesheet" href="/media/css/flexslider.css" type="text/css" media="screen" />
-  <link rel="stylesheet" href="/media/css/prettyPhoto.css" type="text/css" media="screen" title="prettyPhoto main stylesheet" />
-  <link rel="stylesheet" href="/media/css/custom-rebuild.css" media="screen"  />
-  
-  <link href='http://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
-  <script src="/media/js/libs/modernizr-2.0.6.min.js"></script>
-  
-  {{ analytics_code }}
-</head>
+<div class="message-box green">
+	<p>Don't see your local track? Getting your results added is easy
+		if you have your race results. See the FAQ or contact an the admin.</p>
+</div><!-- /.message-box -->
+</section><!-- /.full_width --> 
 
-<body>
-
-<div id="container">
-    <header>
-    	<section class="header_fix">
-            <a class="logo" href="/"></a><!-- /.logo --> 
-        </section><!-- /.header_fix --> 
-    </header><!-- /header -->
-    
-    <nav>
-    	<section class="nav_fix">
-            <section class="nav_fix_in">
-            <ul class="main-menu">
-                <li><a href="/">Home</a></li>
-                <li><a href="/myresults">MyResults</a></li>
-                <li class="current_page_item"><a href="/trackdata">TrackData</a></li>
-                <li><a href="/ranking">Ranking</a></li>
-                <li><a href="/faq">FAQ</a></li>
-            </ul>
-        	</section><!-- /.nav_fix_in -->
-        </section><!-- /.nav_fix -->
-    </nav><!-- /nav -->
-    
-	<section id="content-container">
-    	<section class="content_container_fix">
-        
-        <section class="page_title">
-          <h1>TrackData</h1>
-          <h2>Individual tracks are organized below. Select a track to get stats and race data. </h2>
-        </section><!-- /.page_title -->
-  
-        <section class="full_width">
-
-        <section class="widget">
-          <h3>Supported Tracks</h3>
-          <ul class="menu">
-            {% if track_list %}
-		        {% for track in track_list %}
-		        <li><a href="/trackdata/{{ track.id }}/">{{ track.trackkey }}</a></li>
-		        {% endfor %}
-		        </ul>
-			      {% else %}
-			      <p>No tracks are available.</p>
-			      {% endif %}	       
-          </ul>
-        </section><!-- /.widget -->
-                 
-        <div class="message-box green">
-          <p>Don't see your local track? Getting your results added is easy if you have your race results. See the FAQ or contact an the admin.</p>
-        </div><!-- /.message-box -->
-
-         </section><!-- /.full_width -->
-         
-         <section class="clear_full"></section><!-- /.clear_full --> 
-            
-        </section><!-- /.content_container_fix --> 
-    </section><!-- /#content-container -->   
-
-
-    <footer>
-    	<section class="footer_fix">
-            <section class="footer_widgets">
-            
-            	<section class="footer_widget_12">
-                	<h3>About rc-stats.com</h3>
-                    <article>
-                    
-                    <p>rc-stats.com is dedicated to the rc racing community. This is a site to store race results so that they can be easily organized and reviewed. Whether your goal is improving your lap times or just taking your bench racing to the next level, rc-stats will have the tools for you.</p>
-                    <img src="/media/images/icons/retina-icons/globe_64.png" class="float-left" alt="globe" />
-                    <p>This site was designed to be extensible, so you if you want your track or event included please contact an admin. Created by racers for racers.  </p>
-                    </article>
-                </section><!-- /.footer_widget_12 -->
-                
-                <section class="footer_widget_14">
-                	<h3>Contact Information</h3>
-                    <article>
-                          <p>
-                          <strong><em>How To Contact Us</em></strong><br>
-                          Email: rcstats.site@gmail.com<br>
-                          </p>
-                    </article>
-                </section><!-- /.footer_widget_14 -->
-            
-            </section><!-- /.footer_widgets --> 
-            
-            <section class="footer_meta">
-                <ul class="footer_menu">
-                  <li><a href="/">Home</a></li>
-                  <li><a href="/myresults">MyResults</a></li>
-                  <li class="current_page_item"><a href="/trackdata">TrackData</a></li>
-                  <li><a href="/ranking">Ranking</a></li>
-                  <li><a href="/faq">FAQ</a></li>                   
-                </ul><!-- /.footer_menu --> 
-            </section><!-- /.footer_meta --> 
-            
-        </section><!-- /.footer_fix --> 
-    </footer><!-- /footer -->
-</div> <!-- /#container -->
-
-  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary -->
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script src="/media/js/libs/jquery-1.7.2.min.js"><\/script>')</script>
-  
-  <script type="text/javascript">
-   
-/*-------------------------------
-* jQuery Plugin: Super Fish Menu
--------------------------------*/
-
-    jQuery(document).ready(function($){ 
-        $("ul.main-menu").supersubs({ 
-            minWidth:    12,   // minimum width of sub-menus in em units 
-            maxWidth:    150,   // maximum width of sub-menus in em units 
-            extraWidth:  1     // extra width can ensure lines don't sometimes turn over 
-                               // due to slight rounding differences and font-family 
-        }).superfish({ 
-            delay:       300,                            // one second delay on mouseout 
-            animation:   {opacity:'show',height:'show'},  // fade-in and slide-down animation 
-            speed:       'normal',                          // faster animation speed 
-            autoArrows:  false,                           // disable generation of arrow mark-up 
-            dropShadows: true                            // disable drop shadows 
-        });  // call supersubs first, then superfish, so that subs are 
-                         // not display:none when measuring. Call before initialising 
-                         // containing tabs for same reason. 
-    }); 
-  </script>
-  
-  <script src="/media/js/libs/ui/jquery.ui.core.js"></script>
-  <script src="/media/js/libs/ui/jquery.ui.widget.js"></script>
-  <script src="/media/js/libs/ui/jquery.ui.accordion.js"></script>
-  <script src="/media/js/libs/ui/jquery.ui.tabs.js"></script>
-  <script src="/media/js/libs/superfish/hoverIntent.js"></script> 
-  <script src="/media/js/libs/superfish/superfish.js"></script> 
-  <script src="/media/js/libs/superfish/supersubs.js"></script>
-  <script src="/media/js/libs/jquery.flexslider-min.js"></script>
-  <script type="text/javascript" src="/media/js/libs/jquery.easing.1.3.js"></script>
-  <script src="/media/js/libs/slides.min.jquery.js"></script>
-  <script src="/media/js/libs/jquery.prettyPhoto.js" type="text/javascript" charset="utf-8"></script>
-    
-  <script src="/media/js/scripts.js"></script>
-  <!-- scripts concatenated and minified via ant build script-->
-  <script src="/media/js/helper.js"></script>
-  <!-- end scripts-->
-
-</body>
-</html>
+{% endblock %}
