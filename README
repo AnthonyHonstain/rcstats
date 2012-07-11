@@ -8,18 +8,18 @@ Overview of the apps in this project.
 		The other apps highly coupled with rcdata.
 		
 	myresults - App responsible to displaying data specific to individual
-		users. A case could be made for pushing this functionality into rcdata,
-		but because of the future plans for more user specific functionality
-		I have placed it in a separate app.
+		users. A case could be made for pushing this functionality 
+		into rcdata, but because of the future plans for more user 
+		specific functionality I have placed it in a separate app.
 		
-	trackdata - This app is similar to myresults, but with information specific
-		to individual race tracks.
+	trackdata - This app is similar to myresults, but with information 
+		specific to individual race tracks.
 
-	displayresults - This app holds general views that are used by both myresults
-		and trackdata.
+	displayresults - This app holds general views that are used by both 
+		myresults and trackdata.
 
-	ranking - The application for tracking the ranking of racers. Right now it 
-		is just a place holder.
+	ranking - The application for tracking the ranking of racers. Right 
+		now it is just a place holder.
 
 	uploadresults - The early stages of an application to support users
 		uploading new race results.
