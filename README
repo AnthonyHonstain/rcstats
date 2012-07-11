@@ -1,0 +1,31 @@
+This is a Django project for code that powers the www.rc-stats.com web site.
+
+The majority of the html, css, and JS are stored in a separate private repo
+since I do not own the rights to distribute them. 
+
+Overview of the apps in this project.
+	rcdata - The primary app, this defines the models for all the race data.
+		The other apps highly coupled with rcdata.
+		
+	myresults - App responsible to displaying data specific to individual
+		users. A case could be made for pushing this functionality into rcdata,
+		but because of the future plans for more user specific functionality
+		I have placed it in a separate app.
+		
+	trackdata - This app is similar to myresults, but with information specific
+		to individual race tracks.
+
+	displayresults - This app holds general views that are used by both myresults
+		and trackdata.
+
+	ranking - The application for tracking the ranking of racers. Right now it 
+		is just a place holder.
+
+	uploadresults - The early stages of an application to support users
+		uploading new race results.
+
+Better documentation is pending, I have the majority of information in a onenote
+and I am in the process of moving it to a series of blog posts.
+
+NOTE - This is an ongoing project and is a tool for my own learning and growth in
+	Django, JS, JQuery, etc.
