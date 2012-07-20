@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+
+{% block pagetitle %}Upload Race Results{% endblock %}
+{% block pagetitle_description %}Upload race results from the scoring system.{% endblock %}
+
+
+{% block content %}
+
+<section class="full_width">
+
+{% if state %}
+<h2>Warning</h2>
+	{{ state }}
+{% endif %}
+
+{% if prevalidation_race_list %}
+<h2>Please Validate the following races</h2> 
+<p>A rough dump of the results is provided for you below.</p>
+
+{% for race in prevalidation_race_list %}
+
+<h2>TrackName:{{ race.trackName }}</h2>
+<p>
+Class: {{ race.raceClass }}</br>
+RoundNumber: {{ race.roundNumber }}</br>
+RaceNumber: {{ race.raceNumber }}</br>
+
+<h3>Header Data:</h3>
+{% if race.raceHeaderData %}
+{% for racer in race.raceHeaderData %}
+{{ racer }}</br> 
+{% endfor %}
+{% endif %}
+
+<h3>Lap Times</h3>
+{% if race.lapRowsTime %}
+{% for laptime in race.lapRowsTime %}
+{{ laptime }}</br> 
+{% endfor %}
+{% endif %}
+
+<h3>Position at Each Lap</h3>
+{% if race.lapRowsPosition %}
+{% for lappos in race.lapRowsPosition %}
+{{ lappos }}</br> 
+{% endfor %}
+{% endif %}
+</p>
+
+{% endfor %}
+{% endif %}
+     
+</section><!-- /.full_width --> 
+{% endblock %}

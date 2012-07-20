@@ -5,7 +5,7 @@ Created on May 13, 2012
 '''
 
 import unittest
-import SingleRace
+from rcscoringprotxtparser import RCScoringProTXTParser
     
     
 singleRaceSimple = '''Scoring Software by www.RCScoringPro.com                8:09:03 PM  01/14/2012
@@ -63,7 +63,7 @@ TOM WAGGONER            #9         26         8:07.943         17.063           
 class TestSingleRaceSimple(unittest.TestCase):
 
     def setUp(self):        
-        self.singe_test_race = SingleRace.SingleRace("test_filename", singleRaceSimple.split('\n'))
+        self.singe_test_race = RCScoringProTXTParser("test_filename", singleRaceSimple.split('\n'))
 
     def test_racerOne(self):
         # Note - this test verifies racer one, it expects empty laps at the end
@@ -106,7 +106,7 @@ class TestSingleRaceSimpleTextFile(unittest.TestCase):
         self.filename = "TestFile_SingleRaceSimple.txt"
         with open(self.filename) as f: 
             content = f.readlines()     
-        self.singe_test_race = SingleRace.SingleRace(self.filename, content)
+        self.singe_test_race = RCScoringProTXTParser(self.filename, content)
 
     def test_filename(self):
         self.assertEqual(self.filename, self.singe_test_race.filename)
@@ -151,7 +151,7 @@ class TestMoreThanTenTextFile(unittest.TestCase):
         self.filename = "TestFile_12manrace.txt"
         with open(self.filename) as f: 
             content = f.readlines()     
-        self.singe_test_race = SingleRace.SingleRace(self.filename, content)
+        self.singe_test_race = RCScoringProTXTParser(self.filename, content)
 
     def test_filename(self):
         self.assertEqual(self.filename, self.singe_test_race.filename)
@@ -214,7 +214,7 @@ MATESA, TANNER            #9          4         1:20.392         17.097
 class TestSingleRaceModified(unittest.TestCase):
 
     def setUp(self):        
-        self.singe_test_race = SingleRace.SingleRace("testfilename", singleRaceModified.split('\n'))
+        self.singe_test_race = RCScoringProTXTParser("testfilename", singleRaceModified.split('\n'))
 
     def test_racerOne(self):
         # Note - this test verifies racer one, it expects empty laps at the end
@@ -288,7 +288,7 @@ MIKE CRAIG			#1 		 0		    0.000
 class TestSingleRaceRacerDropped(unittest.TestCase):
  
     def setUp(self):        
-        self.singe_test_race = SingleRace.SingleRace("t1", singleRaceEarlyDrop.split('\n'))
+        self.singe_test_race = RCScoringProTXTParser("t1", singleRaceEarlyDrop.split('\n'))
 
     def test_racerOne(self):
         expectedLaps = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
@@ -386,7 +386,7 @@ Gilley, Tres            #10         1           21.675
 class TestSingleRaceBrokeRacer(unittest.TestCase):
 
     def setUp(self):        
-        self.singe_test_race = SingleRace.SingleRace("testfilename", singleRaceWithBrokeRacer.split('\n'))
+        self.singe_test_race = RCScoringProTXTParser("testfilename", singleRaceWithBrokeRacer.split('\n'))
         
     def test_headerData(self):
         self.assertEqual("TACOMA R/C RACEWAY", self.singe_test_race.trackName)
@@ -491,11 +491,189 @@ BUTLER, BRANDON            #2         15         6:12.022         19.415
 class TestSingleRaceWithPaceData(unittest.TestCase):
  
     #def setUp(self):        
+        #self.assertRaises(Exception, RCScoringProTXTParser, "t1", singleRaceWithPaceData.split('\n'))
+        #self.singe_test_race = SingleRace("t1", singleRaceEarlyDrop.split('\n'))
+        
+    def test_notSupported(self):
+        self.assertRaises(Exception, RCScoringProTXTParser, "t1", singleRaceWithPaceData.split('\n'))    
+        #expectedLaps = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+        #self.assertEqual(expectedLaps, self.singe_test_race.lapRowsTime[0])
+
+
+elevenManRaceWithPaceData = '''Scoring Software by www.RCScoringPro.com                11:16:24 PM  03/18/2011
+
+                               TACOMA R/C RACEWAY
+
+MODIFIED SHORT COURSE A Main                                  Round# 3, Race# 8
+
+________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
+CANTRELL, JONATHAN            #6         23         8:00.139         17.827                  
+MARGESON, EVAN            #5         23         8:17.632         19.677            17.493
+FRANK, JON            #1         22         8:12.675         19.432                  
+KNOX, MIKE            #4         21         8:23.785         20.854                  
+KEITH, BRIAN            #11        19         8:21.059         23.253                  
+KEITH, SCOTT            #8         19         8:23.912         17.128             2.853
+BUTLER, JAMIE            #9         14         6:08.575         22.896                  
+Woods, Doug            #7          8         6:59.849         21.092                  
+YOUNG, BRANDON            #2          0            0.000                                 
+MAZANTI, KRIS            #10         0            0.000                            0.000
+
+ ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
+ 1/28.60                 3/32.12 2/30.30 6/38.31 8/254.2 5/36.97 7/40.05        
+ 17/06.2                 15/01.7 16/04.9 13/18.0  2/28.4 13/00.7 12/00.7        
+
+ 1/21.86                 3/22.25 2/20.71 4/17.82 8/23.01 6/23.11 7/24.64        
+ 20/24.6                 18/09.4 19/04.6 18/25.2  4/14.4 16/00.8 15/05.2        
+
+ 1/19.94                 3/20.85 2/20.58 4/20.69 8/28.15 6/25.54 7/24.38        
+ 21/12.9                 20/21.5 21/21.2 19/06.5  5/28.9 17/05.2 17/24.8        
+
+ 1/20.46                 3/21.66 2/20.24 4/20.37 8/23.90 6/22.44 7/26.88        
+ 22/19.8                 20/04.4 21/02.2 20/06.0  6/13.9 18/06.4 17/12.8        
+
+ 1/23.60                 4/25.87 2/22.81 3/21.37 8/21.09 6/25.56 7/25.03        
+ 21/00.8                 20/11.0 21/01.5 21/18.0  7/10.5 18/01.1 18/27.6        
+
+ 1/20.30                 4/23.07 2/21.00 3/18.88 8/21.30 6/25.39 7/22.89        
+ 22/14.2                 20/06.1 22/17.4 21/01.1  8/15.5 19/23.6 18/11.6        
+
+ 1/20.40                 4/21.28 2/20.33 3/18.79 8/22.15 6/23.86 7/23.61        
+ 22/07.7                 21/21.3 22/10.2 22/11.1  9/26.3 19/16.4 18/02.1        
+
+ 1/20.73                 4/23.83 3/21.44 2/20.25 8/26.00 6/24.19 7/23.87        
+ 22/03.8                 21/21.2 22/07.9 22/05.4 10/44.8 19/11.8 19/22.0        
+
+ 2/21.50                 4/20.93 3/20.43 1/18.25         6/26.31 7/26.37        
+ 22/02.6                 21/14.4 22/03.7 23/17.7         19/12.7 19/21.9        
+
+ 3/24.78                 4/21.90 2/23.12 1/18.34         6/24.91 7/27.23        
+ 22/08.8                 21/10.9 22/06.2 23/10.1         19/10.8 19/23.5        
+
+ 2/19.43                 4/26.70 3/21.42 1/20.48         6/26.70 7/24.62        
+ 22/03.3                 21/17.2 22/04.8 23/08.4         19/12.3 19/20.2        
+
+ 2/20.06                 4/26.80 3/19.67 1/20.39         6/27.80 7/25.99        
+ 23/21.6                 21/22.7 22/00.5 23/06.8         19/15.3 19/19.7        
+
+ 3/26.46                 4/25.83 2/20.90 1/21.86         6/22.96 7/23.50        
+ 22/07.6                 20/01.7 23/20.6 23/08.0         19/10.7 19/15.6        
+
+ 3/21.81                 4/22.21 2/21.35 1/26.38         6/24.80 7/29.43        
+ 22/07.1                 21/23.0 23/20.0 23/16.5         19/09.3 19/20.2        
+
+ 3/21.17                 4/22.84 2/23.33 1/18.67         6/27.03                
+ 22/05.7                 21/21.4 22/00.6 23/12.1         19/11.0                
+
+ 3/24.89                 4/23.04 2/20.99 1/20.15         5/34.99                
+ 22/09.5                 21/20.3 23/21.2 23/10.3         19/21.8                
+
+ 3/23.75                 4/21.27 2/23.33 1/18.68         6/37.57                
+ 22/11.5                 21/17.2 22/01.4 23/06.7         18/07.2                
+
+ 3/20.42                 4/21.28 2/21.00 1/18.64         6/17.12                
+ 22/09.1                 21/14.4 22/00.3 23/03.5         19/23.8                
+
+ 3/23.28                 4/23.28 2/20.76 1/22.39         6/26.56                
+ 22/10.3                 21/14.1 23/20.9 23/05.2         19/23.9                
+
+ 3/24.70                 4/26.71 2/20.12 1/19.63                                
+ 22/13.0                 21/17.4 23/19.0 23/03.5                                
+
+ 3/22.18                 4/29.98 2/20.09 1/20.75                                
+ 22/12.7                 21/23.7 23/17.2 23/03.2                                
+
+ 3/22.27                         2/20.19 1/19.57                                
+ 22/12.6                         23/15.7 23/01.7                                
+
+                                 2/23.42 1/19.34                                
+                                 23/17.6 23/00.1                                
+ ------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+     22/      0/             21/     23/     23/      8/     19/     14/      0/
+  8:12.6     0.0          8:23.7  8:17.6  8:00.1  6:59.8  8:23.9  6:08.5     0.0
+
+
+ ___11__ ___12__ ___13__ ___14__ ___15__ ___16__ ___17__ ___18__ ___19__ ___20__
+ 4/34.30                                                                        
+ 14/00.1                                                                        
+
+ 5/24.25                                                                        
+ 17/17.7                                                                        
+
+ 5/23.71                                                                        
+ 18/13.6                                                                        
+
+ 5/25.11                                                                        
+ 18/03.2                                                                        
+
+ 5/24.01                                                                        
+ 19/19.3                                                                        
+
+ 5/23.25                                                                        
+ 19/09.7                                                                        
+
+ 5/25.16                                                                        
+ 19/08.0                                                                        
+
+ 5/24.32                                                                        
+ 19/04.8                                                                        
+
+ 5/23.71                                                                        
+ 19/00.9                                                                        
+
+ 5/23.93                                                                        
+ 20/23.5                                                                        
+
+ 5/25.24                                                                        
+ 20/23.6                                                                        
+
+ 5/26.03                                                                        
+ 20/25.1                                                                        
+
+ 5/25.03                                                                        
+ 20/24.7                                                                        
+
+ 5/30.71                                                                        
+ 19/06.9                                                                        
+
+ 5/28.28                                                                        
+ 19/10.3                                                                        
+
+ 6/35.96                                                                        
+ 19/22.3                                                                        
+
+ 5/24.26                                                                        
+ 19/19.9                                                                        
+
+ 5/24.62                                                                        
+ 19/18.1                                                                        
+
+ 5/29.10                                                                        
+ 19/21.0                                                                        
+
+                                                                                
+                                                                                
+
+                                                                                
+                                                                                
+
+                                                                                
+                                                                                
+
+                                                                                
+                                                                                
+ ------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+     19/                                                                        
+  8:21.0                                                                        
+'''
+
+class TestElevenManPaceData(unittest.TestCase):
+ 
+    #def setUp(self):        
         #self.assertRaises(Exception, SingleRace, "t1", singleRaceWithPaceData.split('\n'))
         #self.singe_test_race = SingleRace("t1", singleRaceEarlyDrop.split('\n'))
         
     def test_notSupported(self):
-        self.assertRaises(Exception, SingleRace.SingleRace, "t1", singleRaceWithPaceData.split('\n'))    
+        self.assertRaises(Exception, RCScoringProTXTParser, "t1", elevenManRaceWithPaceData.split('\n'))    
         #expectedLaps = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
         #self.assertEqual(expectedLaps, self.singe_test_race.lapRowsTime[0])
 

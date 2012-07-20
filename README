@@ -1,7 +1,7 @@
 This is a Django project for code that powers the www.rc-stats.com web site.
 
 The majority of the html, css, and JS are stored in a separate private repo
-since I do not own the rights to distribute them. 
+because I do not have the rights to distribute them. 
 
 Overview of the apps in this project.
 	rcdata - The primary app, this defines the models for all the race data.

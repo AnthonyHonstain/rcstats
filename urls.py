@@ -12,7 +12,8 @@ urlpatterns = patterns('',
     url(r'^ranking$', 'rcstats.ranking.views.ranking', name="ranking_url_name"),
     
     url(r'^login/$', 'rcstats.uploadresults.views.login_user', name="upload_url_name"),    
-    url(r'^upload_start/$', 'rcstats.uploadresults.views.upload_start', name="upload_url_name"),
+    url(r'^upload_start/$', 'rcstats.uploadresults.views.upload_start', name="upload_url_name"),    
+    url(r'^upload_start/(?P<upload_id>\d+)/$', 'rcstats.uploadresults.views.upload_validate', name="upload_url_name"),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login', name="upload_url_name"),
     
     url(r'^trackdata/$', 'rcstats.trackdata.views.trackdata', name="trackdata_url_name"),    

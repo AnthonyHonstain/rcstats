@@ -2,10 +2,6 @@
 Created on Jan 4, 2012
 
 @author: Anthony Honstain
-'''
-
-
-'''
 
 -----------------------------------------------------------------------
 EXAMPLE of file this is designed to process: 
@@ -48,8 +44,10 @@ ________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
      27/     28/     25/     29/     26/     26/     26/     27/     27/     25/
   8:04.7  8:00.5  8:07.7  8:08.6  8:14.3  8:10.1  8:01.7  8:04.4  8:15.2  8:13.1
 '''
+from singlerace import SingleRace
 
-class SingleRace(object):
+
+class RCScoringProTXTParser(SingleRace):
     """
     SingleRace is will parse the www.RCScoringPro.com printout sheet
     and extract the following properties:
@@ -98,6 +96,7 @@ class SingleRace(object):
         '''
         Constructor - Will initialize all the required properties.
         '''
+        super(RCScoringProTXTParser, self).__init__()
         
         # The raw data rows from the text file.
         #     HAVE NOT BEEN PARSED YET
@@ -107,17 +106,6 @@ class SingleRace(object):
         self._singleRaceLines = singleRaceLines
         
         self.filename = filename
-    
-        self.date = None
-        self.trackName = None
-        self.raceClass = None
-        self.roundNumber = None
-        self.raceNumber = None
-        
-        self.raceHeaderData = [] # List of Dictionaries
-        self.lapRowsTime = [] # List of Lists
-        self.lapRowsPosition = []
-           
         
         # ===================================================
         # Stage 1
@@ -137,9 +125,6 @@ class SingleRace(object):
         self._process_Raw_Header_Rows()
 
 
-
-    
-    
     def _initial_Processing_Raw_Lines(self):
         """
         Process the file lines into initial raw structures. 
@@ -188,9 +173,16 @@ class SingleRace(object):
                 # WARNING HACK TO MITIGATE LACK OF SUPPORT FOR OLDER RACE FORMATS
                 # Check to see if pace data is mixed in - this is a strong indicator.
                 index = self._singleRaceLines.index(line)
-                if (self._singleRaceLines[index + 3] == '' and 
-                    self._singleRaceLines[index + 6] == '' and 
-                    self._singleRaceLines[index + 9] == ''):                    
+                #print "DEBUG TEST:"
+                #for line in self._singleRaceLines[index:]:
+                #    print line 
+                #print "'" + self._singleRaceLines[index + 3].strip() + "'"
+                #print "'" + self._singleRaceLines[index + 6].strip() + "'"
+                #print "'" + self._singleRaceLines[index + 9].strip() + "'"
+                
+                if (self._singleRaceLines[index + 3].strip() == '' and 
+                    self._singleRaceLines[index + 6].strip() == '' and 
+                    self._singleRaceLines[index + 9].strip() == ''): 
                     raise Exception("This file format not supported, cannot mix pace data in with lap times.")
                 
                 
