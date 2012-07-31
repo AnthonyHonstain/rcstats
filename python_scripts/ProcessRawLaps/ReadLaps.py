@@ -4,7 +4,7 @@ Created on Jan 4, 2012
 @author: Anthony Honstain
 '''
 from optparse import OptionParser
-import SingleRace
+import rcscoringprotxtparser
 import ProcessSingleRacePGDB
 import sys
 import traceback
@@ -87,7 +87,7 @@ def main():
                             currentRaceStartIndex = i
                             continue
                     
-                        singleRace = SingleRace.SingleRace(filename, content[currentRaceStartIndex:i])
+                        singleRace = rcscoringprotxtparser.RCScoringProTXTParser(filename, content[currentRaceStartIndex:i])
                         # Put the results in the Postgres SQL server.
                         ProcessSingleRacePGDB.ProcessSingleRacePGDB(singleRace, 
                                                                     options.database, 
@@ -98,8 +98,8 @@ def main():
                         currentRaceStartIndex = i
 
             
-    # This triggers when we have found the final race in the file.
-                singleRace = SingleRace.SingleRace(filename, content[currentRaceStartIndex:len(content)])
+                # This triggers when we have found the final race in the file.
+                singleRace = rcscoringprotxtparser.RCScoringProTXTParser(filename, content[currentRaceStartIndex:len(content)])
                 # Put the results in the Postgres SQL server.
                 ProcessSingleRacePGDB.ProcessSingleRacePGDB(singleRace, 
                                                             options.database, 

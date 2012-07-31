@@ -4,7 +4,6 @@ register = template.Library()
 
 @register.tag
 def active(parser, token):
-    import re
     args = token.split_contents()
     template_tag = args[0]
     if len(args) < 3:

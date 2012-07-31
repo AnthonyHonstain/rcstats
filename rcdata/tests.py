@@ -7,58 +7,10 @@ import time
 
 
 class SingleRace(TestCase):
-#    def setUp_old(self):
-#        self.track = models.TrackName.objects.create(id=1, trackname="TestTrack0")
-#        
-#        self.racer0 = models.RacerId.objects.create(id=1, racerpreferredname="Racer0")
-#        self.racer1 = models.RacerId.objects.create(id=2, racerpreferredname="Racer1")
-#        
-#        self.singlerace = models.SingleRaceDetails.objects.create(id=1, 
-#                                                                  trackkey=self.track,
-#                                                                  racedata="TestClassBuggy0",
-#                                                                  racedate=datetime.datetime(year=2012,
-#                                                                                             month=1,
-#                                                                                             day=19, 
-#                                                                                             hour=12,
-#                                                                                             minute=1,
-#                                                                                             second=20,),
-#                                                                  uploaddate=datetime.datetime(year=2012,
-#                                                                                             month=1,
-#                                                                                             day=19, 
-#                                                                                             hour=12,
-#                                                                                             minute=1,
-#                                                                                             second=20, 
-#                                                                                             ),
-#                                                                  racelength='8',
-#                                                                  winninglapcount='2',
-#                                                                  )
-#           
-#        models.SingleRaceResults(id=1,
-#                                 raceid=self.singlerace,
-#                                 racerid=self.racer0,
-#                                 carnum=0,
-#                                 lapcount=2,
-#                                 racetime=datetime.time(second=20),
-#                                 fastlap="10.01",
-#                                 finalpos=1)
-#        
-#        models.SingleRaceResults(id=2,
-#                                 raceid=self.singlerace,
-#                                 racerid=self.racer1,
-#                                 carnum=1,
-#                                 lapcount=2,
-#                                 racetime=datetime.time(second=20),
-#                                 fastlap="20.02",
-#                                 finalpos=2)
-#        
-#        models.LapTimes(id=1, raceid=self.singlerace, racerid=self.racer0, racelap=0, raceposition=1, racelaptime=10.01)
-#        models.LapTimes(id=2, raceid=self.singlerace, racerid=self.racer0, racelap=1, raceposition=1, racelaptime=10.01)
-#        models.LapTimes(id=3, raceid=self.singlerace, racerid=self.racer1, racelap=0, raceposition=2, racelaptime=20.02)
-#        models.LapTimes(id=4, raceid=self.singlerace, racerid=self.racer1, racelap=1, raceposition=2, racelaptime=2.2)
-#        
-        
-        
     '''
+    Push a basic race into the DB for testing. This is a simple race for testing
+    the basic functionality in the other views/apps that build off of this one.
+    
     Race that this test case will setup into the system:
     
     Scoring Software by www.RCScoringPro.com                8:09:03 PM  01/14/2012

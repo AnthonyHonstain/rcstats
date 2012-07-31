@@ -17,7 +17,6 @@ import pgdb
 
 class ProcessRacerId():
 
-
     def __init__(self, racerid_data):
                
         # This will contain the primary names that all others will be aliases of.
@@ -65,7 +64,8 @@ class ProcessRacerId():
             else:
                 # This means it was an unkown name with no aliases found.
                 self._primaryName_dict[tempname].append(result)
-            
+        
+        # Filter the results so that we have just possible aliases    
         self.likely_aliases = filter(lambda x: len(x[1]) > 1, self._primaryName_dict.items())
             
         #print "Prining all the likely_aliases"
@@ -135,9 +135,7 @@ def main():
     
     processRacerObj = ProcessRacerId(results)
 
-
-    for canidate in processRacerObj.likely_aliases:
-        
+    for canidate in processRacerObj.likely_aliases:        
         
         primary_name = canidate[1][0]
         alias_list = canidate[1][1:]
@@ -145,6 +143,9 @@ def main():
         print "Primary:", primary_name
         print "Lkely Alias:", alias_list
         var = raw_input("\tEnter ANY character to collapse to primary: ")
+        
+        # This a very basic script, if they entered any character, than we
+        # proceed with collapsing the suspected aliases.
         if (len(var) > 0):
             print 'COLLAPSING IN SQL'
             # ------------------------------------
@@ -203,52 +204,3 @@ def main():
 if __name__ == '__main__':
     main()
     
-
-"""
-def update(sql):
-    cur = sql.cursor()
-    
-    #rcraceperformance=> select * from rcdata_singleraceresults;
-    #id | raceid_id | racerid_id | carnum | lapcount | racetime | fastlap | behind | finalpos 
-
-    insert = "INSERT INTO " + _raceResults_tblname +\
-        " (id, raceid_id, racerid_id, carnum, lapcount, " +\
-        "racetime, fastlap, behind, finalpos) " +\
-        "VALUES ( " +\
-        "nextval('" + _raceResults_tblname + "_id_seq'), " +\
-        "%(raceid_id)s, " +\
-        "%(racerid_id)s, " +\
-        "%(carnum)s, " +\
-        "%(lapcount)s, " +\
-        "%(racetime)s, " +\
-        "%(fastlap)s, " +\
-        "%(behind)s, " +\
-        "%(finalpos)s);"
-        
-    params = []
-    # For each racer in the raceHeaderData
-    for racer in raceHeaderData:
-        if (racer['RaceTime'] == ''):
-            racer['RaceTime'] = None
-        if (racer['Fast Lap'] == ''):
-            racer['Fast Lap'] = None
-        if (racer['Behind'] == ''):
-            racer['Behind'] = None
-           
-        params.append({ 'raceid_id': raceDetailsKey, 
-                        'racerid_id': racer['racerKey'],
-                        'carnum': racer['Car#'], 
-                        'lapcount': racer['Laps'], 
-                        'racetime': racer['RaceTime'],
-                        'fastlap': racer['Fast Lap'],
-                        'behind': racer['Behind'],
-                        'finalpos': racer['Final Position']})
-        
-    cur.executemany(insert, params)
-    cur.close()
-    sql.commit()
-
-"""
-
-
-        

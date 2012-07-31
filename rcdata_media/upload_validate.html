@@ -9,38 +9,66 @@
 
 <section class="full_width">
 
+
 {% if state %}
-<h2>Warning</h2>
-	{{ state }}
+<section class="two_third">
+<div class="message-box red">
+	<h2>Error</h2>
+	<p>{{ state }}</p>	
+</div><!-- /.message-box -->
+
+<h2>Your results should look similar to these:</h2>
+<img src="/media/images/exampleformat.png" alt="Example race results" />
+	
+</section>
+
 {% endif %}
+
 
 {% if prevalidation_race_list %}
 <h2>Please Validate the following races</h2> 
-<p>A rough dump of the results is provided for you below.</p>
+<p>It is important to verify the correct track name is used.</p>
+<p>This is a quick dump to help you verify that the system is correctly reading results
+	before they are processed and sent to the database.</p>
+
+
+<form action="" method="post">
+	{% csrf_token %}
+    Trackname:	
+	<select name="track_id">
+	{% for entry in form.supported_tracks %}
+    <option value="{{ entry.0 }}">{{ entry.1 }}</option>
+	{% endfor %}
+	</select>
+
+	<input type="submit" value="Submit">
+</form>
 
 {% for race in prevalidation_race_list %}
-
-<h2>TrackName:{{ race.trackName }}</h2>
+<section class="content_heading">
+	<a class="gotop" href="#"></a>
+	<h3>{{ race.raceClass }}</h3>
+</section> <!--  END content_heading -->
 <p>
+TrackName:{{ race.trackName }}</br>
 Class: {{ race.raceClass }}</br>
 RoundNumber: {{ race.roundNumber }}</br>
 RaceNumber: {{ race.raceNumber }}</br>
-
-<h3>Header Data:</h3>
+Header Data:</br>
 {% if race.raceHeaderData %}
 {% for racer in race.raceHeaderData %}
 {{ racer }}</br> 
 {% endfor %}
 {% endif %}
 
-<h3>Lap Times</h3>
+Lap Times</br>
 {% if race.lapRowsTime %}
 {% for laptime in race.lapRowsTime %}
 {{ laptime }}</br> 
 {% endfor %}
 {% endif %}
 
-<h3>Position at Each Lap</h3>
+Position at Each Lap</br>
 {% if race.lapRowsPosition %}
 {% for lappos in race.lapRowsPosition %}
 {{ lappos }}</br> 
