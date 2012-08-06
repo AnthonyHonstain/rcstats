@@ -13,12 +13,12 @@ import os
 import time
 
 import models
-from rcdata.models import LapTimes
-from rcdata.models import SingleRaceDetails
-from rcdata.models import SingleRaceResults
-from rcdata.models import SupportedTrackName
-from rcdata.models import TrackName
-from rcdata.models import RacerId
+from rcstats.rcdata.models import LapTimes
+from rcstats.rcdata.models import SingleRaceDetails
+from rcstats.rcdata.models import SingleRaceResults
+from rcstats.rcdata.models import SupportedTrackName
+from rcstats.rcdata.models import TrackName
+from rcstats.rcdata.models import RacerId
 
 class SingleRace(TestCase):
 

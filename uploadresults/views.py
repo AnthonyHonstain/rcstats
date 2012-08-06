@@ -16,13 +16,13 @@ from django import forms
 from django.conf import settings
 from models import UploadRecord
 from models import UploadedRaces
-from rcdata.models import SupportedTrackName
-from rcdata.models import TrackName
-from rcdata.models import RacerId
-from rcdata.models import SingleRaceDetails
-from rcdata.models import SingleRaceResults
-from rcdata.models import LapTimes
-from python_scripts.ProcessRawLaps.rcscoringprotxtparser import RCScoringProTXTParser
+from rcstats.rcdata.models import SupportedTrackName
+from rcstats.rcdata.models import TrackName
+from rcstats.rcdata.models import RacerId
+from rcstats.rcdata.models import SingleRaceDetails
+from rcstats.rcdata.models import SingleRaceResults
+from rcstats.rcdata.models import LapTimes
+from rcstats.python_scripts.ProcessRawLaps.rcscoringprotxtparser import RCScoringProTXTParser
 
 import hashlib
 import logging

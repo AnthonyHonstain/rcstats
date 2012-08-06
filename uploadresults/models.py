@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from rcdata.models import SingleRaceDetails
+from rcstats.rcdata.models import SingleRaceDetails
 
 class UploadRecord(models.Model):
     origfilename = models.CharField(max_length=200)
