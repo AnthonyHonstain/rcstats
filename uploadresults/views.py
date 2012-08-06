@@ -15,12 +15,15 @@ from django import forms
 
 from django.conf import settings
 from models import UploadRecord
+from models import UploadedRaces
 from rcdata.models import SupportedTrackName
 from rcdata.models import TrackName
-from python_scripts.ProcessRawLaps.singlerace import SingleRace
+from rcdata.models import RacerId
+from rcdata.models import SingleRaceDetails
+from rcdata.models import SingleRaceResults
+from rcdata.models import LapTimes
 from python_scripts.ProcessRawLaps.rcscoringprotxtparser import RCScoringProTXTParser
 
-import bleach
 import hashlib
 import logging
 import os.path
@@ -115,14 +118,22 @@ def _handle_uploaded_file(f, filename):
     return md5.hexdigest()
 
 
-
 class TrackNameForm(forms.Form):
+    
     supported_tracks = map(lambda x : (x['trackkey__id'], x['trackkey__trackname']), 
-                       SupportedTrackName.objects.all().select_related().values("trackkey__id", "trackkey__trackname"))
-    
+                       SupportedTrackName.objects.all().select_related().values("trackkey__id", "trackkey__trackname"))    
     track_id = forms.ChoiceField(choices=supported_tracks)
-
     
+    def __init__(self, *args, **kwargs):
+        super(TrackNameForm, self).__init__(*args, **kwargs)
+
+        # This is a one-liner to get all the track id and names into a list of tuples.
+        # Required formating for ChoiceField.
+        # Example [(1, "TRCR"), (2, "BRCR"), ...]        
+        supportedtrack_choices = map(lambda x : (x['trackkey__id'], x['trackkey__trackname']), 
+                       SupportedTrackName.objects.all().select_related().values("trackkey__id", "trackkey__trackname"))
+        self.fields['track_id'] = forms.ChoiceField(choices=supportedtrack_choices)
+        
 
 @login_required(login_url='/login')
 def upload_validate(request, upload_id):
@@ -164,7 +175,7 @@ def upload_validate(request, upload_id):
     # Get the uploaded file name from the database.
     filename = os.path.join(settings.MEDIA_USER_UPLOAD, upload_record.filename)
 
-    # Error message in case processing of the file fails for any reason.    
+    # General Error message in case processing of the file fails for any reason.    
     state = "We were unable to process the file you uploaded. Please double " +\
             "check that the file is in the supported format. If you still believe " +\
             "there is an error, please contact the admin."            
@@ -221,17 +232,15 @@ def upload_validate(request, upload_id):
 
     # ***************************************************************
     # Basic Validation Complete, we have been able to at least parse
-    # the upladed file and if NOT we have returned and communicated/logged
+    # the upladed file and if NOT, we have returned and communicated/logged
     # the problem.
     # ***************************************************************
     if request.method == 'POST':
-        form = TrackNameForm(request.POST)    
+        form = TrackNameForm(request.POST)  
         if (form.is_valid()):
             # Note - They have clicked on the submit button and have set a desired trackname
-            # We not want to process and upload the file.
+            # We want to process and upload the file.
             cd = form.cleaned_data
-            #_insert_results_database()
-            print "form.track_id:", cd['track_id']
             track = get_object_or_404(TrackName, pk=cd['track_id'])
             
             # Now we know the trackname that the file should be using.
@@ -240,58 +249,58 @@ def upload_validate(request, upload_id):
             #     an emergency (all that would be needed would be these text files).
             _modify_trackname(upload_record.filename, upload_trackname, track.trackname)
             
+            uploaded_races_list = []
             # Process each race and load it into the DB.             
             for race in prevalidation_race_list:
                 # Set the new trackname on each of the race objects.
                 race.trackName = track.trackname
                         
-                print "UPLOAD FILE TO DB!- ", race.raceClass
-                _process_singlerace(race)
-            
+                try:
+                    new_singleracedetails = _process_singlerace(race)
+                    # We are going to track who uploaded this race.
+                    UploadedRaces.objects.create(upload=upload_record, racedetails=new_singleracedetails)
+                    uploaded_races_list.append((race.raceClass, new_singleracedetails.id))
+                except FileAlreadyUploadedError:
+                    logger.error("This race has already been uploaded, filename=" + filename + " raceobject:" + str(race))        
+                    return render_to_response('upload_validate.html',
+                                              {'state':"This race has ALREADY been uploaded. " + state,},
+                                              context_instance=RequestContext(request)) 
+                except Exception as e:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    trace = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                    logger.error("Unable to process file: {0} exception:{1} \n {2}".format(filename, str(e), trace))
+                    return render_to_response('upload_validate.html',
+                                              {'state':state,},
+                                              context_instance=RequestContext(request)) 
+                    
+                    
             # Log this upload as processed (we do NOT want to support
             # multiple attempts at uploading the file).
             upload_record.processed = True
             upload_record.save()
-            # WARNING STUB - We want to direct them to the page for the races they uploaded.
-            #return HttpResponseRedirect('/displayresults/singleracedetailed/' + str(track.id))
-            return HttpResponseRedirect(reverse('rcstats.displayresults.views.singleracedetailed', 
-                                                args=(track.id,)))
+            
+            return render_to_response('upload_complete.html',
+                                      {'uploaded_races_list':uploaded_races_list},
+                                      context_instance=RequestContext(request))
+    
+            
             
         else:
-            logger.error("Invalid form, file=" + filename)        
+            logger.error("Invalid form, file=" + filename + " form.error:" + str(form.errors))        
             return render_to_response('upload_validate.html',
                                       {'state':"Invalid option selected.",},
                                       context_instance=RequestContext(request))
-        
-    else:             
-        # If the track name is not already supported, we will suggest they change it.
-        supported_track_obj = SupportedTrackName.objects.filter(trackkey__trackname__exact=upload_trackname)
-        if (supported_track_obj == None):
-            # They are using an unsupported track, we are going to force them to use a supported track.
-            
-            # This is where we need to display a special message letting them know how
-            # to proceed.
-            state = "Warning - The file has a trackname which is not a featured track."
-            
-            #
-            # TODO - This is a stub!
-            #
-        
-        form = TrackNameForm()
+    
+    # We are always going to require that the select a trackname, at least for now.
+    # I can see this behavior changing the future to streamline the process.
+    form = TrackNameForm()
                    
-            
     return render_to_response('upload_validate.html',
                               {'form':form,
+                               'uploadtrackname': upload_trackname,
                                'prevalidation_race_list':prevalidation_race_list,},
                               context_instance=RequestContext(request))
 
-
-#from rcdata.models import SupportedTrackName
-#from rcdata.models import TrackName
-from rcdata.models import RacerId
-from rcdata.models import SingleRaceDetails
-from rcdata.models import SingleRaceResults
-from rcdata.models import LapTimes
 
 def _process_singlerace(race):
     '''
@@ -300,30 +309,143 @@ def _process_singlerace(race):
     Conditions - The trackname is already in the db.
     '''
     
+    #----------------------------------------------------
+    # Trackname
+    #----------------------------------------------------
     # Track - We assume it has already been validated that this is a known track.
     #    NOTE - we do not want to be creating new tracks in this code, if the track
     #    is new it probably means they are not uploading appropriately.
     track_obj = TrackName.objects.get(trackname=race.trackName)
+            
+    #----------------------------------------------------
+    # Insert Racers
+    #----------------------------------------------------
+    # We want to add a new racerid if one does not already exist.
+    for racer in race.raceHeaderData:
+        racer_obj, created = RacerId.objects.get_or_create(racerpreferredname=racer['Driver'])
+        racer['racer_obj'] = racer_obj
         
-    
-    # Insert Racers - We want to add a new racerid if one does not already exist.
-    racer_obj_list = []
-    for racerdata in race.raceHeaderData:
-        racer_obj, created = RacerId.objects.get_or_create(racerpreferredname=racerdata['Driver'])
-        
-    
+    #----------------------------------------------------
+    # Insert Race Details
+    #----------------------------------------------------
     # Find race length
+    racelength = _calculate_race_length(race.raceHeaderData)
     
     # Find Winning lap count
+    maxlaps = 0;
+    for racer in race.raceHeaderData:
+        if (racer['Laps'] > maxlaps):
+            maxlaps = racer['Laps']
+      
+    # Parse this '10:32:24 PM  8/13/2011'
+    timestruct = time.strptime(race.date, "%I:%M:%S %p %m/%d/%Y")    
+    # Format the time to get something like this '2012-01-04 20:20:20-01'
+    formatedtime = time.strftime('%Y-%m-%d %H:%M:%S', timestruct)
+    currenttime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     
+    # We want to stop if this race is already in the database
     
-    # Insert Race Details
+    test_objs = SingleRaceDetails.objects.filter(trackkey=track_obj,
+                                            racedata=race.raceClass,    
+                                            roundnumber=race.roundNumber,
+                                            racenumber=race.raceNumber,
+                                            racedate=formatedtime,
+                                            racelength=racelength,
+                                            winninglapcount=maxlaps)
+    if (len(test_objs) != 0):    
+        # We want to tell the user since this not what they wanted.
+        # We can be reasonably certain this file has already been uploaded.
+        raise FileAlreadyUploadedError(race, "File already uploaded")
+        
+    details_obj = SingleRaceDetails(trackkey=track_obj,
+                                    racedata=race.raceClass,
+                                    roundnumber=race.roundNumber,
+                                    racenumber=race.raceNumber,
+                                    racedate=formatedtime,
+                                    uploaddate=currenttime,
+                                    racelength=racelength,
+                                    winninglapcount=maxlaps)
+    details_obj.save()
     
+    #----------------------------------------------------
     # Insert Race Laps
-    
-    # Insert Race Results
+    #----------------------------------------------------    
+    # For each racer in the raceHeaderData
+    for racer in race.raceHeaderData:        
+        # Upload each lap for this racer, their care number - 1 indicates
+        # the index of their laps in the lapRowsTime list.
+        index = racer['Car#'] - 1
+        
+        # This would be a good place to check and see if there are enough laps, it
+        # has been observed that the parser can fail to get everyone's lap data (another
+        # pending bug).        
+        for row in range(0, len(race.lapRowsTime[index])):
+            # print "Debug: ", racer
+            # print "Debug: ", lapRowsPosition[index]
+            if (race.lapRowsPosition[index][row] == ''):
+                race.lapRowsPosition[index][row] = None
+                race.lapRowsTime[index][row] = None
 
-    return
+            lap_obj = LapTimes(raceid=details_obj, 
+                               racerid=racer['racer_obj'], 
+                               racelap=row, 
+                               raceposition=race.lapRowsPosition[index][row],
+                               racelaptime=race.lapRowsTime[index][row])
+            lap_obj.save()
+            
+    #----------------------------------------------------
+    # Insert Race Results
+    #----------------------------------------------------
+    '''
+        Example of the data structure we will work with here:
+                          [{"Driver":"TOM WAGGONER", 
+                          "Car#":"9", 
+                          "Laps":"26", 
+                          "RaceTime":"8:07.943", 
+                          "Fast Lap":"17.063", 
+                          "Behind":"6.008",
+                          "Final Position":9} , ...]
+    '''
+    for racer in race.raceHeaderData:
+        if (racer['RaceTime'] == ''):
+            racer['RaceTime'] = None
+        if (racer['Fast Lap'] == ''):
+            racer['Fast Lap'] = None
+        if (racer['Behind'] == ''):
+            racer['Behind'] = None
+           
+        individual_result = SingleRaceResults(raceid=details_obj, 
+                                              racerid=racer['racer_obj'],
+                                              carnum=racer['Car#'], 
+                                              lapcount=racer['Laps'], 
+                                              racetime=racer['RaceTime'],
+                                              fastlap=racer['Fast Lap'],
+                                              behind=racer['Behind'],
+                                              finalpos=racer['Final Position'])
+        individual_result.save()       
+
+    return details_obj
+
+
+def _calculate_race_length(raceHeaderData):
+    '''
+    Look at all the racetimes and take largest number of minutes (note: we only
+    look at the number of minutes in the race, not the number of seconds).
+    
+    Some people may be recorded as not going the entire race time, or have no
+    race time at all.
+    '''
+    maxNumMinutes = 0
+    
+    for racer in raceHeaderData:
+        if (racer["RaceTime"] == ''):
+            continue
+        else:
+            numMin = int(racer["RaceTime"].split(':')[0])
+            if numMin > maxNumMinutes:
+                maxNumMinutes = numMin
+    
+    return maxNumMinutes
 
 
 def _parse_file(filename):
@@ -398,4 +520,20 @@ def _modify_trackname(uploaded_filename, origional_trackname, new_trackname):
             else:
                 destination.write(line)
     return
+
+
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+class FileAlreadyUploadedError(Error):
+    """Exception raised when a race has already been placed in the system..
+
+    Attributes:
+        singlerace -- singlerace object that was being processed.
+    """
+
+    def __init__(self, singlerace, msg):
+        self.singlerace = singlerace
+        self.msg = msg
         

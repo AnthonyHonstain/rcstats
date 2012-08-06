@@ -1,0 +1,21 @@
+The scripts contained here are primarily for uploading results or 
+modifying race data in the DB.
+
+Overview
+	ReadLaps.py - the first script created to push race results 
+		into the system. 
+		DO NOT USE, it does not correctly execute 
+		SQL queries. This is largely obsolete because of the 
+		new app that handles pushing results to the DB.
+		
+		Some useful references for fixing it.
+		http://stackoverflow.com/questions/6741636/how-to-use-pgdb-executemany 
+			This questions covers some of the mistakes I am making - 
+			http://stackoverflow.com/questions/9829381/creating-a-user-login-function-for-a-database-in-sql-using-python-pgdb-postgre
+	
+	CollapseNames.py - a quick script for identifying and collapsing 
+		alias names. Race directors often misspell a racers name, this is a 
+		quick way to identify and fix those problems.	
+
+	singlerace.py and rcscoringprotxtparser* are the parsers used to read 
+		the scoring txt file.

@@ -37,3 +37,10 @@ class SingleRace(object):
         self.raceHeaderData = [] # List of Dictionaries
         self.lapRowsTime = [] # List of Lists
         self.lapRowsPosition = []
+
+    def __str__(self):
+        return self.trackName + " | " +\
+            self.raceClass + " | " +\
+            self.roundNumber + " | " +\
+            self.raceNumber + " | " +\
+            self.date

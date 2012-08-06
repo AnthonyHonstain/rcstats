@@ -87,7 +87,8 @@ class SingleRace(TestCase):
                                                                   winninglapcount='2',
                                                                   )
            
-        models.SingleRaceResults.objects.create(id=1,
+        self.results = []
+        result0 = models.SingleRaceResults.objects.create(id=1,
                                  raceid=self.singlerace,
                                  racerid=self.racer0,
                                  carnum=2,
@@ -96,7 +97,7 @@ class SingleRace(TestCase):
                                  fastlap="16.939",
                                  finalpos=1)
         
-        models.SingleRaceResults.objects.create(id=2,
+        result1 = models.SingleRaceResults.objects.create(id=2,
                                  raceid=self.singlerace,
                                  racerid=self.racer1,
                                  carnum=1,
@@ -104,39 +105,65 @@ class SingleRace(TestCase):
                                  racetime=datetime.time(second=20),
                                  fastlap="16.900",
                                  finalpos=2)
+        self.results.append(result0)
+        self.results.append(result1)
         
         lapid = 1
-    
+                
+        self.racer0_laps = []
         expectedLaps_Racer0 = ["20.58", "17.09", "16.93", "17.11", "17.25", "17.25", "16.99", "17.44", "17.33", "17.56", "17.31", "17.35", "18.07", "17.31", "18.23", "17.40", "17.32", "17.15", "17.31", "17.47", "17.31", "17.42", "18.37", "17.47", "17.34", "17.36", "17.27", "17.14"]
         prepared_laps = map(lambda x: float(x) if x != "" else None, expectedLaps_Racer0)
         
         lapcount = 0
         for lap in prepared_laps:
-            models.LapTimes.objects.create(id=lapid,
+            racer0_lap = models.LapTimes.objects.create(id=lapid,
                             raceid=self.singlerace, 
                             racerid=self.racer0,
                             racelap=lapcount,
                             raceposition=1,
                             racelaptime=float(lap))
+            self.racer0_laps.append(racer0_lap)
             lapcount += 1
             lapid += 1
 
+        self.racer1_laps = []
         expectedLaps_Racer1 = ["24.5", "18.04", "17.53", "17.34", "17.13", "17.30", "17.21", "17.42", "17.14", "17.18", "17.47", "17.01", "17.21", "19.16", "17.03", "19.43", "17.24", "17.43", "17.31", "16.90", "17.33", "17.17", "24.36", "21.31", "17.24", "17.02", "20.17", ""]
         # This step is required since the expectedLaps list isnt in the right format for the DB
         prepared_laps = map(lambda x: float(x) if x != "" else None, expectedLaps_Racer1)
         
         lapcount = 0
         for lap in prepared_laps:            
-            models.LapTimes.objects.create(id=lapid,
+            racer1_lap = models.LapTimes.objects.create(id=lapid,
                             raceid=self.singlerace, 
                             racerid=self.racer1,
                             racelap=lapcount,
                             raceposition=2,
                             racelaptime=lap)
+            self.racer1_laps.append(racer1_lap)
             lapcount += 1
             lapid += 1
                                                                   
+    
+    def tearDown(self):
         
+        for lap in self.racer0_laps:
+            lap.delete()
+        
+        for lap in self.racer1_laps:
+            lap.delete()
+        
+        for result in self.results:
+            result.delete()
+        
+        self.singlerace.delete()
+                
+        self.racer0.delete()
+        self.racer1.delete()
+        
+        self.track.delete()
+        
+    
+    
     def test_basic_racedata(self):
         """
         Sanity Check - Validate the basic track information is loaded.

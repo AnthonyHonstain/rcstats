@@ -13,18 +13,14 @@ import os
 import time
 
 import models
+from rcdata.models import LapTimes
+from rcdata.models import SingleRaceDetails
+from rcdata.models import SingleRaceResults
 from rcdata.models import SupportedTrackName
 from rcdata.models import TrackName
 from rcdata.models import RacerId
 
 class SingleRace(TestCase):
-    
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
-
 
     singlerace_testfile = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/17/2012
 
@@ -114,19 +110,95 @@ RacerFifthCar1, Jon            #1          1           35.952         35.952
         response = self.client.get("/upload_start/2/")
         self.assertEqual(response.status_code, 404)
         
+        response = self.client.get("/upload_start/" + str(log_entry.id) + "/")
+        self.assertEqual(response.status_code, 200)
         
-        response = self.client.post('/upload_start/1/', {'track_id': '1',})
-        self.assertEqual(response.status_code, 302)
-        #print "STATUS CODE", response.status_code
+        response = self.client.post('/upload_start/' + str(log_entry.id) + '/', {'track_id': sup_trackname_obj.id})
         #print "Content:", response.content
+        self.assertEqual(response.status_code, 200)
         
         
+        #----------------------------------------------------
+        # Validate Racers
+        #----------------------------------------------------
         # The race should now be uploaded, we want to validate it is in the system.
-        racerobj = RacerId.objects.get(racerpreferredname="RacerFirstCar2, Jon")
-        self.assertIsNotNone(racerobj)
-        racerobj = RacerId.objects.get(racerpreferredname="RacerFifthCar1, Jon")
-        self.assertIsNotNone(racerobj)
-                        
+        car2 = RacerId.objects.get(racerpreferredname="RacerFirstCar2, Jon")
+        car5 = RacerId.objects.get(racerpreferredname="RacerThirdCar5, Jon")
+        car1 = RacerId.objects.get(racerpreferredname="RacerFifthCar1, Jon")
+        
+        #----------------------------------------------------
+        # Validate Race Details
+        #----------------------------------------------------
+        # Validate the race details have been uploaded.
+        raceobj = SingleRaceDetails.objects.get(trackkey=trackname_obj,
+                                                 racedata="MODIFIED BUGGY A Main",
+                                                 racenumber=2,
+                                                 roundnumber=3,
+                                                 racelength=8,
+                                                 winninglapcount=28)
+        
+        #----------------------------------------------------
+        # Validate Race Laps
+        #----------------------------------------------------        
+        # Validate the corner cases for the lap times and positions
+        LapTimes.objects.get(raceid=raceobj,
+                             racerid=car1,                             
+                             racelap=0,
+                             raceposition=5,
+                             racelaptime='35.95')
+        
+        LapTimes.objects.get(raceid=raceobj,
+                             racerid=car2,
+                             racelap=0,
+                             raceposition=1,
+                             racelaptime='26.24')
+        
+        LapTimes.objects.get(raceid=raceobj,
+                             racerid=car2,
+                             racelap=27,
+                             raceposition=1,
+                             racelaptime='20.71')
+        
+        LapTimes.objects.get(raceid=raceobj,
+                             racerid=car5,
+                             racelap=0,
+                             raceposition=3,
+                             racelaptime='29.63')
+        
+        LapTimes.objects.get(raceid=raceobj,
+                             racerid=car5,
+                             racelap=25,
+                             raceposition=3,
+                             racelaptime='19.69')
+        
+        LapTimes.objects.get(raceid=raceobj,
+                             racerid=car5,
+                             racelap=26)
+        
+        
+        #----------------------------------------------------
+        # Validate Race Results
+        #----------------------------------------------------
+        #________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
+        #RacerFirstCar2, Jon            #2         28         8:18.588         17.042                  
+        #RacerSecondCar4, Jon            #4         27         8:08.928         17.116                  
+        #RacerThirdCar5, Jon            #5         26         8:00.995         17.274                  
+        #RacerFourthCar3, Jon            #3         25         8:02.680         17.714                  
+        #RacerFifthCar1, Jon            #1          1           35.952         35.952 
+        SingleRaceResults.objects.get(racerid=car1,
+                                      raceid=raceobj,
+                                      carnum=1,
+                                      lapcount=1)
+        
+        SingleRaceResults.objects.get(racerid=car2,
+                                      raceid=raceobj,
+                                      carnum=2,
+                                      lapcount=28)
+        
+        SingleRaceResults.objects.get(racerid=car5,
+                                      raceid=raceobj,
+                                      carnum=5,
+                                      lapcount=26)
         
         # Quick end to end test, verify we now have a results page for the new race.
         #response = self.client.get("/displayresults/singleracedetailed/1/")

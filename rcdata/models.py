@@ -33,6 +33,11 @@ class SingleRaceDetails(models.Model):
     uploaddate = models.DateTimeField('Date the race was uploaded')
     racelength = models.IntegerField('Number of minutes for the race')
     winninglapcount = models.IntegerField('Number of laps that won the race')
+    def __str__(self):
+        return str(self.trackkey) + " | " +\
+            str(self.racedata) + " | " +\
+            str(self.racedate) + " | " +\
+            str(self.uploaddate)
 
 class SingleRaceResults(models.Model):
     raceid = models.ForeignKey(SingleRaceDetails)

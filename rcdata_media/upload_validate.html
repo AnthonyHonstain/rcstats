@@ -26,11 +26,12 @@
 
 
 {% if prevalidation_race_list %}
-<h2>Please Validate the following races</h2> 
-<p>It is important to verify the correct track name is used.</p>
-<p>This is a quick dump to help you verify that the system is correctly reading results
-	before they are processed and sent to the database.</p>
+<h2>Please Validate the following races you are about to upload:</h2> 
+<h3>It is <b>IMPORTANT</b> to verify the correct track name is used. You must select the correct track from the dropdown. The choice you select will be used for all the races uploaded in this file.</h3>
 
+{% if uploadtrackname %}
+<h3>The trackname that is in the file: <b>"{{ uploadtrackname }}"</b></h3>
+{% endif %}
 
 <form action="" method="post">
 	{% csrf_token %}
@@ -43,6 +44,31 @@
 
 	<input type="submit" value="Submit">
 </form>
+</br>
+</br>
+</br>
+<div id="accordion">
+	<div>
+        <h3><a href="#">Why do we have this step?</a></h3>
+        <div>
+       	<p>It is common for the trackname to get changed on the race directors machine. It saves time and energy down the road if we can enforce that the file be uploaded with the correct trackname.</p>	
+		</div>
+    </div>
+	<div>
+        <h3><a href="#">Don't see the trackname you want to use?</a></h3>
+        <div>
+        <p>New tracks need to be added by an admin, if you are in a hurry you can email the results to rcstats.site@gmail.com with the trackname you want to use and they will be uploaded for you.</p>
+        </div>
+    </div>
+    <div>
+        <h3><a href="#">What is all the junk below?</a></h3>
+        <div>
+       	<p>This is a quick dump to help you verify that the system is correctly reading results
+		before they are processed and sent to the database.</p>
+		<p>This is a raw dump of the results, I will improve the readability in the future.</p>	
+		</div>
+    </div>           
+</div><!-- /.accordion -->
 
 {% for race in prevalidation_race_list %}
 <section class="content_heading">
