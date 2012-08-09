@@ -253,33 +253,20 @@ def _get_Recent_Race_Dates(supported_track, number_races):
     """
     Retrieve a list of python datetime objects for the most recent races.
     
-    WARNING - Only considers race dates with a main event (racedata contains the token 'main')
+    WARNING - Only considers race dates with a main event (racedata contains the token 'main')        
+    """  
     
-    Note - I spent a fair bit of time trying to figure out how
-    to do this type of query using the orm, but I have been unable
-    to get to any where near as simple of a solution.
-        Trying to do something like: SingleRaceDetails.objects.aggregate(datetime)        
-    """
-
-    querydates = '''SELECT rdetails_date.racedate::date as racedate FROM
-        rcdata_singleracedetails as rdetails_date
-        WHERE rdetails_date.trackkey_id = %(trackkey)s AND      
-          rdetails_date.racedata ILIKE '%%main%%'
-        GROUP BY rdetails_date.racedate::date
-        ORDER BY rdetails_date.racedate::date desc
-        LIMIT %(numraces)s;'''
-       
-    cursor = connection.cursor()
-    cursor.execute(querydates, {'trackkey':supported_track.trackkey.id, 'numraces':number_races})
-    racedates = cursor.fetchall()
-    
-    # Example racedates for tacoma and number_races=5:
-    # [(datetime.date(2012, 5, 12),), (datetime.date(2012, 5, 11),), (datetime.date(2012, 5, 8),), 
-    #  (datetime.date(2012, 5, 5),), (datetime.date(2012, 5, 4),)]
-    #print 'racedates', racedates
-    
-    # List flatten - src http://stackoverflow.com/questions/952914/making-a-flat-list-out-of-list-of-lists-in-python
-    racedates_flat = [item for sublist in racedates for item in sublist]    
+    # We only want races for the given track that have 'main' in the title, then we want to group by and order on the date
+    queryset = SingleRaceDetails.objects.filter(racedata__icontains='main', trackkey__exact=supported_track.trackkey.id).extra(select={'day': 'date( racedate )'}).values('day')
+    queryset.query.group_by = ['day']
+    racedates = queryset.order_by( '-day' )[:number_races]
+    #print racedates
+    # [{'day': datetime.date(2011, 1, 1)}, {'day': datetime.date(2011, 1, 3)}, 
+    racedates_flat = []
+    for datedict in racedates:
+        racedates_flat.append(datedict['day'])
+    #print racedates_flat     
+    # [datetime.date(2012, 8, 7), datetime.date(2012, 8, 3), datetime.date(2012, 7, 31),
     return racedates_flat
 
 

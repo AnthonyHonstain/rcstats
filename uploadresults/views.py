@@ -310,25 +310,25 @@ def _process_singlerace(race):
     Conditions - The trackname is already in the db.
     '''
     
-    #----------------------------------------------------
+    # ====================================================
     # Trackname
-    #----------------------------------------------------
+    # ====================================================
     # Track - We assume it has already been validated that this is a known track.
     #    NOTE - we do not want to be creating new tracks in this code, if the track
     #    is new it probably means they are not uploading appropriately.
     track_obj = TrackName.objects.get(trackname=race.trackName)
             
-    #----------------------------------------------------
+    # ====================================================
     # Insert Racers
-    #----------------------------------------------------
+    # ====================================================
     # We want to add a new racerid if one does not already exist.
     for racer in race.raceHeaderData:
         racer_obj, created = RacerId.objects.get_or_create(racerpreferredname=racer['Driver'])
         racer['racer_obj'] = racer_obj
         
-    #----------------------------------------------------
+    # ====================================================
     # Insert Race Details
-    #----------------------------------------------------
+    # ====================================================
     # Find race length
     racelength = _calculate_race_length(race.raceHeaderData)
     
@@ -368,9 +368,9 @@ def _process_singlerace(race):
                                     winninglapcount=maxlaps)
     details_obj.save()
     
-    #----------------------------------------------------
+    # ====================================================
     # Insert Race Laps
-    #----------------------------------------------------    
+    # ====================================================    
     # For each racer in the raceHeaderData
     for racer in race.raceHeaderData:        
         # Upload each lap for this racer, their care number - 1 indicates
@@ -394,9 +394,9 @@ def _process_singlerace(race):
                                racelaptime=race.lapRowsTime[index][row])
             lap_obj.save()
             
-    #----------------------------------------------------
+    # ====================================================
     # Insert Race Results
-    #----------------------------------------------------
+    # ====================================================
     '''
         Example of the data structure we will work with here:
                           [{"Driver":"TOM WAGGONER", 
