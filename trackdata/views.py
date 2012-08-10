@@ -251,13 +251,23 @@ def recentresultshistory_data(request, track_id, race_date):
 
 def _get_Recent_Race_Dates(supported_track, number_races):
     """
-    Retrieve a list of python datetime objects for the most recent races.
+    Retrieve a list of python datetime objects for the most recent races.    
     
-    WARNING - Only considers race dates with a main event (racedata contains the token 'main')        
-    """  
+    OVERIVEW:
+        A difficult bug (for me at least) came out of this original code. I did
+        not completely understand all the work django was doing automatically
+        to try and resolve the timezone (postgresql is storing it in UTC).
+        
+        This was a perfect example of TECHNICAL DEBT, I did not really
+        understand how django was modifying the datetimes, and I use the
+        code in a number of places.
     
-    # We only want races for the given track that have 'main' in the title, then we want to group by and order on the date
-    queryset = SingleRaceDetails.objects.filter(racedata__icontains='main', trackkey__exact=supported_track.trackkey.id).extra(select={'day': 'date( racedate )'}).values('day')
+        If you look at the origional code, I was doing all the grouping and 
+        extracting simple dates at the DB level (before any timezone
+        processing was done).
+    
+    # We only want races for the given track then we want to group by and order on the date
+    queryset = SingleRaceDetails.objects.filter(trackkey__exact=supported_track.trackkey.id).extra(select={'day': 'date( racedate )'}).values('day')
     queryset.query.group_by = ['day']
     racedates = queryset.order_by( '-day' )[:number_races]
     #print racedates
@@ -268,6 +278,28 @@ def _get_Recent_Race_Dates(supported_track, number_races):
     #print racedates_flat     
     # [datetime.date(2012, 8, 7), datetime.date(2012, 8, 3), datetime.date(2012, 7, 31),
     return racedates_flat
+    """
+    
+    # TODO - there is allot of room for optimization in this code, it is pretty inefficient.
+    
+    # This is a quick re-write to take advantage for the time zone conversion.
+    queryset = SingleRaceDetails.objects.filter(trackkey__exact=supported_track.trackkey.id).values('racedate')
+    # We do not want all the races, but hopefully enough that we can find the last 5 race days.
+    racedates = queryset.order_by( '-racedate' )[:number_races*10]
+    
+    # TODO replace this with a sorted dict
+    unique_dates = {}
+    for date in racedates:
+        if date['racedate'].date() in unique_dates:
+            pass
+        else:
+            unique_dates[date['racedate'].date()] = True
+    
+    unique_dates = unique_dates.keys()
+    unique_dates.sort(reverse=True)
+    #print 'UNIQUE_DATES', unique_dates
+    # [datetime.date(2012, 8, 7), datetime.date(2012, 8, 3), datetime.date(2012, 7, 31),
+    return unique_dates[:number_races]
 
 
 def _display_Date_User(datetime_object):
