@@ -1,7 +1,9 @@
 import time
 import datetime
+import pytz
 
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
 
 from django.template import Context
 from django.template import RequestContext
@@ -287,13 +289,15 @@ def _get_Recent_Race_Dates(supported_track, number_races):
     # We do not want all the races, but hopefully enough that we can find the last 5 race days.
     racedates = queryset.order_by( '-racedate' )[:number_races*10]
     
+    tmz = pytz.timezone(settings.TIME_ZONE)    
     # TODO replace this with a sorted dict
     unique_dates = {}
-    for date in racedates:
-        if date['racedate'].date() in unique_dates:
+    for date in racedates:        
+        converted_date = date['racedate'].astimezone(tmz).date()        
+        if converted_date in unique_dates:
             pass
         else:
-            unique_dates[date['racedate'].date()] = True
+            unique_dates[converted_date] = True
     
     unique_dates = unique_dates.keys()
     unique_dates.sort(reverse=True)
