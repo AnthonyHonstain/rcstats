@@ -1,6 +1,5 @@
-from rcstats.rcdata.models import SingleRaceDetails, RacerId, SupportedTrackName
+from rcstats.rcdata.models import SingleRaceDetails, RacerId, TrackName, SupportedTrackName
 from django.contrib import admin
-
 
 class SingleRaceDetailsAdmin(admin.ModelAdmin):
     #fields = ['racedata', 'racedate']
@@ -26,6 +25,6 @@ class SupportedTrackNameAdmin(admin.ModelAdmin):
 admin.site.register(SingleRaceDetails, SingleRaceDetailsAdmin)
 #admin.site.register(LapTimes, LapTimesAdmin)
 admin.site.register(RacerId, RacerIdAdmin)
-#admin.site.register(TrackName)
+admin.site.register(TrackName)
 admin.site.register(SupportedTrackName, SupportedTrackNameAdmin)
 
