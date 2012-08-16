@@ -32,7 +32,7 @@ class SimpleTest(basetests.SingleRace):
         of all the races the user has been in.
         '''
         racerobj = rcstats.rcdata.models.RacerId.objects.get(pk=1)
-        expected_js_response = '[{"data": [[1326593343000.0, 1]], "label": "Racer0"}]'
+        expected_js_response = '[{"data": [[1326629343000.0, 1]], "label": "Racer0"}]'
         self.assertEqual(expected_js_response, views._get_RaceTimeline_JSData(racerobj))
         
     
