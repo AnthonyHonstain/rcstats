@@ -2,24 +2,171 @@ import re
 import trueskill.trueskill as trueskill
 
 from django.db.models import Max
-from django.shortcuts import render_to_response
+from django.http import Http404
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
+from django.utils import simplejson
 
 from rcstats.ranking.models import RankedClass, RankEvent, RankEventDetails, Ranking
 from rcstats.rcdata.models import SingleRaceDetails, SingleRaceResults, RacerId, TrackName, SupportedTrackName
 
 
 def ranking(request):
-    
-    # TESTING/PROTOTYPE - have not decided where this code should live yet.
-    rankedclass_obj = RankedClass.objects.get(pk=1)
-    print "Testclass:", rankedclass_obj.raceclass
-    _process_ranking(rankedclass_obj)
-
     return render_to_response('ranking.html', {}, context_instance=RequestContext(request))
 
 
-class GroupedEvent():
+REQUIRED_NUM_RACES = 10
+NUM_RANK_EVENTS_TO_DISPLAY = 8
+
+
+def _format_rank(rank):    
+    rank = rank + 5 # I want to boost people above 0
+    rank *= 2
+    return round(rank, 2)
+
+
+def ranking_track_class(request, rankedclass_id):
+    
+    rankedclass_obj = get_object_or_404(RankedClass, pk=rankedclass_id)
+    
+    trackname = TrackName.objects.get(pk=rankedclass_obj.trackkey.id).trackname
+    classname =  rankedclass_obj.raceclass
+
+    # Get the last ten rankings and graph them.
+    
+    rankevents = RankEvent.objects.filter(rankedclasskey__exact=rankedclass_obj.id)
+    if (len(rankevents)  < 1):
+        # We do not have anyhting to show the user.
+        raise Http404
+        
+    latestevents = rankevents.order_by('-eventcount')[:NUM_RANK_EVENTS_TO_DISPLAY]
+
+    current_rank_ordering = []
+    
+    # =======================================================================
+    # Collect and format data for datable of current rankings.
+    # =======================================================================
+    current_ranking_formated = []
+    
+    datatable_ranking = Ranking.objects.filter(rankeventkey__exact=latestevents[0].id,
+                                               racecount__gte=REQUIRED_NUM_RACES).order_by('-rank')
+    
+    count = 1
+    for rank in datatable_ranking:
+        current_ranking_formated.append([count, rank.raceridkey.racerpreferredname, _format_rank(rank.rank)])
+        count += 1
+        current_rank_ordering.append(rank.raceridkey.id)
+        
+    current_ranking = simplejson.dumps(current_ranking_formated) 
+    
+    super_group = []
+    count = 0
+    prev = 0
+    #print "current_rank_ordering", current_rank_ordering
+    for current in range(10, len(current_rank_ordering), 10):
+        if (current + 10 > len(current_rank_ordering)):
+            # We want to fold the rest into the final group
+            current = len(current_rank_ordering)
+        super_group.append({'title':"Ranks {0}-{1}".format(prev, current),
+                            'js_id':str(count),
+                            'ranking_graph_jsdata':None})
+        
+        
+        # =======================================================================
+        # Collect and format the date for the flot graph.
+        # =======================================================================
+        ranking_graphdata = {}
+            
+        racer_dict = {} # Hold the racers rankings { <racerid>:[25.0, 24.0, 23.0, ..]
+        # WARNING - The index 0 is the most recent event, index 1 is the next most recent, etc..
+            
+        for rankevent in latestevents:        
+            ranking = Ranking.objects.filter(rankeventkey__exact=rankevent.id,
+                                             racecount__gte=REQUIRED_NUM_RACES).order_by('-rank')
+            
+            for rank in ranking: # This covers all the racers being ranked at this stage.
+                
+                # We only want to use them if they are in this grouping
+                print rank.raceridkey.id
+                if (rank.raceridkey.id in current_rank_ordering[prev:current]):
+                    print "ping"
+                    if rank.raceridkey.id in racer_dict:
+                        racer_dict[rank.raceridkey.id].append(_format_rank(rank.rank))
+                    else:
+                        racer_dict[rank.raceridkey.id] = [None, None, _format_rank(rank.rank), ]
+            
+            
+        # Now we need to format the ranking data for display in the flot graph.    
+        for racer in racer_dict:
+            
+            if (len(racer_dict[racer]) < NUM_RANK_EVENTS_TO_DISPLAY):
+                racer_dict[racer] += [None,] * (NUM_RANK_EVENTS_TO_DISPLAY - len(racer_dict[racer]))
+                
+            indv_rank_data = []
+            for i in range(len(racer_dict[racer])):
+                indv_rank_data.append([NUM_RANK_EVENTS_TO_DISPLAY + 2 - i, racer_dict[racer][i]])
+            
+            racer_name = RacerId.objects.get(pk=racer).racerpreferredname
+            #racer_name = racer.racerpreferredname
+            ranking_graphdata[racer_name] = {'label': racer_name,
+                                             'data': indv_rank_data}                
+    
+        #print 'ranking_graphdata', ranking_graphdata
+        ranking_graph_jsdata = simplejson.dumps(ranking_graphdata)    
+        
+        super_group[-1]['ranking_graph_jsdata'] = ranking_graph_jsdata
+        prev = current
+        count += 1
+    
+#    return render_to_response('rankingtrackclassdetailed.html', 
+#                              {'trackname': trackname,
+#                               'classname': classname, 
+#                               'current_ranking': current_ranking,
+#                               'ranking_graph_jsdata': ranking_graph_jsdata,}, 
+#                              context_instance=RequestContext(request))
+    #print super_group
+
+    return render_to_response('rankingtrackclassdetailed.html', 
+                              {'trackname': trackname,
+                               'classname': classname, 
+                               'current_ranking': current_ranking,
+                               'super_group': super_group,}, 
+                              context_instance=RequestContext(request))
+
+
+def get_ranked_classes_by_track(trackkey):
+    '''
+    For the given track, return all the rankedclass keys that have ranked
+    racers with the REQUIRED_NUM_RACES.    
+    '''
+    trackname_obj = TrackName.objects.get(pk=trackkey)
+    
+    possible_rankedclasses = RankedClass.objects.filter(trackkey__exact=trackname_obj)
+    # For each of these rankedclasses, we are only concerned with
+    # classes that have 2 or more racers with more than the required_num_races
+    # completed.
+    
+    return_keys = []
+    
+    for rankedclass in possible_rankedclasses:
+        rankevents = RankEvent.objects.filter(rankedclasskey__exact=rankedclass.id)
+        latestevent = None    
+        if (len(rankevents) > 0):
+            latestevent = rankevents.order_by('-eventcount')[0]
+            
+        # We want to count the number of ranked racers with the required number of events.
+        rankings = Ranking.objects.filter(rankeventkey__exact=latestevent.id,
+                                          racecount__gte=REQUIRED_NUM_RACES)
+        
+        if (len(rankings) >= 2):
+            return_keys.append(rankedclass.id)
+
+    return return_keys
+
+
+
+
+class _GroupedEvent():
     def __init__(self, rankevent=None, ranking=[]):
         self.rankevent = rankevent
         # ranking is a list or racerid's in the order they finished.
@@ -27,7 +174,7 @@ class GroupedEvent():
     def __str__(self):
         return str(self.rankevent) + " " + str(self.ranking)
     
-class Player(object):    
+class _Player(object):    
     def __init__(self, racerid, skill=(25.0, 25.0/3.0), racecount=1):
         self.racerid = racerid
         self.skill = skill
@@ -37,7 +184,7 @@ class Player(object):
     def __str__(self):
         return "mu={0[0]:.3f}  sigma={0[1]:.3f} count={1}".format(self.skill, self.racecount)
 
-def _process_ranking(rankedclass_obj):
+def process_ranking(rankedclass_obj):
     '''
     For the RankedClass, we want to see if there is a new event, then process
     the races from the event and update the ranking.
@@ -77,18 +224,15 @@ def _process_ranking(rankedclass_obj):
     # ===============================================================
     # Step 3 - Organize the races with sub-mains into a single stack rank
     # ===============================================================
-    # Format for grouped_results = [ <GroupedEvent object>, <GroupedEvent object>, ...
+    # Format for grouped_results = [ <_GroupedEvent object>, <_GroupedEvent object>, ...
     grouped_results = []
     prev_race = None
     
-    # Get the most recent event
+    # Get the most recent event for this class
     rankevents = RankEvent.objects.filter(rankedclasskey__exact=rankedclass_obj.id)
-    #max_eventcount = rankevents.aggregate(Max('eventcount'))
     eventcount = 0
     latestevent = None    
     if (len(rankevents) > 0):
-    #if (max_eventcount['eventcount__max'] != None):
-        #eventcount = max_eventcount['eventcount__max']
         latestevent = rankevents.order_by('-eventcount')[0]
         eventcount = latestevent.eventcount
     print "MOST RECENT EVENT:", latestevent
@@ -111,10 +255,10 @@ def _process_ranking(rankedclass_obj):
     # I have the problem of grouping multiple A-mains
     # Work through the race results from OLDEST to NEWEST
     for race_details in races_to_rank:
-        print race_details.racedate
-        print eventcount + 1
-        print "grouped_results", grouped_results
-        print    
+        #print race_details.racedate
+        #print eventcount + 1
+        #print "grouped_results", grouped_results
+        #print    
                 
         # If the last race was a sub-main - we are going to combine this and
         # the previous.
@@ -158,9 +302,7 @@ def _process_ranking(rankedclass_obj):
                                                racedetailskey=race_details)
             neweventdetails.save()
             
-            
-            grouped_results.append(GroupedEvent(newevent, flatresults))
-            
+            grouped_results.append(_GroupedEvent(newevent, flatresults))
 
         prev_race = race_details
 
@@ -169,7 +311,7 @@ def _process_ranking(rankedclass_obj):
     rankedclass_obj.startdate = prev_race.racedate
     rankedclass_obj.save()
     
-    print "New Start Date:", rankedclass_obj.startdate 
+    #print "New Start Date:", rankedclass_obj.startdate 
 
     # ===============================================================
     # Step 4 - Now we are ready to compute the ranking.
@@ -186,9 +328,9 @@ def _process_ranking(rankedclass_obj):
         # We need all the currently ranked racers for this class.
         currently_ranked = Ranking.objects.filter(rankeventkey__exact=latestevent_ranked)
         for player in currently_ranked:
-            player_dict[player.raceridkey.id] = Player(player.raceridkey.id, 
-                                                       skill=(player.mu, player.sigma), 
-                                                       racecount=player.racecount)
+            player_dict[player.raceridkey.id] = _Player(player.raceridkey.id, 
+                                                        skill=(player.mu, player.sigma), 
+                                                        racecount=player.racecount)
         
         players_to_adjust = []
         
@@ -199,7 +341,7 @@ def _process_ranking(rankedclass_obj):
             if racer in player_dict:
                 player_dict[racer].racecount += 1
             else:
-                player_dict[racer] = Player(racer)
+                player_dict[racer] = _Player(racer)
                 
             player_dict[racer].rank = i + 1
             

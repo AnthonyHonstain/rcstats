@@ -8,6 +8,18 @@
 {% block content %}        
 
 <section class="full_width">
+
+<h3>Track Ranking by Class</h3>
+<ul>    
+{% if formated_rankedclasses %}
+{% for rankedclass in formated_rankedclasses %}
+	<a href="/ranking/{{ rankedclass.key }}/" class="button white" target="_self"><span>{{ rankedclass.class }}</span></a>
+{% endfor %}
+{% else %}
+	<p>There are no ranked classes established for this track, or there are not enough races being tracked for the class.</p>
+{% endif %}
+<ul>
+
 <h3>General Track Statistics</h3>
 <p>These tables will rank racers based on the total number of wins and race laps completed. This takes into account any qualifying rounds or main events currently being tracked in the system. The buttons below can be used to filter this stats by date.</p>
 <input type="submit" value="All Time" id="load_basic_alltime"></input>

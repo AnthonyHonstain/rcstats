@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+
+{% block pagetitle %}{{ trackname }} Ranking{% endblock %}
+{% block pagetitle_description %}Ranking for {{ classname }}{% endblock %}
+
+
+{% block content %}
+        	
+<section class="full_width">
+			
+			<div id="racedetails_placeholder"></div>
+			
+			<section class="content_heading">
+            	<a class="gotop" href="#"></a>
+                <h3>Ranking over time</h3>
+		    </section> <!--  END content_heading -->
+			
+			{% for group in super_group %}
+			<h3>{{ group.title }}</h3>
+			<div id="laptimegraph_placeholder{{ group.js_id }}" style="width:950px;height:700px;"></div>
+			{% endfor %}
+			
+</section><!-- /.full_width --> 
+					
+{% endblock %}
+
+
+{% block scripts %}
+
+	<script src="/media/js/datatables/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
+   	<script type="text/javascript" src="/media/js/flot/jquery.flot.js"></script>   	
+	
+		<script type="text/javascript" charset="utf-8">
+		$(document).ready(function() {
+		    $('#racedetails_placeholder').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="racedetails_table"></table>' );
+		    $('#racedetails_table').dataTable( {
+		    	"bPaginate": false,
+		        "bLengthChange": false,
+		        "bFilter": false,				        
+		        "bInfo": false,
+		        "aaData": {% autoescape off %} {{  current_ranking  }} {% endautoescape %},
+		        "sScrollX": "65%",
+		        "aoColumns": [
+		        				{ "sTitle": "Order" },
+							    { "sTitle": "Racer" , "sClass": "center" },
+								{ "sTitle": "Ranking" }
+		        ]
+		    } );			
+		} );					
+	</script>
+	
+	{% for group in super_group %}
+			
+ 	<script type="text/javascript" charset="utf-8">
+ 	 									
+		$(function () {
+	    	var datasets = {% autoescape off %} {{ group.ranking_graph_jsdata }} {% endautoescape %};    
+		    
+		        
+		    function plotAccordingToChoices() {
+		        var data = [];
+		
+		        $.each(datasets, function(key, val) {
+		        //choiceContainer.find("input:checked").each(function () {
+		        //    var key = $(this).attr("name");
+		        //    if (key && datasets[key])
+		                data.push(datasets[key]);
+		        });
+		
+		        if (data.length > 0)
+		            $.plot($("#laptimegraph_placeholder{{ group.js_id }}"), data, {
+		                //yaxis: { min: 0 },
+		                xaxis: { tickDecimals: 0 },
+		                lines: {show:true},
+		                points: {show:true},
+		                grid: {hoverable: true, }, // Hover tooltip
+		            });
+		    }		
+		    plotAccordingToChoices();
+		    
+		    // ====================================================================
+		    // Hover tooltip
+		    // ====================================================================		    
+		    
+		    function showTooltip(x, y, contents) {
+	        $('<div id="flot-tooltip">' + contents + '</div>').css( {
+	        	'font-size': '15px',
+	        	'color': 'white',
+	            position: 'absolute',
+	            display: 'none',
+	            top: y + 5,
+	            left: x + 5,
+	            border: '2px solid #000000',
+	            padding: '2px',
+	            'background-color': '#EF5D1C', //'#fee',
+	            opacity: 0.95
+	        }).appendTo("body").fadeIn(200);
+	    	}
+	    
+		    var previousPoint = null;	    
+		    
+	   		$("#laptimegraph_placeholder{{ group.js_id }}").bind("plothover", function (event, pos, item) {
+	   			if (item) {
+		            if (previousPoint != item.datapoint) {
+		                previousPoint = item.datapoint;
+		                $("#flot-tooltip").remove();
+		 
+		                y = item.datapoint[1];
+		 
+		                showTooltip(item.pageX, item.pageY,
+		                    item.series.label + ": " + y);
+		            }
+		        } else {
+		            $("#flot-tooltip").remove();
+		            previousPoint = null;
+		        }   		
+	   		});
+		    
+		});
+ 	
+ 	</script>
+ 	{% endfor %}
+ 	
+{% endblock %}

@@ -16,6 +16,9 @@ from django import forms
 from django.conf import settings
 from models import UploadRecord
 from models import UploadedRaces
+from rcstats.ranking.models import RankedClass
+from rcstats.ranking.views import process_ranking 
+
 from rcstats.rcdata.models import SupportedTrackName
 from rcstats.rcdata.models import TrackName
 from rcstats.rcdata.models import RacerId
@@ -424,6 +427,21 @@ def _process_singlerace(race):
                                               behind=racer['Behind'],
                                               finalpos=racer['Final Position'])
         individual_result.save()       
+
+    # ===============================================================
+    # Do we need to update ranking?
+    # TESTING/PROTOTYPE - have not decided if this is the best place for this.
+    # WARNING - The names need to be collapsed first, or it will confuse the ranking.
+    
+#    pattern = re.compile("[A-Z][1-9]? main", re.IGNORECASE)
+#    start_index = pattern.search(race.raceClass).start(0)
+#    trimmed_class = race.raceClass[:start_index].strip('+- ')
+#    
+#    rankedclass = RankedClass.objects.filter(trackkey__exact=track_obj.id,
+#                                             raceclass__icontains=trimmed_class)
+#    if (len(rankedclass) > 0):
+#        process_ranking(rankedclass[0])
+    # ===============================================================
 
     return details_obj
 

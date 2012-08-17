@@ -9,8 +9,10 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', 'rcstats.rcdata.views.index', name="index_url_name"),    
     url(r'^faq$', 'rcstats.rcdata.views.faq', name="faq_url_name"),
-    url(r'^ranking$', 'rcstats.ranking.views.ranking', name="ranking_url_name"),
     
+    url(r'^ranking$', 'rcstats.ranking.views.ranking', name="ranking_url_name"),
+    url(r'^ranking/(?P<rankedclass_id>\d+)/$', 'rcstats.ranking.views.ranking_track_class', name="ranking_url_name"),
+        
     url(r'^login/$', 'rcstats.uploadresults.views.login_user', name="upload_url_name"),    
     url(r'^upload_start/$', 'rcstats.uploadresults.views.upload_start', name="upload_url_name"),    
     url(r'^upload_start/(?P<upload_id>\d+)/$', 'rcstats.uploadresults.views.upload_validate', name="upload_url_name"),

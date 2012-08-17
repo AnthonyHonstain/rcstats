@@ -3,8 +3,8 @@ import datetime
 import pytz
 
 from dateutil.relativedelta import relativedelta
-from django.conf import settings
 
+from django.conf import settings
 from django.template import Context
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
@@ -12,6 +12,9 @@ from django.http import Http404
 from django.db import connection
 from django.utils import simplejson
 
+
+from rcstats.ranking.views import get_ranked_classes_by_track
+from rcstats.ranking.models import RankedClass
 from rcstats.rcdata.models import SupportedTrackName, SingleRaceDetails, SingleRaceResults
 
 
@@ -34,7 +37,19 @@ def trackdetail(request, track_id):
     """
     supported_track = get_object_or_404(SupportedTrackName, pk=track_id)
     
-    ctx = Context({'trackname':supported_track.trackkey})
+    rankedclasses = get_ranked_classes_by_track(supported_track.trackkey.id)
+    # Format the classes and retrieve the names to display.
+    formated_rankedclasses = []
+    for rankedclass in rankedclasses:
+        rankedclass_obj = RankedClass.objects.get(pk=rankedclass)
+        formated_rankedclasses.append({'class': rankedclass_obj.raceclass,
+                                       'key': rankedclass})
+    
+    # This is done so we can easily display a message indicating there are not rankings.
+    if (formated_rankedclasses == []):
+        formated_rankedclasses = None
+    ctx = Context({'trackname':supported_track.trackkey,
+                   'formated_rankedclasses':formated_rankedclasses})
     return render_to_response('trackdatadetail.html', ctx, context_instance=RequestContext(request))
     
 
