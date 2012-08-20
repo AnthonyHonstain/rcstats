@@ -56,7 +56,12 @@ class LapTimes(models.Model):
     raceposition = models.SmallIntegerField(null=True)
     racelaptime = models.DecimalField(decimal_places=3, max_digits=6, null=True)
 
-
+    def __str__(self):
+        return str(self.raceid.id) + " | " +\
+            str(self.racerid) + " | " +\
+            str(self.racelap) + " | " +\
+            str(self.raceposition) + " | " +\
+            str(self.racelaptime)
 
 
 

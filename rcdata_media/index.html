@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 
+{% block title %}
+RC-Stats - Tracking Race Results
+{% endblock %}
+
+{% block description %}    
+RC-Stats stores your remote control race results and gives you tools to track your race results. We support indoor, outdoor, on-road, and off-road RC racing.
+{% endblock %}
 
 {% block banner %}    
 
@@ -15,7 +22,7 @@
 	    		<span class="flex-caption-bg"></span>
 	    		<div class="flex-caption">
                 	<h2>RC-Stats - tracking rc race results.</h2>
-                    <p>All your race results in a single location for easy comparison and analysis.</p>
+                    <p>All your RC race results in a single location for easy comparison and analysis. Whether you race indoor, outdoor, 1/10th, 1/8th etc, your results can be stored here.</p>
                 </div>
 	    	</li>
 	    	<li>
@@ -41,10 +48,19 @@
         
         </section><!-- /.banner_container_fix --> 
     </section><!-- /#banner-container -->   
-
+    
 {% endblock %}
     
 {% block content %}
+
+<section class="full_width">
+<section class="strap_box">
+<h3>NEW</h3>
+<p>A Ranking system by track and class has been added! You can see the current leader board and look at your progress over time (compared to similarly ranked racers). This is a FIRST in remote control car racing, now any track can have a free ranking system for club races. As more results are compiled we will have the ability to rank and compare across entire regions.</p>
+<a href="/ranking" class="button orange" target="_self"><span>Detailed Description</span></a>
+<a href="/ranking/1/" class="button orange" target="_self"><span>TRCR Stock Buggy</span></a>
+</section><!-- /.strap_box --> 
+</section><!-- /.full_width -->
 
 <section class="full_width">
 <section class="strap_box">
@@ -52,14 +68,6 @@
 <iframe width="660" height="415" src="http://www.youtube.com/embed/GUwx7bo3fNo" frameborder="0" allowfullscreen></iframe>
 </section><!-- /.strap_box -->
 </section><!-- /.full_width --> 
-
-<section class="full_width">
-<section class="strap_box">
-<h3>Coming Soon!</h3>
-<p>A Ranking system both globally and by class. This will give you the ability to track ranking over time.</p>
-<a href="/ranking" class="button orange" target="_self"><span>Current Plans</span></a>
-</section><!-- /.strap_box --> 
-</section><!-- /.full_width -->
         	
 <section class="full_width">
 <div class="message-box green">

@@ -1,13 +1,15 @@
 from django.test import TestCase
 from django.test.client import Client
 
-import models 
+import rcdata.models as models
 import datetime
 import time
 
 
 class SingleRace(TestCase):
     '''
+    Simple race result manually pushed in the rcdata tables.
+    
     Push a basic race into the DB for testing. This is a simple race for testing
     the basic functionality in the other views/apps that build off of this one.
     
