@@ -15,6 +15,14 @@ Rankings for users by race class and track. Using advanced statistical technique
 {% block content %}
         	
 <section class="full_width">
+			</br>
+			<p>A more detailed description of the ranking system and be found <a href="/ranking"><span>here</span></a>. A quick overview of the system:
+			<ol>
+<li>You must have at least 10 races in the class (with this name, if the ranking is for "stock buggy" but the results for the night are under "open buggy", they will not be counted).</li>
+<li>This is an <b>estimation</b> of your skill using statistical methods, the numbers displayed with the rankings are <b>relative</b> to your fellow racers at this track and in this class.</li>
+<li>This is meant to be a fun, informational, and transparent system, if you want more information on the rules or have suggestions on how to do it differently then please share your input. This is an early implementation, so expect results to change as bugs and changes are made.</li>
+			</ol>
+			</p>
 			
 			<div id="racedetails_placeholder"></div>
 			
@@ -22,6 +30,10 @@ Rankings for users by race class and track. Using advanced statistical technique
             	<a class="gotop" href="#"></a>
                 <h3>Ranking over time</h3>
 		    </section> <!--  END content_heading -->
+		    
+		    <div class="message-box green">
+				<h5>Hover over the points on the graph to get the name and rank!</h5>
+			</div><!-- /.message-box -->
 			
 			{% for group in super_group %}
 			<h3>{{ group.title }}</h3>
