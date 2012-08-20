@@ -9,12 +9,14 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 {% endblock %}
 
 {% block pagetitle %}Log in{% endblock %}
-{% block pagetitle_description %}We are almost ready to start creating accounts!{% endblock %}
+{% block pagetitle_description %}Upload accounts are available for race directors and volunteers.{% endblock %}
 
 
 {% block content %}
 
 <section class="full_width">
+<p>Currently the login and upload portion of the site is for race directors or designated volunteers. If you want to have your track included in the site, or you have access to your tracks race results and want to be responsible for uploading them, please contact us at rcstats.site@gmail.com or contact us using the <a href="http://www.facebook.com/RCStats"><span>Facebook page</span></a>.</p>
+
 {{ state }}
 <form action="/login/" method="post">
 	{% csrf_token %}
