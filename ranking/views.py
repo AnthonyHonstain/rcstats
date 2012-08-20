@@ -62,11 +62,14 @@ def ranking_track_class(request, rankedclass_id):
     super_group = []
     count = 0
     prev = 0
+    
     #print "current_rank_ordering", current_rank_ordering
-    for current in range(10, len(current_rank_ordering), 10):
-        if (current + 10 > len(current_rank_ordering)):
+    for i in range(0, len(current_rank_ordering), 10):
+        current = i + 10
+        if (current > len(current_rank_ordering)):
             # We want to fold the rest into the final group
             current = len(current_rank_ordering)
+            
         super_group.append({'title':"Ranks {0}-{1}".format(prev, current),
                             'js_id':str(count),
                             'ranking_graph_jsdata':None})
