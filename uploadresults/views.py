@@ -82,7 +82,7 @@ def upload_start(request):
             # Record the information we need about the fileupload. Not everything
             # is immediately record (we record the hash and local file name later).
             log_entry = UploadRecord(origfilename=request.FILES['file'].name,
-                               ip=request.get_host(),
+                               ip=request.META['HTTP_X_FORWARDED_FOR'],
                                user=request.user,
                                filesize=request.FILES['file'].size,
                                uploaddate=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
