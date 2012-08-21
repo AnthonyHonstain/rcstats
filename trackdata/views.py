@@ -301,13 +301,27 @@ def _get_Recent_Race_Dates(supported_track, number_races):
     
     # This is a quick re-write to take advantage for the time zone conversion.
     queryset = SingleRaceDetails.objects.filter(trackkey__exact=supported_track.trackkey.id).values('racedate')
-    # We do not want all the races, but hopefully enough that we can find the last 5 race days.
-    racedates = queryset.order_by( '-racedate' )[:number_races*10]
+    
+    '''
+    Business Logic - 
+     I assumed that I could make reasonable guess at the number of classes in a 
+     single day at the track.
+    
+     What I was doing before (try to pick a reasonable number that works for everyone).
+            #We do not want all the races, but hopefully enough that we can find the last 5 race days.
+            racedates = queryset.order_by( '-racedate' )[:number_races*10]
+    
+    '''
+    racedates = queryset.order_by('-racedate')
     
     tmz = pytz.timezone(settings.TIME_ZONE)    
     # TODO replace this with a sorted dict
     unique_dates = {}
-    for date in racedates:        
+    for date in racedates:
+        if (len(unique_dates) >= number_races):
+            # We want to stop when we have enough races.
+            break
+                
         converted_date = date['racedate'].astimezone(tmz).date()        
         if converted_date in unique_dates:
             pass
