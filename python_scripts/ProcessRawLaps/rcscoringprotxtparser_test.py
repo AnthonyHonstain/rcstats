@@ -490,14 +490,12 @@ BUTLER, BRANDON            #2         15         6:12.022         19.415
         
 class TestSingleRaceWithPaceData(unittest.TestCase):
  
-    #def setUp(self):        
-        #self.assertRaises(Exception, RCScoringProTXTParser, "t1", singleRaceWithPaceData.split('\n'))
-        #self.singe_test_race = SingleRace("t1", singleRaceEarlyDrop.split('\n'))
+    def setUp(self):        
+        self.singe_test_race = RCScoringProTXTParser("testfilename", singleRaceWithPaceData.split('\n'))
         
-    def test_notSupported(self):
-        self.assertRaises(Exception, RCScoringProTXTParser, "t1", singleRaceWithPaceData.split('\n'))    
-        #expectedLaps = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
-        #self.assertEqual(expectedLaps, self.singe_test_race.lapRowsTime[0])
+    def test_racer4_laptimes(self):        
+        expectedLaps = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""] # 18 laps
+        self.assertEqual(expectedLaps, self.singe_test_race.lapRowsTime[3])
 
 
 elevenManRaceWithPaceData = '''Scoring Software by www.RCScoringPro.com                11:16:24 PM  03/18/2011
@@ -668,15 +666,20 @@ MAZANTI, KRIS            #10         0            0.000                         
 
 class TestElevenManPaceData(unittest.TestCase):
  
-    #def setUp(self):        
-        #self.assertRaises(Exception, SingleRace, "t1", singleRaceWithPaceData.split('\n'))
-        #self.singe_test_race = SingleRace("t1", singleRaceEarlyDrop.split('\n'))
+    def setUp(self):        
+        self.singe_test_race = RCScoringProTXTParser("testfilename", elevenManRaceWithPaceData.split('\n'))
         
-    def test_notSupported(self):
-        self.assertRaises(Exception, RCScoringProTXTParser, "t1", elevenManRaceWithPaceData.split('\n'))    
-        #expectedLaps = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
-        #self.assertEqual(expectedLaps, self.singe_test_race.lapRowsTime[0])
+    def test_racer3_laptimes(self):
+        expectedLaps = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""] # 23 laps
+        self.assertEqual(expectedLaps, self.singe_test_race.lapRowsTime[2])
+    
+    def test_racer12_laptimes(self):
+        expectedLaps = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""] # 23 laps
+        self.assertEqual(expectedLaps, self.singe_test_race.lapRowsTime[11])
 
+    def test_racer7_laptimes(self):
+        expectedLaps = ["254.2", "23.01", "28.15", "23.90", "21.09", "21.30", "22.15", "26.00", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""] # 23 laps
+        self.assertEqual(expectedLaps, self.singe_test_race.lapRowsTime[6])
 
 
 if __name__ == '__main__':

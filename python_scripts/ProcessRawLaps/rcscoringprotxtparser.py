@@ -137,7 +137,7 @@ class RCScoringProTXTParser(SingleRace):
         """
         
         '''
-        # IMPORTANT BUG EXPLANTION     
+        # IMPORTANT EXPLANATION FOR RACES WITH PACE DATA.    
         # Some race results have the pace for the lap included in the results
          ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
          6/37.57 5/32.86 4/31.55         3/29.97 2/29.45 1/29.18                        
@@ -157,6 +157,9 @@ class RCScoringProTXTParser(SingleRace):
          ' 10/15.7 11/01.4 12/18.7         13/29.7 13/22.8 13/19.3', 
          '',
         '''
+        
+        pacedata_included = None # If there is pace data, this will be used as a counter. 
+                
         lapData = False
         for index in range(len(self._singleRaceLines)):
                                         
@@ -169,22 +172,18 @@ class RCScoringProTXTParser(SingleRace):
                     raise Exception("The column header data spilled into a new line")
                 self._columnHeaders = line.strip('\r\n')
                 lapData = True
-                
-                # WARNING HACK TO MITIGATE LACK OF SUPPORT FOR OLDER RACE FORMATS
+                                
                 # Check to see if pace data is mixed in - this is a strong indicator.
                 index = self._singleRaceLines.index(line)
                 #print "DEBUG TEST:"
                 #for line in self._singleRaceLines[index:]:
                 #    print line 
-                #print "'" + self._singleRaceLines[index + 3].strip() + "'"
-                #print "'" + self._singleRaceLines[index + 6].strip() + "'"
-                #print "'" + self._singleRaceLines[index + 9].strip() + "'"
-                
+                               
                 if (self._singleRaceLines[index + 3].strip() == '' and 
                     self._singleRaceLines[index + 6].strip() == '' and 
                     self._singleRaceLines[index + 9].strip() == ''): 
-                    raise Exception("This file format not supported, cannot mix pace data in with lap times.")
-                
+                    #raise Exception("This file format not supported, cannot mix pace data in with lap times.")
+                    pacedata_included = 0
                 
             # Get the laps in row format
             elif lapData:
@@ -194,8 +193,16 @@ class RCScoringProTXTParser(SingleRace):
                     index += 2 # WARNING - This is for additional laps logic below. 
                     break
  
-                # Warning - we dont want to blanket strip this (white space matters)
-                self._lapRowsRaw.append(line.strip('\r\n'))
+                # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                # Special code for dealing with pace data.
+                if (pacedata_included == None): # Common case (no pace data)
+                    # Warning - we dont want to blanket strip this (white space matters)
+                    self._lapRowsRaw.append(line.strip('\r\n'))
+                else: # Special case (pace data mixed in).
+                    if (pacedata_included % 3 == 0):
+                        self._lapRowsRaw.append(line.strip('\r\n'))
+                    pacedata_included += 1
+                # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 
             # Get race header data.
             if not lapData:
@@ -203,7 +210,10 @@ class RCScoringProTXTParser(SingleRace):
                 self._raceHeaderData_RAW.append(line)
         
         
-        # Is there additional racer data?
+        # ===================================================
+        # Check to see if there additional racer data - (MORE THAN 10 RACERS)
+        # ===================================================
+        
         # Starting at the index, lets look for another column row.
         found_additional_laps = False
         additional_lap_index = 0
@@ -214,14 +224,27 @@ class RCScoringProTXTParser(SingleRace):
             if ((not found_additional_laps) and (line.find('__11__') != -1)):                
                 found_additional_laps = True
                 self._columnHeaders += line
+                if (pacedata_included != None):
+                    pacedata_included = 0
                 
             elif found_additional_laps:
-                if (line.find('-----') != -1):                    
-                    # Example: ' ------- ------- ------- ------- ' 
+                if (line.find('-----') != -1):                   
+                    # Indicates there is no more data
+                    #     Example: ' ------- ------- ------- ------- ' 
                     break
                 
-                self._lapRowsRaw[additional_lap_index] += line
-                additional_lap_index += 1
+                # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                # Special code for dealing with pace data.
+                if (pacedata_included == None): # Common case (no pace data)
+                    self._lapRowsRaw[additional_lap_index] += line
+                    additional_lap_index += 1
+                else: # Special case (pace data mixed in)
+                    if (pacedata_included % 3 == 0):
+                        self._lapRowsRaw[additional_lap_index] += line
+                        additional_lap_index += 1
+                    pacedata_included += 1
+                # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                
                 
             
     def _process_Raw_Lap_Rows(self):
