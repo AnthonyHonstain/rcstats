@@ -442,14 +442,15 @@ def _process_singlerace(race):
     # ===============================================================
     # Lookup if this class is being ranked.
     pattern = re.compile("[A-Z][1-9]? main", re.IGNORECASE)
-    start_index = pattern.search(race.raceClass).start(0)
-    trimmed_class = race.raceClass[:start_index].strip('+- ')
-    
-    rankedclass = RankedClass.objects.filter(trackkey__exact=track_obj.id,
-                                             raceclass__icontains=trimmed_class)
-    if (len(rankedclass) > 0):
-        # We found a ranked class to process its ranking data.
-        process_ranking(rankedclass[0])
+    if (pattern.search(race.raceClass) != None):
+        start_index = pattern.search(race.raceClass).start(0)
+        trimmed_class = race.raceClass[:start_index].strip('+- ')
+        
+        rankedclass = RankedClass.objects.filter(trackkey__exact=track_obj.id,
+                                                 raceclass__icontains=trimmed_class)
+        if (len(rankedclass) > 0):
+            # We found a ranked class to process its ranking data.
+            process_ranking(rankedclass[0])
 
     return details_obj
 
