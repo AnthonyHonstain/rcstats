@@ -20,6 +20,7 @@ from rcstats.rcdata.models import SupportedTrackName
 from rcstats.rcdata.models import TrackName
 from rcstats.rcdata.models import RacerId
 
+
 class SingleRace(TestCase):
 
     singlerace_testfile = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/17/2012
@@ -341,7 +342,7 @@ Golf, Jon            #7         17         6:16.439         18.222            13
 
 
 
-    def test_multipledraces_upload(self):
+    def test_multipleraces_upload(self):
         
         #====================================================
         # Validate Racers
@@ -551,7 +552,7 @@ Huddleston, Chris            #3          3           51.832         23.550
     racelist_to_upload = [{'filename':'upload1', 'filecontent':singlerace_testfile1},]
     
 
-    def test_multipledraces_upload(self):
+    def test_multipleraces_upload(self):
         
         #====================================================
         # Validate Racers

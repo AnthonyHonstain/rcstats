@@ -1,80 +1,77 @@
 {% extends "admin/base_site.html" %}
-{% load i18n %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css" />{% endblock %}
+<!-- LOADING -->
+{% load i18n grp_tags log %}
 
-{% block coltype %}colMS{% endblock %}
+<!-- JAVASCRIPTS -->
+{% block javascripts %}
+    {{ block.super }}
+{% endblock %}
 
+<!-- COLTYPE/BODYCLASS-- >
 {% block bodyclass %}dashboard{% endblock %}
+{% block content-class %}content-grid{% endblock %}
 
-{% block breadcrumbs %}{% endblock %}
+<!-- BREADCRUMBS -->
+{% block breadcrumbs %}
+    <ul class="grp-horizontal-list">
+        <li>{% trans "Home" %}</li>
+    </ul>
+{% endblock %}
+{% block content_title %}
+    {% if title %}
+        <header><h1>{{ title }}</h1></header>
+    {% endif %}
+{% endblock %}
 
+<!-- CONTENT -->
 {% block content %}
-<div id="content-main">
-
-{% if app_list %}
-    {% for app in app_list %}
-        <div class="module">
-        <table summary="{% blocktrans with app.name as name %}Models available in the {{ name }} application.{% endblocktrans %}">
-        <caption><a href="{{ app.app_url }}" class="section">{% blocktrans with app.name as name %}{{ name }}{% endblocktrans %}</a></caption>
-        {% for model in app.models %}
-            <tr>
-            {% if model.perms.change %}
-                <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
-            {% else %}
-                <th scope="row">{{ model.name }}</th>
-            {% endif %}
-
-            {% if model.perms.add %}
-                <td><a href="{{ model.admin_url }}add/" class="addlink">{% trans 'Add' %}</a></td>
-            {% else %}
-                <td>&nbsp;</td>
-            {% endif %}
-
-            {% if model.perms.change %}
-                <td><a href="{{ model.admin_url }}" class="changelink">{% trans 'Change' %}</a></td>
-            {% else %}
-                <td>&nbsp;</td>
-            {% endif %}
-            </tr>
-        {% endfor %}
-        </table>
-        </div>
-    {% endfor %}
-{% else %}
-    <p>{% trans "You don't have permission to edit anything." %}</p>
-{% endif %}
-</div>
-{% endblock %}
-
-{% block sidebar %}
-<div id="content-related">
-    <div class="module" id="recent-actions-module">
-        <h2>{% trans 'Recent Actions' %}</h2>
-        <h3>{% trans 'My Actions' %}</h3>
-            {% load log %}
-            {% get_admin_log 10 as admin_log for_user user %}
-            {% if not admin_log %}
-            <p>{% trans 'None available' %}</p>
-            {% else %}
-            <ul class="actionlist">
-            {% for entry in admin_log %}
-            <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
-                {% if entry.is_deletion or not entry.get_admin_url %}
-                    {{ entry.object_repr }}
-                {% else %}
-                    <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
-                {% endif %}
-                <br/>
-                {% if entry.content_type %}
-                    <span class="mini quiet">{% filter capfirst %}{% trans entry.content_type.name %}{% endfilter %}</span>
-                {% else %}
-                    <span class="mini quiet">{% trans 'Unknown content' %}</span>
-                {% endif %}
-            </li>
+    <div class="g-d-c">
+        <div class="g-d-12 g-d-f">
+            {% for app in app_list %}
+                <div class="grp-module" id="app_{{ app.name|lower }}">
+                    <h2><a href="{{ app.app_url }}" class="grp-section">{% trans app.name %}</a></h2>
+                    {% for model in app.models %}
+                        <div class="grp-row">
+                            {% if model.perms.change %}<a href="{{ model.admin_url }}"><strong>{{ model.name }}</strong></a>{% else %}<span><strong>{{ model.name }}</strong></span>{% endif %}
+                            {% if model.perms.add or model.perms.change %}
+                                <ul class="grp-actions">
+                                    {% if model.perms.add %}<li class="grp-add-link"><a href="{{ model.admin_url }}add/">{% trans 'Add' %}</a></li>{% endif %}
+                                    {% if model.perms.change %}<li class="grp-change-link"><a href="{{ model.admin_url }}">{% trans 'Change' %}</a></li>{% endif %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% empty %}
+                <p>{% trans "You don´t have permission to edit anything." %}</p>
             {% endfor %}
-            </ul>
-            {% endif %}
+        </div>
+        <div class="g-d-6 g-d-l">
+            <div class="grp-module" id="grp-recent-actions-module">
+                <h2>{% trans 'Recent Actions' %}</h2>
+                <div class="grp-module">
+                    <h3>{% trans 'My Actions' %}</h3>
+                    {% get_admin_log 10 as admin_log for_user user %}
+                    {% if not admin_log %}
+                        <p>{% trans 'None available' %}</p>
+                    {% else %}
+                        <ul class="grp-listing-small">
+                            {% for entry in admin_log %}
+                                <li class="grp-row{% if entry.is_addition %} grp-add-link{% endif %}{% if entry.is_change %} grp-change-link{% endif %}{% if entry.is_deletion %} grp-delete-link{% endif %}">
+                                    {% if entry.is_deletion %}
+                                        <span>{{ entry.object_repr }}</span>
+                                    {% else %}
+                                        <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                                    {% endif %}
+                                    <span class="grp-font-color-quiet">{% filter capfirst %}{% trans entry.content_type.name %}{% endfilter %}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 {% endblock %}
+

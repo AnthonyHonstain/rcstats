@@ -212,7 +212,7 @@ Echo, Jon            #3          3         1:05.720         17.099
                           {'filename':'upload3', 'filecontent':singlerace_testfile3},]
     
     
-    def test_multipledraces_upload(self):
+    def test_multipleraces_upload(self):
         
         # Basic checks befor we collapse the names.
         

@@ -33,7 +33,8 @@ urlpatterns = patterns('',
     
     url(r'^displayresults/singleracerlaps/(?P<race_detail>\d+)/(?P<racer_id>\d+)/$', 'rcstats.displayresults.views.singleracerlaps'),
 
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^grappelli/', include('grappelli.urls')),
+    url(r'^admin/', include(admin.site.urls)),    
 )
 
 if settings.DEBUG:

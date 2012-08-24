@@ -5,6 +5,7 @@ from django.contrib import admin
 class UploadRecordAdmin(admin.ModelAdmin):
     list_display = ('filename', 'user', 'ip', 'filesize', 'filemd5', 'uploaddate')
     list_filter = ['user', 'ip']
+    ordering = ('-uploaddate',)
 
 class UploadedRacesAdmin(admin.ModelAdmin):
     list_display = ('upload', 'racedetails') 

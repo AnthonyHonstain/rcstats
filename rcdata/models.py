@@ -63,6 +63,12 @@ class LapTimes(models.Model):
             str(self.raceposition) + " | " +\
             str(self.racelaptime)
 
-
-
+class OfficialClassNames(models.Model):
+    raceclass = models.CharField(max_length=200)
+    def __str__(self):
+        return self.raceclass
+    
+class AliasClassNames(models.Model):
+    raceclass = models.CharField(max_length=200)
+    officialclass = models.ForeignKey(OfficialClassNames)
     
