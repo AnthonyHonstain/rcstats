@@ -153,17 +153,16 @@ def get_ranked_classes_by_track(trackkey):
     
     for rankedclass in possible_rankedclasses:
         rankevents = RankEvent.objects.filter(rankedclasskey__exact=rankedclass.id)
-        latestevent = None    
-        if (len(rankevents) > 0):
-            latestevent = rankevents.order_by('-eventcount')[0]
             
-        # We want to count the number of ranked racers with the required number of events.
-        rankings = Ranking.objects.filter(rankeventkey__exact=latestevent.id,
-                                          racecount__gte=REQUIRED_NUM_RACES)
+        if (len(rankevents) > 0):
+            latestevent = rankevents.order_by('-eventcount')[0]            
+            # We want to count the number of ranked racers with the required number of events.
+            rankings = Ranking.objects.filter(rankeventkey__exact=latestevent.id,
+                                              racecount__gte=REQUIRED_NUM_RACES)
+            if (len(rankings) >= 2):
+                return_keys.append(rankedclass.id)
+        # If there were not rankevents or rankings, we don't want to show this class.
         
-        if (len(rankings) >= 2):
-            return_keys.append(rankedclass.id)
-
     return return_keys
 
 
