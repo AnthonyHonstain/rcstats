@@ -376,9 +376,7 @@ def _combine_races(submain_results, highermain_results):
     highermain_results: the list of racerid's in the order of finalpos, this
         will be the results of a higher main. If submain is the C main,
         the highermain_results would be the B main.
-    '''
-    returnlist = []
-    
+    '''        
     print "COMBINE RACES", highermain_results, submain_results
     # Fist check for bumps and remove them from the submain results.
     for higherresult in highermain_results:

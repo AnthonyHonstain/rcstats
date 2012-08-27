@@ -20,6 +20,7 @@ from rcstats.ranking.models import RankedClass
 from rcstats.ranking.views import process_ranking 
 
 from rcstats.rcdata.views import collapsenames
+from rcstats.rcdata.database_cleanup import collapse_alias_classnames
 
 from rcstats.rcdata.models import SupportedTrackName
 from rcstats.rcdata.models import TrackName
@@ -79,10 +80,18 @@ def upload_start(request):
             # Need to make sure the key used for FILES[ ] matches up with the
             # form in the template.
             
+            # Bug - This is not the ideal solution but I need quick 
+            # way for this to work in production and in development.
+            #     In the dev enviro, 'HTTP_X_FORWARD_FOR' is not a 
+            #     key in request.META
+            ip = "127.0.0.1" 
+            if 'HTTP_X_FORWARDED_FOR' in request.META:
+                ip = request.META['HTTP_X_FORWARDED_FOR']
+            
             # Record the information we need about the fileupload. Not everything
             # is immediately record (we record the hash and local file name later).
             log_entry = UploadRecord(origfilename=request.FILES['file'].name,
-                               ip=request.META['HTTP_X_FORWARDED_FOR'],
+                               ip=ip,
                                user=request.user,
                                filesize=request.FILES['file'].size,
                                uploaddate=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
@@ -434,6 +443,11 @@ def _process_singlerace(race):
     # Collapse alias names.
     # ===============================================================
     collapsenames()
+    
+    # ===============================================================
+    # Collapse class names.
+    # ===============================================================    
+    collapse_alias_classnames(SingleRaceDetails.objects.filter(id__exact=details_obj.id))
 
     # ===============================================================
     # Do we need to update ranking?
