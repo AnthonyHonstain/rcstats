@@ -1,15 +1,17 @@
+from django.views.decorators.cache import cache_page
+
 from django.db import connection
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from rcstats.rcdata.models import RacerId, SingleRaceResults, LapTimes
 
-
+@cache_page(60 * 60 * 12)
 def index(request):
     
     return render_to_response('index.html', {}, context_instance=RequestContext(request))
 
-
+@cache_page(60 * 60 * 12)
 def faq(request):
     
     return render_to_response('faq.html', {}, context_instance=RequestContext(request))

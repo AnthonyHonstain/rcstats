@@ -4,6 +4,8 @@ import pytz
 
 from dateutil.relativedelta import relativedelta
 
+from django.views.decorators.cache import cache_page
+
 from django.conf import settings
 from django.template import Context
 from django.template import RequestContext
@@ -17,7 +19,7 @@ from rcstats.ranking.views import get_ranked_classes_by_track
 from rcstats.ranking.models import RankedClass
 from rcstats.rcdata.models import SupportedTrackName, SingleRaceDetails, SingleRaceResults
 
-
+@cache_page(60 * 60)
 def trackdata(request):
     """
     This view will display a list of the supported race tracks. It
@@ -30,7 +32,7 @@ def trackdata(request):
 
     return render_to_response('trackdata.html', {'track_list':tracklist}, context_instance=RequestContext(request))
 
-
+@cache_page(60 * 60)
 def trackdetail(request, track_id):
     """
     This view is the initial page once a track has been selected.
@@ -52,7 +54,7 @@ def trackdetail(request, track_id):
                    'formated_rankedclasses':formated_rankedclasses})
     return render_to_response('trackdatadetail.html', ctx, context_instance=RequestContext(request))
     
-
+@cache_page(60 * 60)
 def trackdetail_data(request, track_id, time_frame='alltime'):
     """
     the purpose of trackdetail_data is to provide summary race data about

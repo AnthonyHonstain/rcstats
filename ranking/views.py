@@ -1,6 +1,8 @@
 import re
 import trueskill.trueskill as trueskill
 
+from django.views.decorators.cache import cache_page
+
 from django.db.models import Max
 from django.http import Http404
 from django.shortcuts import render_to_response, get_object_or_404
@@ -25,6 +27,7 @@ def _format_rank(rank):
     return round(rank, 2)
 
 
+@cache_page(60 * 60)
 def ranking_track_class(request, rankedclass_id):
     
     rankedclass_obj = get_object_or_404(RankedClass, pk=rankedclass_id)
