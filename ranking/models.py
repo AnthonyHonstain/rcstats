@@ -7,6 +7,9 @@ class RankedClass(models.Model):
     # I had hoped to have startdate as a DateField, but I need to
     # consider the time as well (to simplify multiple races on same day).
     startdate = models.DateTimeField('Date Time to start ranking from.')
+    lastdate = models.DateTimeField('The most recent ranking date.')
+    experation = models.IntegerField('The number of races before a ranking expires')
+    requiredraces = models.IntegerField('The number of ranked races required before showing in ranking')
     def __str__(self):
         return str(self.trackkey) + " | " + self.raceclass
     
@@ -25,5 +28,6 @@ class Ranking(models.Model):
     raceridkey = models.ForeignKey(RacerId)
     mu = models.FloatField()
     sigma = models.FloatField()
-    rank = models.FloatField("Calculated using mu and sigma.")
+    displayrank = models.FloatField("Calculated using mu and sigma.")
     racecount = models.IntegerField("The number of ranked race events.")
+    lastrace = models.IntegerField("The most recent RankEvent event they participated in")

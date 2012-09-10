@@ -2,7 +2,7 @@ from rcstats.ranking.models import RankedClass, RankEvent, RankEventDetails, Ran
 from django.contrib import admin
 
 class RankedClassAdmin(admin.ModelAdmin):
-    list_display = ('trackkey', 'raceclass', 'startdate')
+    list_display = ('trackkey', 'raceclass', 'startdate', 'lastdate', 'experation', 'requiredraces')
     list_filter = ['trackkey', 'raceclass']
 
 class RankedEventAdmin(admin.ModelAdmin):
@@ -13,7 +13,7 @@ class RankedEventDetailsAdmin(admin.ModelAdmin):
     list_display = ('rankeventkey', 'racedetailskey')
     
 class RankingAdmin(admin.ModelAdmin):
-    list_display = ('rankeventkey', 'raceridkey',  'mu', 'sigma', 'rank', 'racecount')
+    list_display = ('rankeventkey', 'raceridkey',  'mu', 'sigma', 'displayrank', 'racecount', 'lastrace')
         
 admin.site.register(RankedClass, RankedClassAdmin)
 admin.site.register(RankEvent,RankedEventAdmin)

@@ -263,7 +263,9 @@ def upload_validate(request, upload_id):
             #     an emergency (all that would be needed would be these text files).
             _modify_trackname(upload_record.filename, upload_trackname, track.trackname)
             
-            uploaded_races_list = []
+            uploaded_races_list = [] # This is to display to the user.
+            uploaded_raceid_list = [] # This is for ranking
+            
             # Process each race and load it into the DB.             
             for race in prevalidation_race_list:
                 # Set the new trackname on each of the race objects.
@@ -274,6 +276,7 @@ def upload_validate(request, upload_id):
                     # We are going to track who uploaded this race.
                     UploadedRaces.objects.create(upload=upload_record, racedetails=new_singleracedetails)
                     uploaded_races_list.append((race.raceClass, new_singleracedetails.id))
+                    uploaded_raceid_list.append(new_singleracedetails.id)
                 except FileAlreadyUploadedError:
                     logger.error("This race has already been uploaded, filename=" + filename + " raceobject:" + str(race))        
                     return render_to_response('upload_validate.html',
@@ -286,8 +289,9 @@ def upload_validate(request, upload_id):
                     return render_to_response('upload_validate.html',
                                               {'state':state,},
                                               context_instance=RequestContext(request)) 
-                    
-                    
+            
+            _update_ranking(track, uploaded_raceid_list)        
+                        
             # Log this upload as processed (we do NOT want to support
             # multiple attempts at uploading the file).
             upload_record.processed = True
@@ -447,26 +451,34 @@ def _process_singlerace(race):
     # ===============================================================
     # Collapse class names.
     # ===============================================================    
+    # Note - this likely changed the race's name.
     collapse_alias_classnames(SingleRaceDetails.objects.filter(id__exact=details_obj.id))
 
-    # ===============================================================
-    # Do we need to update ranking?
-    # TESTING/PROTOTYPE - have not decided if this is the best place for this.
-    # WARNING - The names need to be collapsed first, or it will confuse the ranking.
-    # ===============================================================
-    # Lookup if this class is being ranked.
-    pattern = re.compile("[A-Z][1-9]? main", re.IGNORECASE)
-    if (pattern.search(race.raceClass) != None):
-        start_index = pattern.search(race.raceClass).start(0)
-        trimmed_class = race.raceClass[:start_index].strip('+- ')
-        
-        rankedclass = RankedClass.objects.filter(trackkey__exact=track_obj.id,
-                                                 raceclass__icontains=trimmed_class)
-        if (len(rankedclass) > 0):
-            # We found a ranked class to process its ranking data.
-            process_ranking(rankedclass[0])
-
     return details_obj
+
+
+def _update_ranking(track_obj, raceid_list):
+    
+    for racedetails_id in raceid_list:
+        # Ensure we have the newest name for the race.
+        updateddetails = SingleRaceDetails.objects.get(pk = racedetails_id)
+        
+        # ===============================================================
+        # Do we need to update ranking?
+        # TESTING/PROTOTYPE - have not decided if this is the best place for this.
+        # WARNING - The names need to be collapsed first, or it will confuse the ranking.
+        # ===============================================================
+        # Lookup if this class is being ranked.
+        pattern = re.compile("[A-Z][1-9]? main", re.IGNORECASE)
+        if (pattern.search(updateddetails.racedata) != None):
+            start_index = pattern.search(updateddetails.racedata).start(0)
+            trimmed_class = updateddetails.racedata[:start_index].strip('+- ')
+            
+            rankedclass = RankedClass.objects.filter(trackkey__exact=track_obj.id,
+                                                     raceclass__icontains=trimmed_class)
+            if (len(rankedclass) > 0):
+                # We found a ranked class to process its ranking data.
+                process_ranking(rankedclass[0])
 
 
 def _calculate_race_length(raceHeaderData):

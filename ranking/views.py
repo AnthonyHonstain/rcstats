@@ -17,7 +17,6 @@ def ranking(request):
     return render_to_response('ranking.html', {}, context_instance=RequestContext(request))
 
 
-REQUIRED_NUM_RACES = 10
 NUM_RANK_EVENTS_TO_DISPLAY = 8
 
 
@@ -34,9 +33,7 @@ def ranking_track_class(request, rankedclass_id):
     
     trackname = TrackName.objects.get(pk=rankedclass_obj.trackkey.id).trackname
     classname =  rankedclass_obj.raceclass
-
-    # Get the last ten rankings and graph them.
-    
+        
     rankevents = RankEvent.objects.filter(rankedclasskey__exact=rankedclass_obj.id)
     if (len(rankevents)  < 1):
         # We do not have anyhting to show the user.
@@ -52,14 +49,16 @@ def ranking_track_class(request, rankedclass_id):
     current_ranking_formated = []
     
     datatable_ranking = Ranking.objects.filter(rankeventkey__exact=latestevents[0].id,
-                                               racecount__gte=REQUIRED_NUM_RACES).order_by('-rank')
+                                               racecount__gte=rankedclass_obj.requiredraces).order_by('-displayrank')
     
     count = 1
     for rank in datatable_ranking:
-        current_ranking_formated.append([count, rank.raceridkey.racerpreferredname, _format_rank(rank.rank)])
-        count += 1
-        current_rank_ordering.append(rank.raceridkey.id)
-        
+        # The are only shown if they have raced frequently enough (defined for the class).
+        if (latestevents[0].eventcount - rank.lastrace <= rankedclass_obj.experation):
+            current_ranking_formated.append([count, rank.raceridkey.racerpreferredname, _format_rank(rank.displayrank)])
+            count += 1
+            current_rank_ordering.append(rank.raceridkey.id)
+            
     current_ranking = simplejson.dumps(current_ranking_formated) 
     
     super_group = []
@@ -88,7 +87,7 @@ def ranking_track_class(request, rankedclass_id):
             
         for rankevent in latestevents:        
             ranking = Ranking.objects.filter(rankeventkey__exact=rankevent.id,
-                                             racecount__gte=REQUIRED_NUM_RACES).order_by('-rank')
+                                             racecount__gte=rankedclass_obj.requiredraces).order_by('-displayrank')
             
             for rank in ranking: # This covers all the racers being ranked at this stage.
                 
@@ -97,9 +96,9 @@ def ranking_track_class(request, rankedclass_id):
                 if (rank.raceridkey.id in current_rank_ordering[prev:current]):
                     print "ping"
                     if rank.raceridkey.id in racer_dict:
-                        racer_dict[rank.raceridkey.id].append(_format_rank(rank.rank))
+                        racer_dict[rank.raceridkey.id].append(_format_rank(rank.displayrank))
                     else:
-                        racer_dict[rank.raceridkey.id] = [None, None, _format_rank(rank.rank), ]
+                        racer_dict[rank.raceridkey.id] = [None, None, _format_rank(rank.displayrank), ]
             
             
         # Now we need to format the ranking data for display in the flot graph.    
@@ -135,6 +134,10 @@ def ranking_track_class(request, rankedclass_id):
     return render_to_response('rankingtrackclassdetailed.html', 
                               {'trackname': trackname,
                                'classname': classname, 
+                               'startdate':rankedclass_obj.startdate,
+                               'lastdate':rankedclass_obj.lastdate,
+                               'experation':rankedclass_obj.experation,
+                               'requiredraces':rankedclass_obj.requiredraces,
                                'current_ranking': current_ranking,
                                'super_group': super_group,}, 
                               context_instance=RequestContext(request))
@@ -143,7 +146,7 @@ def ranking_track_class(request, rankedclass_id):
 def get_ranked_classes_by_track(trackkey):
     '''
     For the given track, return all the rankedclass keys that have ranked
-    racers with the REQUIRED_NUM_RACES.    
+    racers with the required number of races.    
     '''
     trackname_obj = TrackName.objects.get(pk=trackkey)
     
@@ -161,7 +164,7 @@ def get_ranked_classes_by_track(trackkey):
             latestevent = rankevents.order_by('-eventcount')[0]            
             # We want to count the number of ranked racers with the required number of events.
             rankings = Ranking.objects.filter(rankeventkey__exact=latestevent.id,
-                                              racecount__gte=REQUIRED_NUM_RACES)
+                                              racecount__gte=rankedclass.requiredraces)
             if (len(rankings) >= 2):
                 return_keys.append(rankedclass.id)
         # If there were not rankevents or rankings, we don't want to show this class.
@@ -180,11 +183,12 @@ class _GroupedEvent():
         return str(self.rankevent) + " " + str(self.ranking)
     
 class _Player(object):    
-    def __init__(self, racerid, skill=(25.0, 25.0/3.0), racecount=1):
+    def __init__(self, racerid, lastrace, skill=(25.0, 25.0/3.0), racecount=1):
         self.racerid = racerid
         self.skill = skill
         self.racecount = racecount
         self.rank = None
+        self.lastrace = lastrace
     
     def __str__(self):
         return "mu={0[0]:.3f}  sigma={0[1]:.3f} count={1}".format(self.skill, self.racecount)
@@ -201,12 +205,12 @@ def process_ranking(rankedclass_obj):
         being tracked in a RankEvent), then it will not be considered
         in the ranking.
         
-    IMPORTANT - Quallifiers are considered as well.
+    IMPORTANT - Qualifiers are considered as well.
     '''    
     # ===============================================================
     # Step 1 - Get the date to start looking for new races from
     # ===============================================================
-    checkdate = rankedclass_obj.startdate
+    checkdate = rankedclass_obj.lastdate
     print "checkdate", checkdate
         
     # ===============================================================
@@ -313,10 +317,10 @@ def process_ranking(rankedclass_obj):
 
     # This is important, we want to record the date of the last race we have
     # processed.
-    rankedclass_obj.startdate = prev_race.racedate
+    rankedclass_obj.lastdate = prev_race.racedate
     rankedclass_obj.save()
     
-    #print "New Start Date:", rankedclass_obj.startdate 
+    #print "New Start Date:", rankedclass_obj.lastdate 
 
     # ===============================================================
     # Step 4 - Now we are ready to compute the ranking.
@@ -328,14 +332,15 @@ def process_ranking(rankedclass_obj):
         print "Ranking:",  event.ranking
         print "Number of players to rank for this event:", len(event.ranking) 
         
-        player_dict = {} # Used to organize all the Player objects before we compute ranking.
+        player_dict = {} # Used to organize ALL the Player objects before we compute ranking.
     
         # We need all the currently ranked racers for this class.
         currently_ranked = Ranking.objects.filter(rankeventkey__exact=latestevent_ranked)
         for player in currently_ranked:
             player_dict[player.raceridkey.id] = _Player(player.raceridkey.id, 
                                                         skill=(player.mu, player.sigma), 
-                                                        racecount=player.racecount)
+                                                        racecount=player.racecount,
+                                                        lastrace=player.lastrace)
         
         players_to_adjust = []
         
@@ -343,13 +348,15 @@ def process_ranking(rankedclass_obj):
         # and process the racers from this event (increment their racecount and set rank).
         for i in range(len(event.ranking)):
             racer = event.ranking[i]
+            
             if racer in player_dict:
                 player_dict[racer].racecount += 1
+                player_dict[racer].lastrace = event.rankevent.eventcount
             else:
-                player_dict[racer] = _Player(racer)
+                player_dict[racer] = _Player(racer, lastrace=event.rankevent.eventcount)
                 
-            player_dict[racer].rank = i + 1
-            
+            player_dict[racer].rank = i + 1 
+                        
             players_to_adjust.append(player_dict[racer])
                 
         # We adjust the racers that were in this event.
@@ -362,9 +369,10 @@ def process_ranking(rankedclass_obj):
                                  raceridkey = RacerId.objects.get(pk=racer.racerid),
                                  mu = racer.skill[0] ,
                                  sigma = racer.skill[1], 
-                                 # rank = mu - (3*sigma)
-                                 rank = racer.skill[0] - 3*racer.skill[1],
-                                 racecount = racer.racecount)
+                                 # displayrank = mu - (3*sigma)
+                                 displayrank = racer.skill[0] - 3*racer.skill[1],
+                                 racecount = racer.racecount,
+                                 lastrace = racer.lastrace)
             newranking.save()
         
         latestevent_ranked = event.rankevent
@@ -381,7 +389,7 @@ def _combine_races(submain_results, highermain_results):
         the highermain_results would be the B main.
     '''        
     print "COMBINE RACES", highermain_results, submain_results
-    # Fist check for bumps and remove them from the submain results.
+    # First check for bumps and remove them from the submain results.
     for higherresult in highermain_results:
         if higherresult in submain_results:
             print "FOUND BUMP:", higherresult
