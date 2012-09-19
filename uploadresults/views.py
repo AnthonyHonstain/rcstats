@@ -19,8 +19,7 @@ from models import UploadedRaces
 from rcstats.ranking.models import RankedClass
 from rcstats.ranking.views import process_ranking 
 
-from rcstats.rcdata.views import collapsenames
-from rcstats.rcdata.database_cleanup import collapse_alias_classnames
+from rcstats.rcdata.database_cleanup import collapse_alias_classnames, collapse_racer_names
 
 from rcstats.rcdata.models import SupportedTrackName
 from rcstats.rcdata.models import TrackName
@@ -442,11 +441,12 @@ def _process_singlerace(race):
                                               finalpos=racer['Final Position'])
         individual_result.save()       
 
-
+    # TODO - I can see the following code being good stuff to log.    
+    
     # ===============================================================
-    # Collapse alias names.
+    # Collapse alias racer names.
     # ===============================================================
-    collapsenames()
+    collapse_racer_names()
     
     # ===============================================================
     # Collapse class names.

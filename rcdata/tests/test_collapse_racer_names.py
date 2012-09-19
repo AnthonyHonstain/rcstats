@@ -15,7 +15,7 @@ from rcstats.rcdata.models import RacerId
 
 import rcstats.uploadresults.tests as uploadresultstests
 
-from rcstats.rcdata.views import _ProcessRacerId, collapsenames
+from rcstats.rcdata.database_cleanup import _ProcessRacerId, collapse_racer_names
 
 class TestProcessRacerIdSimple(TestCase):
 
@@ -77,7 +77,7 @@ class TestProcessRacerId_E2E_detailed(TestCase):
 
 
 
-class CollapseNames(uploadresultstests.GeneralRaceUploader):
+class CollapseRacerNames(uploadresultstests.GeneralRaceUploader):
     
     singlerace_testfile1 = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/17/2012
 
@@ -291,7 +291,7 @@ Echo, Jon            #3          3         1:05.720         17.099
         # Collapse the names
         #     Not necessary, it happens at upload time
         #=====================================================
-        #collapsenames()
+        #collapse_racer_names()
         
         #=====================================================
         # Validate that "Honstain, Anthony" was collapsed to "Anthony Honstain"
