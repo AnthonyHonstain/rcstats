@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test.client import Client
 
-import rcdata.models as models
+import rcstats.rcdata.models as models
 
 import datetime
         
