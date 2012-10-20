@@ -33,6 +33,13 @@ class SingleRaceDetails(models.Model):
     uploaddate = models.DateTimeField('Date the race was uploaded')
     racelength = models.IntegerField('Number of minutes for the race')
     winninglapcount = models.IntegerField('Number of laps that won the race')
+    # Need two seperate columns, one for the main, and another for its main-round number
+    #     The main-round number A3 may have no correlation with the race round number.
+    # Example: A main -> mainevent=1 , C main -> mainevent=3
+    #     Then a B1 main -> mainevent=2 maineventroundnum=1
+    mainevent = models.SmallIntegerField(null=True)
+    maineventroundnum = models.SmallIntegerField(null=True)    
+    maineventparsed = models.CharField(max_length=200, null=True)
     def __str__(self):
         return str(self.trackkey) + " | " +\
             str(self.racedata) + " | " +\
