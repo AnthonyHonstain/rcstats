@@ -87,7 +87,7 @@ class SingleRace(TestCase):
                                                                   roundnumber=3,
                                                                   racenumber=16,
                                                                   winninglapcount='2',
-                                                                  )
+                                                                  mainevent=1,)
            
         self.results = []
         result0 = models.SingleRaceResults.objects.create(id=1,

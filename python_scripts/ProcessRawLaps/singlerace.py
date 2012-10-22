@@ -33,6 +33,9 @@ class SingleRace(object):
         self.raceClass = None
         self.roundNumber = None
         self.raceNumber = None
+        self.mainEvent = None
+        self.mainEventRoundNum = None
+        self.mainEventParsed = None
         
         self.raceHeaderData = [] # List of Dictionaries
         self.lapRowsTime = [] # List of Lists

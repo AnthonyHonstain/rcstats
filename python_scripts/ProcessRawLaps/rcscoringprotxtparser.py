@@ -45,7 +45,7 @@ ________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
   8:04.7  8:00.5  8:07.7  8:08.6  8:14.3  8:10.1  8:01.7  8:04.4  8:15.2  8:13.1
 '''
 from singlerace import SingleRace
-
+import re
 
 class RCScoringProTXTParser(SingleRace):
     """
@@ -347,10 +347,14 @@ class RCScoringProTXTParser(SingleRace):
         
         self.trackName = self._raceHeaderData_RAW[2].strip()
         
-        self.raceClass, self.roundNumber, self.raceNumber = \
+        race_class_raw, self.roundNumber, self.raceNumber = \
             self._parse_Class_And_Race_Data(self._raceHeaderData_RAW[4])
         
-        
+        # Extract the main event and main event round info from the class data.
+        # Example: race classes often contain information like "Mod Buggy A-main"
+        self.raceClass, self.mainEvent, self.mainEventRoundNum, self.mainEventParsed = \
+            self._parse_Class_Main_Event_Info(race_class_raw)
+                
         #
         # Step 2 - is to process the general race results for each racer.
         #
@@ -423,7 +427,54 @@ class RCScoringProTXTParser(SingleRace):
         round_num = rawClassData[roundIndex:].split(',')[0].split()[1]
         race_num = rawClassData[roundIndex:].split(',')[1].split()[1]
         return (raceClass, round_num, race_num)
-         
+    
+    
+    def _parse_Class_Main_Event_Info(self, race_class_raw):
+        '''        
+        Examples of what we want to process:
+            "Mod Buggy A-main"
+            "Mod Buggy A main"
+            "Pro 4 A3 main"
+            "Pro 4 B2 main"
+        '''
+        pattern = re.compile("[A-Z][1-9]?.main", re.IGNORECASE)
+    
+        match = pattern.search(race_class_raw)
+        if not match:
+            # Nothing to do if we don't spot a main event.            
+            print 'Ignoring:', race_class_raw            
+            return race_class_raw, None, None, None
+        
+        start_index = match.start(0)
+    
+        # Fields we want to parse out
+        cleaned_raceclass_name = ""
+        main_event = None # Indicates A,B,C, etc main event
+        main_event_round_num = None # Indicates the round for multiple main events A1, C2, etc.
+                
+        # We want to trim off the 'A main' part of the string and clean it up.
+        cleaned_raceclass_name = race_class_raw[:start_index]
+        # I added an additional cleanup, since I saw some older results with extra
+        # junk characters in the name.
+        cleaned_raceclass_name = cleaned_raceclass_name.strip('+- ')
+        
+        main_event_raw = race_class_raw[start_index:].strip('+- ')    
+
+        # The regex means there must be a white space here.        
+        main_event_round_raw = main_event_raw.split()[0]
+        
+        # "A" -> 65
+        main_event = ord(main_event_round_raw[0].upper()) - 64 
+        
+        if len(main_event_round_raw) > 1:
+            # We are looking for the case like: "A1", "A3"
+            # I have left it open to the possibility of multiple B,C, etc.
+            main_event_round_num = int(main_event_round_raw[1:])
+                
+        print 'raceclass:{0:25} mainevent:{1} maineventroundnumber:{2:5} Orig:{3} '.format(cleaned_raceclass_name, main_event, main_event_round_num, race_class_raw)
+
+        return cleaned_raceclass_name, main_event, main_event_round_num, main_event_raw
+    
             
     def _parse_Lap(self, rawLap):
         # rawLap will have the form of 3/3.804

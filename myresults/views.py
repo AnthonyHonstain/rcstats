@@ -88,7 +88,7 @@ def _get_Group_Race_Classes(racer_obj):
         
     # Warning - requires the racedata to contain the token 'main'
     racedetails_allmains = SingleRaceDetails.objects.filter(singleraceresults__racerid=racer_obj.id, 
-                                                            racedata__icontains="main")\
+                                                            mainevent__gte=1)\
                                                             .values('racedata')\
                                                             .annotate(dcount=Count('racedata'))\
                                                             .order_by('dcount')[::-1]
@@ -208,7 +208,7 @@ def generalstats(request, racer_id):
         '''
         test = SingleRaceDetails.objects.filter(trackkey=track['trackkey'], # track
                                                 singleraceresults__racerid=racer_obj.id, # racer
-                                                racedata__icontains = "main" # class name
+                                                mainevent__gte = 1
                                                 ).values('racedata').annotate(dcount=Count('racedata')).order_by('dcount')[::-1]
         
         
@@ -234,7 +234,7 @@ def generalstats(request, racer_id):
             
             # Now I have a track, and a class name.
             # I want the last 5 races.
-            racedetails = SingleRaceDetails.objects.filter(Q(racedata__icontains="main") & Q(racedata__icontains=unique_class),
+            racedetails = SingleRaceDetails.objects.filter(Q(mainevent__gte=1) & Q(racedata__icontains=unique_class),
                                                            trackkey=track['trackkey'],
                                                            singleraceresults__racerid=racer_obj.id                                                           
                                                            ).order_by('racedate')[::-1][:5] 
@@ -280,15 +280,23 @@ def _get_Cleaned_Class_Names(raw_racedata_list):
     #    {'dcount': 56, 'racedata': u'STOCK TRUCK A Main'},
     #    {'dcount': 51, 'racedata': u'13.5 STOCK SHORT COURSE A Main'}]
         
-    for race_dict in raw_racedata_list:            
+    for race_dict in raw_racedata_list:     
+        
+        # WARNING
+        # After migration - this code will be pointless, we can just use racedata.
+        # WARNING
+               
         # I no longer care about the 'A','B', '1', 'main' etc. I am going to strip
         # and trim the strings as I add them to a new master table.            
-        pattern = re.compile("[A-Z][1-9]? main", re.IGNORECASE)
-        
-        start_index = pattern.search(race_dict['racedata']).start(0)
-        
-        # We want to trim off the 'A main' part of the string and clean it up.
-        processed_classname = race_dict['racedata'][:start_index].strip('+- ')
+        pattern = re.compile("[A-Z][1-9]? main", re.IGNORECASE)        
+        match = pattern.search(race_dict['racedata'])
+        if match:
+            start_index = match.start(0)        
+            # We want to trim off the 'A main' part of the string and clean it up.
+            processed_classname = race_dict['racedata'][:start_index].strip('+- ')
+        else:
+            # EXPECTED PATH AFTER MIGRATION
+            processed_classname = race_dict['racedata']
         unique_classes[processed_classname] = unique_classes.get(processed_classname, 0) + race_dict['dcount']
 
     return unique_classes
