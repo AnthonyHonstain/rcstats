@@ -213,8 +213,39 @@ Echo, Jon            #3          3         1:05.720         17.099
     
     
     def test_multipleraces_upload(self):
+        # Basic checks before we collapse the names.
         
-        # Basic checks befor we collapse the names.
+        #=====================================================
+        # Validate Race Details
+        #=====================================================
+        # Validate the race details have been uploaded.
+        
+        #
+        # WARNING - if these fail, it likely means the upload failed.
+        #
+        raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+                                                 racedata="MODIFIED BUGGY",
+                                                 racenumber=2,
+                                                 roundnumber=3,
+                                                 racelength=8,
+                                                 winninglapcount=28,
+                                                 mainevent=1)
+        
+        raceobj2 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+                                                 racedata="MODIFIED BUGGY",
+                                                 racenumber=1,
+                                                 roundnumber=3,
+                                                 racelength=6,
+                                                 winninglapcount=19,
+                                                 mainevent=1)
+        
+        raceobj3 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
+                                                 racedata="MODIFIED BUGGY",
+                                                 racenumber=2,
+                                                 roundnumber=3,
+                                                 racelength=6,
+                                                 winninglapcount=21,
+                                                 mainevent=1)
         
         #=====================================================
         # Validate Racers
@@ -222,31 +253,6 @@ Echo, Jon            #3          3         1:05.720         17.099
         # The race should now be uploaded, we want to validate it is in the system.
         car1 = RacerId.objects.get(racerpreferredname="Anthony Honstain")
         car2 = RacerId.objects.get(racerpreferredname="Hotel, Jon")
-        
-        #=====================================================
-        # Validate Race Details
-        #=====================================================
-        # Validate the race details have been uploaded.
-        raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
-                                                 racedata="MODIFIED BUGGY A Main",
-                                                 racenumber=2,
-                                                 roundnumber=3,
-                                                 racelength=8,
-                                                 winninglapcount=28)
-        
-        raceobj2 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
-                                                 racedata="MODIFIED BUGGY A Main",
-                                                 racenumber=1,
-                                                 roundnumber=3,
-                                                 racelength=6,
-                                                 winninglapcount=19)
-        
-        raceobj3 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
-                                                 racedata="MODIFIED BUGGY A Main",
-                                                 racenumber=2,
-                                                 roundnumber=3,
-                                                 racelength=6,
-                                                 winninglapcount=21)
         
         #=====================================================
         # Validate Race Laps

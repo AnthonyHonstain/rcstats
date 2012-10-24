@@ -442,7 +442,7 @@ class RCScoringProTXTParser(SingleRace):
         match = pattern.search(race_class_raw)
         if not match:
             # Nothing to do if we don't spot a main event.            
-            print 'Ignoring:', race_class_raw            
+            #print 'Ignoring:', race_class_raw            
             return race_class_raw, None, None, None
         
         start_index = match.start(0)
@@ -452,17 +452,23 @@ class RCScoringProTXTParser(SingleRace):
         main_event = None # Indicates A,B,C, etc main event
         main_event_round_num = None # Indicates the round for multiple main events A1, C2, etc.
                 
+        race_class_raw = race_class_raw.replace('-', ' ')
+                
         # We want to trim off the 'A main' part of the string and clean it up.
         cleaned_raceclass_name = race_class_raw[:start_index]
         # I added an additional cleanup, since I saw some older results with extra
         # junk characters in the name.
+        
+        # Example - "Mod Buggy"
         cleaned_raceclass_name = cleaned_raceclass_name.strip('+- ')
         
+        # Example - "A Main"
         main_event_raw = race_class_raw[start_index:].strip('+- ')    
 
         # The regex means there must be a white space here.        
         main_event_round_raw = main_event_raw.split()[0]
         
+        # Convert the character 'A','B', into the corresponding int for the db.
         # "A" -> 65
         main_event = ord(main_event_round_raw[0].upper()) - 64 
         
@@ -471,7 +477,7 @@ class RCScoringProTXTParser(SingleRace):
             # I have left it open to the possibility of multiple B,C, etc.
             main_event_round_num = int(main_event_round_raw[1:])
                 
-        print 'raceclass:{0:25} mainevent:{1} maineventroundnumber:{2:5} Orig:{3} '.format(cleaned_raceclass_name, main_event, main_event_round_num, race_class_raw)
+        #print 'raceclass:{0:25} mainevent:{1} maineventroundnumber:{2:5} Orig:{3} '.format(cleaned_raceclass_name, main_event, main_event_round_num, race_class_raw)
 
         return cleaned_raceclass_name, main_event, main_event_round_num, main_event_raw
     

@@ -12,7 +12,7 @@ singleRaceSimple = '''Scoring Software by www.RCScoringPro.com                8:
 
                                TACOMA R/C RACEWAY
 
-MODIFIED BUGGY B Main                                         Round# 3, Race# 16
+MODIFIED BUGGY B-Main                                         Round# 3, Race# 16
 
 ________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
 Matesa, Ryan            #2         28         8:10.270         16.939                  
@@ -85,7 +85,9 @@ class TestSingleRaceSimple(unittest.TestCase):
     def test_headerData(self):
         self.assertEqual("TACOMA R/C RACEWAY", self.singe_test_race.trackName)
         #self.assertEqual("8:09:03 PM  01/14/2012", self.singe_test_race.date)
-        self.assertEqual("MODIFIED BUGGY B Main", self.singe_test_race.raceClass)
+        self.assertEqual("MODIFIED BUGGY", self.singe_test_race.raceClass)
+        self.assertEqual(2, self.singe_test_race.mainEvent)
+        self.assertEqual(None, self.singe_test_race.mainEventRoundNum)
         self.assertEqual("3", self.singe_test_race.roundNumber)
         self.assertEqual("16", self.singe_test_race.raceNumber)
         
@@ -131,7 +133,10 @@ class TestSingleRaceSimpleTextFile(unittest.TestCase):
     def test_headerData(self):
         self.assertEqual("TACOMA R/C RACEWAY", self.singe_test_race.trackName)
         #self.assertEqual("8:09:03 PM  01/14/2012", self.singe_test_race.date)
-        self.assertEqual("MODIFIED BUGGY B Main", self.singe_test_race.raceClass)
+        self.assertEqual("MODIFIED BUGGY", self.singe_test_race.raceClass)
+        self.assertEqual(2, self.singe_test_race.mainEvent)
+        self.assertEqual(None, self.singe_test_race.mainEventRoundNum)
+        self.assertEqual("B Main", self.singe_test_race.mainEventParsed)
         self.assertEqual("3", self.singe_test_race.roundNumber)
         self.assertEqual("16", self.singe_test_race.raceNumber)
         
@@ -235,7 +240,9 @@ class TestSingleRaceModified(unittest.TestCase):
     def test_headerData(self):
         self.assertEqual("TACOMA R/C RACEWAY", self.singe_test_race.trackName)
         #self.assertEqual("8:09:03 PM  01/14/2012", self.singe_test_race.date)
-        self.assertEqual("4WD MODIFIED A2 Main", self.singe_test_race.raceClass)
+        self.assertEqual("4WD MODIFIED", self.singe_test_race.raceClass)
+        self.assertEqual(1, self.singe_test_race.mainEvent)
+        self.assertEqual(2, self.singe_test_race.mainEventRoundNum)
         self.assertEqual("3", self.singe_test_race.roundNumber)
         self.assertEqual("30", self.singe_test_race.raceNumber)
         
@@ -293,6 +300,8 @@ class TestSingleRaceRacerDropped(unittest.TestCase):
     def test_racerOne(self):
         expectedLaps = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
         self.assertEqual(expectedLaps, self.singe_test_race.lapRowsTime[0])
+        
+        self.assertEqual(2, self.singe_test_race.mainEvent)
 
     def test_racerTwo(self):
         expectedLaps = ["24.85", "20.00", "20.41", "19.97", "20.28", "20.27", "20.29", "20.27", "20.00", "19.14", "20.27", "19.92", "23.70", "20.33", "21.26", "22.50"]
@@ -391,7 +400,8 @@ class TestSingleRaceBrokeRacer(unittest.TestCase):
     def test_headerData(self):
         self.assertEqual("TACOMA R/C RACEWAY", self.singe_test_race.trackName)
         #self.assertEqual("8:09:03 PM  01/14/2012", self.singe_test_race.date)
-        self.assertEqual("4WD MODIFIED A1 Main", self.singe_test_race.raceClass)
+        self.assertEqual("4WD MODIFIED", self.singe_test_race.raceClass)
+        self.assertEqual(1, self.singe_test_race.mainEvent)
         self.assertEqual("3", self.singe_test_race.roundNumber)
         self.assertEqual("22", self.singe_test_race.raceNumber)
         

@@ -263,7 +263,7 @@ Echo, Jon            #1          1           35.952         35.952
 
                      TACOMA R/C RACEWAY
 
-MODIFIED BUGGY A2-Main                                            Round# 3, Race# 1
+MODIFIED BUGGY A Main                                            Round# 3, Race# 1
 
 ________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
 Beta, Jon            #3         19         6:07.101         18.455                  
@@ -344,18 +344,14 @@ Golf, Jon            #7         17         6:16.439         18.222            13
 
 
     def test_multipleraces_upload(self):
-        
-        #====================================================
-        # Validate Racers
-        #====================================================
-        # The race should now be uploaded, we want to validate it is in the system.
-        car1 = RacerId.objects.get(racerpreferredname="Alpha, Jon")
-        car2 = RacerId.objects.get(racerpreferredname="Hotel, Jon")
-        
         #====================================================
         # Validate Race Details
         #====================================================
         # Validate the race details have been uploaded.
+
+        #
+        # WARNING - if this fails it means one of the uploads probably failed.
+        #
         raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=2,
@@ -363,7 +359,6 @@ Golf, Jon            #7         17         6:16.439         18.222            13
                                                  racelength=8,
                                                  winninglapcount=28,
                                                  mainevent=1)
-        
         raceobj2 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=1,
@@ -371,7 +366,15 @@ Golf, Jon            #7         17         6:16.439         18.222            13
                                                  racelength=6,
                                                  winninglapcount=19,
                                                  mainevent=1,
-                                                 maineventroundnum=2)
+                                                 maineventroundnum=None)
+        
+        
+        #====================================================
+        # Validate Racers
+        #====================================================
+        # The race should now be uploaded, we want to validate it is in the system.
+        car1 = RacerId.objects.get(racerpreferredname="Alpha, Jon")
+        car2 = RacerId.objects.get(racerpreferredname="Hotel, Jon")
         
         #====================================================
         # Validate Race Laps
@@ -557,18 +560,13 @@ Huddleston, Chris            #3          3           51.832         23.550
     
 
     def test_multipleraces_upload(self):
-        
-        #====================================================
-        # Validate Racers
-        #====================================================
-        # The race should now be uploaded, we want to validate it is in the system.
-        car10 = RacerId.objects.get(racerpreferredname="Brown, Shaun")
-        car11 = RacerId.objects.get(racerpreferredname="Andres, Jonathan")
-        
         #====================================================
         # Validate Race Details
         #====================================================
         # Validate the race details have been uploaded.
+        #
+        # WARNING - if this fails it means one of the uploads probably failed.
+        #
         raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
                                                  racedata="SC Pro 4",
                                                  racenumber=7,
@@ -577,6 +575,13 @@ Huddleston, Chris            #3          3           51.832         23.550
                                                  winninglapcount=18,
                                                  mainevent=1)
         
+        #====================================================
+        # Validate Racers
+        #====================================================
+        # The race should now be uploaded, we want to validate it is in the system.
+        car10 = RacerId.objects.get(racerpreferredname="Brown, Shaun")
+        car11 = RacerId.objects.get(racerpreferredname="Andres, Jonathan")
+                
         #====================================================
         # Validate Race Laps
         #====================================================        
