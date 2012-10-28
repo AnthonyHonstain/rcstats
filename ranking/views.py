@@ -199,7 +199,6 @@ def process_ranking(rankedclass_obj):
     the races from the event and update the ranking.
     
     IMPORTANT - we only consider races that are a MAIN event
-        This means it MUST have [A-Z]-Main in the class name.
         
     IMPORTANT - if you upload an older race (then the most recent one 
         being tracked in a RankEvent), then it will not be considered
@@ -218,11 +217,14 @@ def process_ranking(rankedclass_obj):
     # ===============================================================
     # Now that we have a date to start looking for new races from,
     # we want to find and process all that we find.
-    #     Remember - qualifiers are considered seperately.
-    #     Main events are grouped into a single stack ranking.    
+    #     Remember - Main events are grouped into a single stack ranking.
+    
+    #
+    # WARNING - We are going to rank only on main events
+    #    
     races_to_rank = SingleRaceDetails.objects.filter(trackkey__exact=rankedclass_obj.trackkey,
                                                      racedata__contains=rankedclass_obj.raceclass,
-                                                     racedata__icontains="main",
+                                                     mainevent__gte=1,
                                                      racedate__gt=checkdate).\
                                                      order_by('racedate')
             
@@ -259,7 +261,6 @@ def process_ranking(rankedclass_obj):
          this is going to confuse things if we dont create a single stack
         
     '''    
-    pattern = re.compile("[B-Z][1-9]? main", re.IGNORECASE)
     
     # I have the problem of grouping multiple A-mains
     # Work through the race results from OLDEST to NEWEST
@@ -271,11 +272,11 @@ def process_ranking(rankedclass_obj):
                 
         # If the last race was a sub-main - we are going to combine this and
         # the previous.
-        start_index = None
+        sub_main = False
         if prev_race != None:
-            start_index = pattern.search(prev_race.racedata)
+            sub_main = prev_race.mainevent
                 
-        if (start_index != None):
+        if (sub_main > 1):
             # We found a sub A-main race
             results = SingleRaceResults.objects.filter(raceid__exact=race_details).order_by('finalpos').values('racerid', 'finalpos')
             flatresults = []

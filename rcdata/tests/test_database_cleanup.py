@@ -23,8 +23,8 @@ class CollapseClassNamesTestCases(TestCase):
         alias = models.AliasClassNames(raceclass="modified buggy", officialclass=officialclass)
         alias.save()
         
-        classnames = [['mod buggy A-main', None, 'Mod Buggy A-main'],
-                      ['modified buggy D main', None, 'Mod Buggy D main'],]
+        classnames = [['mod buggy', None, 'Mod Buggy'],
+                      ['modified buggy', None, 'Mod Buggy'],]
         
         self._create_and_validate_classnames(trackname_obj, classnames)
     
@@ -47,14 +47,14 @@ class CollapseClassNamesTestCases(TestCase):
         alias.save()
         
         
-        classnames = [['mod buggy A-main', None, 'Mod Buggy A-main'],
-                      ['modified buggy D main', None, 'Mod Buggy D main'],
+        classnames = [['mod buggy', None, 'Mod Buggy'],
+                      ['modified buggy', None, 'Mod Buggy'],
                       ['MODIFIED BUGGY', None, 'Mod Buggy'],
                       ['Pro 4', None, '4wd Short Course'],
                       ['Pro 4', None, '4wd Short Course'],
                       ['MODIFIED BUGGY', None, 'Mod Buggy'],
                       ['4WD SHORT COURSE', None, '4wd Short Course'],
-                      ['4x4 SC A-MAIN', None, '4wd Short Course'],]
+                      ['4x4 SC', None, '4wd Short Course'],]
         
         self._create_and_validate_classnames(trackname_obj, classnames)    
         
@@ -65,7 +65,7 @@ class CollapseClassNamesTestCases(TestCase):
         for classname in classnames:
             classname[1] = self._create_racedetail(trackname_obj, classname[0], racenum_count)
             racenum_count += 1
-            
+        
         database_cleanup.collapse_alias_classnames(models.SingleRaceDetails.objects.all())
             
         # Validate that the names were collapse correctly.

@@ -692,6 +692,61 @@ class TestElevenManPaceData(unittest.TestCase):
         self.assertEqual(expectedLaps, self.singe_test_race.lapRowsTime[6])
 
 
+oldBremertonFormat = '''Scoring Software by www.RCScoringPro.com                7:27:45 PM  7/9/2011
+
+                             RankingTestTrack
+
+RankingTestClass A Main                                                        Round# 1, Race# 1
+
+________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
+                  RankedRacer1    #2      12     6:22.032     30.964           
+                  RankedRacer2    #1      10     6:17.466     34.078           
+                  RankedRacer3    #3       5     2:43.317     31.628           
+
+ ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
+ 1/15.27 2/16.03 3/16.80                                                        
+ 2/38.46 1/33.71 3/38.81                                                        
+ 3/38.15 2/38.22 1/31.62                                                        
+ 3/44.80 1/30.96 2/44.17                                                        
+ 3/39.02 1/31.12 2/31.89                                                        
+ 2/43.29 1/31.67                                                                
+ 2/49.39 1/32.09                                                                
+ 2/37.37 1/32.39                                                                
+ 2/34.07 1/35.47                                                                
+ 2/37.60 1/33.41                                                                
+         1/32.41                                                                
+         1/34.50                                                                
+ ------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+     10/     12/      5/                                                        
+  6:17.4  6:22.0  2:43.3 
+'''
+        
+class TestOldBremertonFromat(unittest.TestCase):
+
+    def setUp(self):        
+        self.singe_test_race = RCScoringProTXTParser("testfilename", oldBremertonFormat.split('\n'))
+        
+    def test_headerData(self):
+        # RankedRacer1    #2      12     6:22.032     30.964           
+        self.assertEqual(self.singe_test_race.raceHeaderData[0], 
+                         {"Driver":"RankedRacer1", 
+                          "Car#":2, 
+                          "Laps":12, 
+                          "RaceTime":"6:22.032", 
+                          "Fast Lap":"30.964", 
+                          "Behind":"",
+                          "Final Position":1})
+        # RankedRacer2    #1      10     6:17.466     34.078           
+        self.assertEqual(self.singe_test_race.raceHeaderData[1], 
+                         {"Driver":"RankedRacer2", 
+                          "Car#":1, 
+                          "Laps":10, 
+                          "RaceTime":"6:17.466", 
+                          "Fast Lap":"34.078", 
+                          "Behind":"",
+                          "Final Position":2})
+
+
 if __name__ == '__main__':
     unittest.main()
     

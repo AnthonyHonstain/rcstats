@@ -31,3 +31,5 @@ class Ranking(models.Model):
     displayrank = models.FloatField("Calculated using mu and sigma.")
     racecount = models.IntegerField("The number of ranked race events.")
     lastrace = models.IntegerField("The most recent RankEvent event they participated in")
+    def __str__(self):
+        return "(" + str(self.rankeventkey) + ") | " + str(self.raceridkey) + " | " + str(self.displayrank) 

@@ -323,6 +323,8 @@ def upload_validate(request, upload_id):
 
 def _update_ranking(track_obj, raceid_list):
     
+    classes_to_rank = []
+    
     for racedetails_id in raceid_list:
         # Ensure we have the newest name for the race.
         updateddetails = SingleRaceDetails.objects.get(pk = racedetails_id)
@@ -332,17 +334,18 @@ def _update_ranking(track_obj, raceid_list):
         # TESTING/PROTOTYPE - have not decided if this is the best place for this.
         # WARNING - The names need to be collapsed first, or it will confuse the ranking.
         # ===============================================================
-        # Lookup if this class is being ranked.
-        pattern = re.compile("[A-Z][1-9]? main", re.IGNORECASE)
-        if (pattern.search(updateddetails.racedata) != None):
-            start_index = pattern.search(updateddetails.racedata).start(0)
-            trimmed_class = updateddetails.racedata[:start_index].strip('+- ')
+        # Lookup if this class is being ranked.        
+        if (updateddetails.mainevent >= 1):
             
-            rankedclass = RankedClass.objects.filter(trackkey__exact=track_obj.id,
-                                                     raceclass__icontains=trimmed_class)
-            if (len(rankedclass) > 0):
-                # We found a ranked class to process its ranking data.
-                process_ranking(rankedclass[0])
+            rankedclass = RankedClass.objects.filter(trackkey=track_obj.id,
+                                                     raceclass=updateddetails.racedata)
+            
+            if len(rankedclass) > 0:
+                if rankedclass[0] not in classes_to_rank:
+                    classes_to_rank.append(rankedclass[0])
+
+    for class_to_rank in classes_to_rank:
+        process_ranking(class_to_rank)
 
 
 def _parse_file(filename):

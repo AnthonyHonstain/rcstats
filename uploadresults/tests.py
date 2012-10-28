@@ -13,6 +13,7 @@ import os
 import time
 
 import models
+import rcstats.utils as utils
 from rcstats.rcdata.models import LapTimes
 from rcstats.rcdata.models import SingleRaceDetails
 from rcstats.rcdata.models import SingleRaceResults
@@ -94,7 +95,7 @@ RacerFifthCar1, Jon            #1          1           35.952         35.952
                                         user=uploaduser,
                                         filesize="56",
                                         filename=filename,
-                                        uploaddate=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
+                                        uploaddate=utils.formated_local_time_for_orm(),
                                         processed=False)
         log_entry.save()
         self.singlerace_db_objs.append(log_entry)
@@ -329,7 +330,7 @@ Golf, Jon            #7         17         6:16.439         18.222            13
                                             user=uploaduser,
                                             filesize="56",
                                             filename=filename,
-                                            uploaddate=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
+                                            uploaddate=utils.formated_local_time_for_orm(),
                                             processed=False)
             log_entry.save()
             

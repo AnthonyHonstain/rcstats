@@ -172,25 +172,25 @@ def collapse_racer_names():
             
             alias_id = alias[0]
             new_racerid_obj = RacerId.objects.get(pk=primary_name[0])
-            # ------------------------------------
+            # ===================================
             # Update the race results
-            # ------------------------------------
+            # ===================================
             raceresult_set = SingleRaceResults.objects.filter(racerid__exact=alias_id)       
             for raceresult in raceresult_set:
                 raceresult.racerid = new_racerid_obj
                 raceresult.save()
         
-            # ------------------------------------
+            # ===================================
             # Update the lap times
-            # ------------------------------------
+            # ===================================
             laptimes_set = LapTimes.objects.filter(racerid__exact=alias_id)
             for laptime in laptimes_set:
                 laptime.racerid = new_racerid_obj
                 laptime.save()
         
-            # ------------------------------------
+            # ===================================
             # Remove the alias racerid
-            # ------------------------------------
+            # ===================================
             racerid_obj = RacerId.objects.get(pk=alias_id)
             racerid_obj.delete()
 
@@ -203,6 +203,10 @@ def collapse_alias_classnames(queryset):
     
     This means setting the correct case on the class name if it is different from the official.
     This means changing an alias to the offical class name if they differ.
+    
+    History:
+        Oct 25, 2012 - Anthony: I move the information about the main events
+        to a separate column. No reason to have dead code in here.
     '''
     
     # First we need to construct an efficient structure for checking
@@ -220,30 +224,27 @@ def collapse_alias_classnames(queryset):
     for alliasclass in alliasclass_queryset:
         lookup[alliasclass.raceclass.lower()] = alliasclass.officialclass.raceclass
     
-    pattern = re.compile("[A-Z][1-9]?.main", re.IGNORECASE)
+    #
+    # Look at each of the race details from the query set, and update the
+    # class name if needed.
+    #
     for racedetail in queryset:
         raceclass = racedetail.racedata
-                
-        start_index = None
-        main = ""
-        if (pattern.search(raceclass) != None):
-            start_index = pattern.search(raceclass).start(0)
-            raceclass = raceclass[:start_index].strip('+- ')
-            main = " " + racedetail.racedata[start_index:]
         
         if raceclass.lower() in lookup:
             #print "HIT:", raceclass.lower(), racedetail.racedata
-            
+            #
             # We found a hit, this is either an official class, or we will change it.
+            #
             if (lookup[raceclass.lower()] == None):
                 # This is an official class, we just need to check if case is good.
-                if (official_classnames[raceclass.lower()] != raceclass[:start_index]):
+                if (official_classnames[raceclass.lower()] != raceclass):
                     # The class is named correctly, but we are going to fix the case.
-                    racedetail.racedata = official_classnames[raceclass.lower()] + main 
+                    racedetail.racedata = official_classnames[raceclass.lower()] 
                     #print "CASE FIXED:", racedetail.racedata
                     racedetail.save()                
             else:
-                # We need to set this to the official class name.
-                racedetail.racedata = lookup[raceclass.lower()] + main
+                # We need to UPDATE the race to use the official class name.
+                racedetail.racedata = lookup[raceclass.lower()]
                 #print "ALIAS FIXED:", racedetail.racedata
                 racedetail.save()
