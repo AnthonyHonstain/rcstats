@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}
+RC-Stats - Share Results
+{% endblock %}
+
+{% block description %}    
+RC-Stats stores your remote control race results and gives you tools to track your race results. We support indoor, outdoor, on-road, and off-road RC racing.
+{% endblock %}
+
+{% block pagetitle %}Share Results{% endblock %}
+{% block pagetitle_description %}Formatted links for easy sharing of results from {{ trackname }} {{ display_date }}{% endblock %}
+
+
+{% block content %}
+
+<section class="full_width">           		
+<h3>Share on vBulletin</h3>
+
+<p>Race results from race day {{ display_date }}, this will include all qualifiers and main events currently being tracked. Not all tracks record qualifying races.</p>
+{% if race_details %}
+{% for race in race_details %}
+	<span>[URL="http://www.rc-stats.com/displayresults/singleracedetailed/{{ race.racedetail_id }}/"]{{  race.racedata_summary  }}[/URL]</span><br />
+{% endfor %}
+{% else %}
+There are no results to available for this day.
+{% endif %}
+
+</section><!-- /.full_width --> 
+
+{% endblock %}

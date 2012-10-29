@@ -202,6 +202,8 @@ def recentresultshistory_data(request, track_id, race_date):
     """
     Will use the recentresultshistory_data.html template to display all
     of the MAIN event races at the specified track_id on the given race_date.
+    
+    Qualifying races are only provided a link to the details page.
     """
     supported_track = get_object_or_404(SupportedTrackName, pk=track_id)
 
@@ -285,12 +287,47 @@ def recentresultshistory_data(request, track_id, race_date):
     #    
     #    {'individual_results': ' .........
     #
-    ctx = Context({'trackname':supported_track.trackkey, 
+    ctx = Context({'supported_track_id':supported_track.id,
+                   'race_date':race_date,
                    'display_date':_display_Date_User(date), 
                    'raceresults':results_template_format,
                    'qual_results':qual_results})
     
     return render_to_response('recentresultshistory_data.html', ctx, context_instance=RequestContext(request))
+
+
+def recentresultshistory_share(request, track_id, race_date):
+    """
+    Will use the recentresultshistory_data.html template to display all
+    of the MAIN event races at the specified track_id on the given race_date.
+    
+    Qualifying races are only provided a link to the details page.
+    """
+    supported_track = get_object_or_404(SupportedTrackName, pk=track_id)
+
+    try:
+        date = datetime.datetime.strptime(race_date, "%Y-%m-%d").date()
+    except ValueError():
+        raise Http404
+    
+    # Note - Date Format (year, month, date)
+    details = SingleRaceDetails.objects.filter(racedate__range=(date, date + relativedelta(days=+1)),
+                                                    trackkey=supported_track.trackkey).order_by('racedate')
+    
+    race_details = []
+    for qual in details:
+        classname_summary = utils.format_main_event_for_user(qual) + \
+            " - Round:" + str(qual.roundnumber) + \
+            " Race:" + str(qual.racenumber)
+        
+        race_details.append({'racedetail_id':qual.id,
+                             'racedata_summary':classname_summary})
+    
+    ctx = Context({'trackname':supported_track.trackkey, 
+                   'display_date':_display_Date_User(date),
+                   'race_details':race_details})
+    
+    return render_to_response('recentresultshistory_share.html', ctx, context_instance=RequestContext(request))
 
 
 def _get_Recent_Race_Dates(supported_track, number_races):
