@@ -14,6 +14,7 @@ from django.http import Http404
 from django.db import connection
 from django.utils import simplejson
 
+import rcstats.utils as utils
 
 from rcstats.ranking.views import get_ranked_classes_by_track
 from rcstats.ranking.models import RankedClass
@@ -200,7 +201,7 @@ def recentresultshistory(request, track_id):
 def recentresultshistory_data(request, track_id, race_date):
     """
     Will use the recentresultshistory_data.html template to display all
-    of the races at the specified track_id on the given race_date.
+    of the MAIN event races at the specified track_id on the given race_date.
     """
     supported_track = get_object_or_404(SupportedTrackName, pk=track_id)
 
@@ -209,11 +210,34 @@ def recentresultshistory_data(request, track_id, race_date):
     except ValueError():
         raise Http404
     
-    # Note Format (year, month, date)
-    # Note - the range (date1, date2) works like date1 <= x < date2
-    race_details = SingleRaceDetails.objects.filter(racedate__range=(date, date + relativedelta(days=+1)),
-                                                    trackkey=supported_track.trackkey).order_by('racedate')
     
+    # ========================================================
+    # Qualifying - we just show links to detailed pages
+    # ========================================================
+    # Note - Date Format (year, month, date)
+    qual_details = SingleRaceDetails.objects.filter(racedate__range=(date, date + relativedelta(days=+1)),
+                                                    trackkey=supported_track.trackkey,
+                                                    mainevent=None).order_by('racedate')
+    qual_results = []
+    for qual in qual_details:
+        classname_summary = utils.format_main_event_for_user(qual) + \
+            " - Round:" + str(qual.roundnumber) + \
+            " Race:" + str(qual.racenumber)
+        
+        qual_results.append({'racedetail_id':qual.id,
+                             'racedata_summary':classname_summary})
+    
+    
+    # ========================================================
+    # Main Events - we want to show a summary table of the header
+    # ========================================================
+    
+    # Note - Date Format (year, month, date)
+    race_details = SingleRaceDetails.objects.filter(racedate__range=(date, date + relativedelta(days=+1)),
+                                                    trackkey=supported_track.trackkey,
+                                                    mainevent__gte=1).order_by('racedate')
+    
+    # Note - the range (date1, date2) works like date1 <= x < date2
     results_template_format = []
         
     #print "track", supported_track.trackkey, "date", date + relativedelta(days=+1) , 'race_details', race_details
@@ -236,10 +260,10 @@ def recentresultshistory_data(request, track_id, race_date):
         # EXAMPLE jsdata:
         # [[1, "yoshi,harley", 28, "00:08:10.761000", "16.528", "None"], [2, "Story, Corby", 27, "00:08:01.661000", "16.725", "None"], [3, "hovarter,kevin", 25, "00:08:16.037000", "17.053", "None"], [4, "Kraus, Charlie", 20, "00:08:05.180000", "20.883", "None"], [5, "Schoening, Bryan", 12, "00:03:57.669000", "17.760", "None"]]
         jsdata = simplejson.dumps(formated_result)
-        
+            
         # Going to do extra formating here, to simplify the template.
         results_template_format.append({'racedetail_id':race_detail.id,
-                                        'racedata':race_detail.racedata,
+                                        'racedata':utils.format_main_event_for_user(race_detail),
                                         'roundnumber':race_detail.roundnumber,
                                         'racenumber':race_detail.racenumber,
                                         'racedate':race_detail.racedate,                            
@@ -263,7 +287,8 @@ def recentresultshistory_data(request, track_id, race_date):
     #
     ctx = Context({'trackname':supported_track.trackkey, 
                    'display_date':_display_Date_User(date), 
-                   'raceresults':results_template_format})
+                   'raceresults':results_template_format,
+                   'qual_results':qual_results})
     
     return render_to_response('recentresultshistory_data.html', ctx, context_instance=RequestContext(request))
 

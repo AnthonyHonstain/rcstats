@@ -7,7 +7,8 @@
 	
 	var ajax_load = "<img class='loading' src='/media/images/loadingGif.gif' alt='loading...' />";
 	
-	// load() functions 
+	// load() functions
+	{% if race_dates %} 
 	{% for date in race_dates %}
 	var loadUrl_{{ date.id }} = "/trackdata/{{ supportedtrack.id }}/recentresultshistory/{{ date.date }}/";
 	
@@ -19,14 +20,19 @@
 	
 	// Display the first results returned.
 	$("#result").html(ajax_load).load(loadUrl_{{ race_dates.0.id }}); 
+	{% endif %}
 	
 </script>
 
 <h3>Select a date from the options below to see results from that race day.</h3>
     
+{% if race_dates %}
 {% for date in race_dates %}
 	<input type="submit" value="{{ date.display_date }}" id="load_basic_{{ date.id }}"></input>     
 {% endfor %}
+{% else %}
+No race results currently being tracked.
+{% endif %}
 
 <div id="result"  class="functions"></div>
 

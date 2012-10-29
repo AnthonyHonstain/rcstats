@@ -28,6 +28,10 @@
 </script>
 
 <p>Race results from race day {{ display_date }}, this will include all qualifiers and main events currently being tracked. Not all tracks record qualifying races.</p>
+{% for qual_links in qual_results %}
+	<a href="/displayresults/singleracedetailed/{{ qual_links.racedetail_id }}/" class="button button-small white"><span>{{  qual_links.racedata_summary  }}</span></a><br />
+{% endfor %}
+
 {% for result in raceresults %}
     <p>
     <h5>

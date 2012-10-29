@@ -5,6 +5,8 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 
+import rcstats.utils as utils
+
 from rcstats.rcdata.models import SingleRaceDetails, SingleRaceResults, RacerId, LapTimes
 
 
@@ -13,7 +15,7 @@ def singleraceresult(request, race_detail_id):
     race_detail = get_object_or_404(SingleRaceDetails, pk=race_detail_id)
 
     results_template_format = {'race_detail_id': race_detail_id,
-                               'racedata': race_detail.racedata,
+                               'racedata': utils.format_main_event_for_user(race_detail),
                                'roundnumber': race_detail.roundnumber,
                                'racenumber': race_detail.racenumber,
                                'racedate': race_detail.racedate,}
@@ -162,7 +164,7 @@ def singleracedetailed(request, race_detail_id):
     racedetails_obj = get_object_or_404(SingleRaceDetails, pk=race_detail_id)
     
     racedetails_formated = {'race_detail_id': race_detail_id,
-                               'racedata': racedetails_obj.racedata,
+                               'racedata': utils.format_main_event_for_user(racedetails_obj),
                                'roundnumber': racedetails_obj.roundnumber,
                                'racenumber': racedetails_obj.racenumber,
                                'racedate': racedetails_obj.racedate,}
