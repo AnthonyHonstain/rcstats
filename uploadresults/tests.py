@@ -9,6 +9,7 @@ from django.test import TestCase
 from django.test.client import Client
 
 import datetime
+import decimal
 import os
 import time
 
@@ -192,10 +193,14 @@ RacerFifthCar1, Jon            #1          1           35.952         35.952
                                       carnum=1,
                                       lapcount=1)
         
-        SingleRaceResults.objects.get(racerid=car2,
+        results = SingleRaceResults.objects.get(racerid=car2,
                                       raceid=raceobj,
                                       carnum=2,
                                       lapcount=28)
+        
+        # Test to verify the all of the time data is uploaded.
+        self.assertEqual(results.racetime, datetime.time(minute=8, second=18, microsecond=588000))
+        self.assertEqual(results.fastlap, decimal.Decimal("17.042"))
         
         SingleRaceResults.objects.get(racerid=car5,
                                       raceid=raceobj,

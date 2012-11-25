@@ -23,6 +23,12 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 			
 			<section class="content_heading">
             	<a class="gotop" href="#"></a>
+                <h3>Recent Race Results - Fastest Time Each Race</h3>
+		    </section> <!--  END content_heading -->
+			<div id="recent_laptimes_placeholder" style="width:950px;height:320px;"></div>
+			
+			<section class="content_heading">
+            	<a class="gotop" href="#"></a>
                 <h3>Lap Time Graph</h3>
 		    </section> <!--  END content_heading -->
 								
@@ -87,7 +93,7 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 		    } );			
 		} );					
 	</script>
- 	
+
  	<script type="text/javascript" charset="utf-8">
  	 									
 		$(function () {
@@ -173,4 +179,55 @@ RC-Stats stores your remote control race results and gives you tools to track yo
  	
  	</script>
  	
+ 	<!-- 
+ 	===================================================================================
+	Recent lap times flot graph
+ 	=================================================================================== 	
+ 	 --> 	
+ 	<script type="text/javascript">
+	$(function () {
+   		var datasets = {% autoescape off %} {{ recent_laptimes_jsdata }} {% endautoescape %};
+  
+           $.plot($("#recent_laptimes_placeholder"), datasets, {
+               yaxis: { tickDecimals: 0 }, //min: 0 },
+               //xaxis: { tickDecimals: 0 },
+               //stack: 0,
+               //lines: {show: false, steps: false },
+               //bars: {show: true, barWidth: 0.8, align: 'center',},   
+               grid: {hoverable: true, },             
+           });    		
+   		
+    	function showTooltip(x, y, contents_l1, contents_l2) {
+	        $('<div id="flot-tooltip">' + contents_l1 + '</br>' + contents_l2 + '</div>').css( {
+	        	'font-size': '15px',
+	        	'color': 'white',
+	            position: 'absolute',
+	            display: 'none',
+	            top: y + 5,
+	            left: x + 5,
+	            border: '2px solid #000000',
+	            padding: '2px',
+	            'background-color': '#EF5D1C', //'#fee',
+	            opacity: 0.95
+	        }).appendTo("body").fadeIn(200);
+	    }
+	    
+	    var previousPoint = null;	    
+	    
+   		$("#recent_laptimes_placeholder").bind("plothover", function (event, pos, item) {
+   			if (item) {
+	            if (previousPoint != item.datapoint) {
+	                previousPoint = item.datapoint;
+	                $("#flot-tooltip").remove();
+	 				var tooltip_l1 = item.series.data[item.dataIndex][2];
+	 				var tooltip_l2 = item.series.data[item.dataIndex][3];
+	                showTooltip(item.pageX, item.pageY, tooltip_l1, tooltip_l2);
+	            }
+	        } else {
+	            $("#flot-tooltip").remove();
+	            previousPoint = null;
+	        }   		
+   		});
+	});
+  </script>  
 {% endblock %}

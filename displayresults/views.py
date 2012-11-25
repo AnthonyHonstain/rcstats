@@ -9,6 +9,8 @@ import rcstats.utils as utils
 
 from rcstats.rcdata.models import SingleRaceDetails, SingleRaceResults, RacerId, LapTimes
 
+from rcstats.rcdata.laptimehistory import lap_time_history_fastest_each_night_flot_data
+
 
 def singleraceresult(request, race_detail_id):
 
@@ -231,11 +233,16 @@ def singleracedetailed(request, race_detail_id):
     
     laptime_jsdata = simplejson.dumps(laptime_data)
     
+    # =======================================================
+    # Get the data to display the recent race times graph       
+    recent_laptimes_jsdata = lap_time_history_fastest_each_night_flot_data(racedetails_obj) 
+    
     ctx = Context({'race_detail_id':race_detail_id,
                    'racedetails':racedetails_formated,
                    'column_names': column_names,
                    'laptime_jsdata':laptime_jsdata,
-                   'laptime_graph_jsdata':laptime_graph_jsdata})
+                   'laptime_graph_jsdata':laptime_graph_jsdata,
+                   'recent_laptimes_jsdata':recent_laptimes_jsdata})
     
     return render_to_response('singleracedetailed.html', ctx, context_instance=RequestContext(request))
 

@@ -7,6 +7,7 @@ from rcstats.rcdata.models import SingleRaceResults
 from rcstats.rcdata.models import LapTimes
 
 import time
+import datetime
 
 
 def process_singlerace(race):
@@ -123,6 +124,12 @@ def process_singlerace(race):
     for racer in race.raceHeaderData:
         if (racer['RaceTime'] == ''):
             racer['RaceTime'] = None
+        else:
+            # Convert the racetime to a datetime.time object,
+            # this is required to ensure the microseconds are not
+            # chopped off.
+            racer['RaceTime'] = datetime.datetime.strptime(racer['RaceTime'], "%M:%S.%f")
+            
         if (racer['Fast Lap'] == ''):
             racer['Fast Lap'] = None
         if (racer['Behind'] == ''):
