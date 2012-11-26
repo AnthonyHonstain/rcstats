@@ -46,7 +46,7 @@ def lap_time_history_fastest_each_night_flot_data(racedetails_obj):
     '''
     return recent_laptimes_jsdata       
 
-def _get_lap_time_history(track, raceclass, racelength, startdate=None, racerid=None, number_of_races=20):
+def _get_lap_time_history(track, raceclass, racelength, startdate=None, racerid=None, number_of_races=50):
     '''
     Get the key race data for the track/class/racelength along with any additional
     conditions so that we can display a graphical representation of the most recent
