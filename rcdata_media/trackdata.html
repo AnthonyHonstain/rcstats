@@ -15,12 +15,25 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 {% block content %}
 
 <section class="full_width">
+<p>Each track in the system has its own results page where you can see individualized results
+for the last several races along with general track statistics.</p>
+<section class="two_third">
 <section class="widget">
 	<h3>Supported Tracks</h3>
 	<ul class="menu">
 		{% if track_list %} 
 		{% for track in track_list %}
-		<li><a href="/trackdata/{{ track.id }}/">{{ track.trackkey }}</a></li>
+		<li><a href="/trackdata/{{ track.id }}/">{{ track.trackname }}</a></li>
+		<!-- Track metadata - like number of races or most recent racedate -->
+		{% if track.racecount %}
+		<ul class="bullet-black">
+		<li>Currently tracking {{ track.racecount }} races.</li>
+		<li>Results last uploaded {{ track.recent_racedate }}</li>
+		</ul>
+		</br>
+		{% else %}
+		No results currently being tracked.
+		{% endif %}
 		{% endfor %}
 	</ul>
 		{% else %}
@@ -33,6 +46,8 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 	<p>Don't see your local track? Getting your results added is easy
 		if you have your race results. See the FAQ or contact an the admin.</p>
 </div><!-- /.message-box -->
+</section><!-- /.two_third -->
+
 </section><!-- /.full_width --> 
 
 {% endblock %}

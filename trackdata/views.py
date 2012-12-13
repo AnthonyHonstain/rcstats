@@ -12,6 +12,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import Http404
 from django.db import connection
+from django.db.models import Count
 from django.utils import simplejson
 
 import rcstats.utils as utils
@@ -31,7 +32,28 @@ def trackdata(request):
     """
     tracklist = SupportedTrackName.objects.all()
 
-    return render_to_response('trackdata.html', {'track_list':tracklist}, context_instance=RequestContext(request))
+    detailed_trackdata = []
+    
+    # Lookup the metadata for each of the supported tracks.
+    for track in tracklist:
+        temp_data = {}
+        temp_data['id'] = track.id
+        temp_data['trackname'] = track.trackkey.trackname
+        temp_data['racecount'] = 0
+        temp_data['recent_racedate'] = None
+        
+        # Get the number of racing currently in the system.
+        racecount = SingleRaceDetails.objects.filter(trackkey=track.trackkey.id).count()
+        temp_data['racecount'] = racecount
+        # Get the most recent race date
+        recent_racedate = SingleRaceDetails.objects.filter(trackkey=track.trackkey.id).order_by('-racedate')[:1]
+        if recent_racedate:
+            temp_data['recent_racedate'] = recent_racedate.get().racedate
+            
+        detailed_trackdata.append(temp_data)
+                
+
+    return render_to_response('trackdata.html', {'track_list':detailed_trackdata}, context_instance=RequestContext(request))
 
 @cache_page(60 * 60)
 def trackdetail(request, track_id):

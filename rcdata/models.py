@@ -1,6 +1,10 @@
 from django.db import models
 
 class TrackName(models.Model):
+    '''
+    Holds the raw track identifier for the race data being
+    uploaded. 
+    '''
     trackname = models.CharField(max_length=200)    
     def __str__(self):
         return str(self.trackname)
@@ -9,11 +13,12 @@ class SupportedTrackName(models.Model):
     '''
     This model will contain the additional meta data for race tracks so that
     they can presented in the trackdata section. These is meant to encompass
-    all the adtional data we want to present to the user about the track 
+    all the additional data we want to present to the user about the track 
     (especially information that is not stored in race results). 
     '''
     trackkey = models.ForeignKey(TrackName)
     trackurl = models.URLField()
+    region = models.CharField(max_length=200) # TODO - This might be better as an enum?
     # I am going to pass on this for now:
     #trackimage = models.FilePathField(path="//home/asymptote/Desktop/RCRacePerformance/rcdata_media/images")
 
