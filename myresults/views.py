@@ -90,8 +90,7 @@ def _get_Group_Race_Classes(racer_obj):
     racedetails_allmains = SingleRaceDetails.objects.filter(singleraceresults__racerid=racer_obj.id, 
                                                             mainevent__gte=1)\
                                                             .values('racedata')\
-                                                            .annotate(dcount=Count('racedata'))\
-                                                            .order_by('dcount')[::-1]
+                                                            .annotate(dcount=Count('racedata'))
     
     cleaned_classnames = _get_Cleaned_Class_Names(racedetails_allmains)
     
@@ -204,14 +203,12 @@ def generalstats(request, racer_id):
                                                 racedate__gte=dbdate, # date
                                                 singleraceresults__racerid=racer_obj.id, # racer
                                                 racedata__icontains = "main" # class name
-                                                ).values('racedata').annotate(dcount=Count('racedata')).order_by('dcount')[::-1]
+                                                ).values('racedata').annotate(dcount=Count('racedata')).order_by('-dcount')
         '''
         test = SingleRaceDetails.objects.filter(trackkey=track['trackkey'], # track
                                                 singleraceresults__racerid=racer_obj.id, # racer
                                                 mainevent__gte = 1
-                                                ).values('racedata').annotate(dcount=Count('racedata')).order_by('dcount')[::-1]
-        
-        
+                                                ).values('racedata').annotate(dcount=Count('racedata')).order_by('-dcount')
         
         cleaned_classnames = _get_Cleaned_Class_Names(test)
         
@@ -237,7 +234,7 @@ def generalstats(request, racer_id):
             racedetails = SingleRaceDetails.objects.filter(Q(mainevent__gte=1) & Q(racedata__icontains=unique_class),
                                                            trackkey=track['trackkey'],
                                                            singleraceresults__racerid=racer_obj.id                                                           
-                                                           ).order_by('racedate')[::-1][:5] 
+                                                           ).order_by('-racedate')[:5] 
             
             js_id_race = 0
             
