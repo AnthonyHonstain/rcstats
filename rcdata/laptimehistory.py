@@ -73,12 +73,12 @@ def _get_lap_time_history(track, raceclass, racelength, startdate=None, racerid=
         details = SingleRaceDetails.objects.filter(trackkey=track,
                                                    racedata__contains=raceclass,
                                                    racedate__lte=startdate,
-                                                   racelength=racelength).order_by('racedate')[::-1][:number_of_races] 
+                                                   racelength=racelength).order_by('-racedate')[:number_of_races] 
 
     else:
         details = SingleRaceDetails.objects.filter(trackkey=track,
                                                    racedata__contains=raceclass,
-                                                   racelength=racelength).order_by('racedate')[::-1][:number_of_races] 
+                                                   racelength=racelength).order_by('-racedate')[:number_of_races] 
 
     graph_results = []
     
