@@ -9,6 +9,11 @@ def index(request):
     return render_to_response('index.html', {}, context_instance=RequestContext(request))
 
 @cache_page(60 * 60 * 12)
+def about(request):
+    
+    return render_to_response('about.html', {}, context_instance=RequestContext(request))
+
+@cache_page(60 * 60 * 12)
 def faq(request):
     
     return render_to_response('faq.html', {}, context_instance=RequestContext(request))

@@ -38,6 +38,7 @@
 {% url trackdata_url_name as trackdata %}
 {% url ranking_url_name as ranking %}
 {% url faq_url_name as faq %}
+{% url about_url_name as about %}
 {% url upload_url_name as upload %}
 
 
@@ -50,6 +51,7 @@
                 <li class="{% active request trackdata %}"><a href="/trackdata">TrackData</a></li>
                 <li class="{% active request ranking %}"><a href="/ranking">Ranking</a></li>
                 <li class="{% active request faq %}"><a href="/faq">FAQ</a></li>
+                <li class="{% active request about %}"><a href="/about">About</a></li>
                 <li class="{% active request upload %}"><a href="/upload_start">Upload</a></li>
             </ul>
         	</section><!-- /.nav_fix_in -->
@@ -114,6 +116,7 @@
                 	<li class="{% active request trackdata %}"><a href="/trackdata">TrackData</a></li>
                 	<li class="{% active request ranking %}"><a href="/ranking">Ranking</a></li>
                 	<li class="{% active request faq %}"><a href="/faq">FAQ</a></li>
+                	<li class="{% active request about %}"><a href="/about">About</a></li>
                 	<li class="{% active request upload %}"><a href="/upload_start">Upload</a></li>
                 </ul><!-- /.footer_menu --> 
             </section><!-- /.footer_meta --> 
