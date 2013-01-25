@@ -15,8 +15,29 @@ from rcstats.rcdata.models import RacerId
 
 import rcstats.uploadresults.tests as uploadresultstests
 
-from rcstats.rcdata.laptimehistory import _get_lap_time_history
+from rcstats.rcdata.laptimehistory import _get_lap_time_history, _get_laptime_median
   
+class TestLapTimeHistoryFunctions(TestCase):
+    
+    def test_get_laptime_median(self):
+        
+        laps = [LapTimes(racelaptime=2.0),
+                LapTimes(racelaptime=3.0),
+                LapTimes(racelaptime=4.0),]
+        median = _get_laptime_median(laps)
+        self.assertEqual(median, 3.0)
+        
+        laps = [LapTimes(racelaptime=2.0),
+                LapTimes(racelaptime=3.0),
+                LapTimes(racelaptime=None),]
+        median = _get_laptime_median(laps)
+        self.assertEqual(median, 3.0)
+
+        laps = [LapTimes(racelaptime=None),
+                LapTimes(racelaptime=None),
+                LapTimes(racelaptime=None),]
+        median = _get_laptime_median(laps)
+        self.assertEqual(median, None)
 
 class LapTimeHistory(uploadresultstests.GeneralRaceUploader):
     
@@ -161,6 +182,8 @@ Echo, Jon            #1          1           35.952         35.952
     35.9  8:18.5  8:02.6  8:08.9  8:00.9    
     '''
     
+    # WARNING - this race was intentionally mangled to verify the robustness of the code
+    # to group recent fast times.
     singlerace_testfile4 = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/4/2012
 
                    TACOMA R/C RACEWAY
@@ -176,31 +199,31 @@ Echo, Jon            #1          1           35.952         35.952
 
  ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
  5/35.95 1/26.24 4/30.95 2/27.01 3/29.63                                        
-         1/17.47 4/18.67 2/19.47 3/17.76                                        
+                 4/18.67 2/19.47 3/17.76                                        
          1/17.33 4/17.71 2/17.83 3/17.55                                        
-         1/17.27 4/19.73 2/17.85 3/17.92                                        
+                 4/19.73 2/17.85 3/17.92                                        
          1/17.08 4/19.64 2/18.29 3/17.88                                        
-         1/17.07 4/18.33 2/17.92 3/17.82                                        
+                 4/18.33 2/17.92 3/17.82                                        
          1/17.66 4/17.83 2/17.66 3/17.89                                        
-         1/17.39 4/17.82 2/17.37 3/17.67                                        
+                 4/17.82 2/17.37 3/17.67                                        
          1/17.54 4/18.88 2/17.79 3/17.75                                        
-         1/17.04 4/18.62 2/17.41 3/17.67                                        
+                 4/18.62 2/17.41 3/17.67                                        
          1/17.30 4/17.72 2/17.52 3/18.81                                        
-         1/19.07 4/20.62 2/17.82 3/18.23                                        
+                 4/20.62 2/17.82 3/18.23                                        
          1/17.30 4/20.27 2/17.46 3/17.35                                        
-         1/17.05 4/18.85 2/17.63 3/18.45                                        
+                 4/18.85 2/17.63 3/18.45                                        
          1/17.10 4/19.43 2/17.59 3/17.61                                        
-         1/17.46 4/18.10 2/17.96 3/18.86                                        
+                 4/18.10 2/17.96 3/18.86                                        
          1/17.17 4/17.82 2/17.68 3/17.67                                        
-         1/17.28 4/17.86 2/17.96 3/17.27                                        
+                 4/17.86 2/17.96 3/17.27                                        
          1/17.05 4/17.89 2/17.43 3/17.47                                        
-         1/17.16 4/18.43 2/17.34 3/17.60                                        
+                 4/18.43 2/17.34 3/17.60                                        
          1/17.39 4/23.66 2/18.26 3/17.73                                        
-         1/17.44 4/18.52 2/17.51 3/18.30                                        
+                 4/18.52 2/17.51 3/18.30                                        
          1/17.28 4/19.18 2/18.22 3/21.11                                        
-         1/17.39 4/18.03 2/17.65 3/17.46                                        
-         1/17.48 4/18.05 2/17.83 3/17.74                                        
-         1/17.14         2/17.25 3/19.69                                        
+                 4/18.03 2/17.65 3/17.46                                        
+                 4/18.05 2/17.83 3/17.74                                        
+                         2/17.25 3/19.69                                        
          1/17.61         2/17.11                                                
          1/20.71                                                                
  ------- ------- ------- ------- ------- ------- ------- ------- ------- -------

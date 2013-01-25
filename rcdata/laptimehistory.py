@@ -46,6 +46,24 @@ def lap_time_history_fastest_each_night_flot_data(racedetails_obj):
     '''
     return recent_laptimes_jsdata       
 
+
+def _get_laptime_median(laptimes):
+    '''
+    This is a potentially risky area if the data is really dirty.
+    
+    It is interly possible that the list of laptimes we recieve is
+    anywhere from empty, to partially filled, to entirely full of
+    empty laptimes.
+    '''
+    # Step 1 - filter out the blank laps
+    nonblank_laptimes = [x for x in laptimes if x.racelaptime]
+    
+    if not nonblank_laptimes:
+        return
+        
+    # Step 2 - take the median
+    return nonblank_laptimes[int(len(nonblank_laptimes) * .5)].racelaptime
+
 def _get_lap_time_history(track, raceclass, racelength, startdate=None, racerid=None, number_of_races=50):
     '''
     Get the key race data for the track/class/racelength along with any additional
@@ -93,11 +111,21 @@ def _get_lap_time_history(track, raceclass, racelength, startdate=None, racerid=
             #     This is going to have large impact on how the results are displayed.
             
             # I need the average lap time for that race.
-            #    So I need all the laps for the racer 
-            # TODO - I am going to start with just the bottom 75% for the winner.
+            #    So I need all the laps for the racer, there are several different
+            #    ways to get at this, I could look at all the racers laps or keep
+            #    some cached total, but this is good enough (if the data is garbage
+            #    this feature is the least of our concerns).
+            # TODO - (OLD) I am going to start with just the bottom 75% for the winner.
+            #      - Now I am taking the median lap time
             laptimes = LapTimes.objects.filter(raceid=detail, 
                                                racerid=race_result.racerid).order_by('racelaptime')
-            estimated_laptime = laptimes[int(len(laptimes) * .75)].racelaptime
+                        
+            estimated_laptime = _get_laptime_median(laptimes)
+            
+            # IF there are no laps for the racers, we are not going to bother
+            # graphing this race for them.
+            if not estimated_laptime:
+                continue
                         
             graph_results.append({'singleracedetails_id':detail.id,
                                   'racerid':race_result.racerid.id,
