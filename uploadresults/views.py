@@ -70,7 +70,7 @@ class UploadFileForm(forms.Form):
 
 @login_required(login_url='/login')
 def easyupload_track(request):
-    track_list = SupportedTrackName.objects.all()
+    track_list = SupportedTrackName.objects.all().order_by('trackkey__trackname')
     return render_to_response('easyupload/easyupload_track.html', {'track_list':track_list}, context_instance=RequestContext(request))
 
 @login_required(login_url='/login')

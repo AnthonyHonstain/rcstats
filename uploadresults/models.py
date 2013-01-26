@@ -2,9 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from rcstats.rcdata.models import SingleRaceDetails
 
-class UploadMultipleRecord(models.Model):
-    uploadrecord = models.ForeignKey(UploadRecord)
-    
 class UploadRecord(models.Model):
     origfilename = models.CharField(max_length=200)
     filename = models.CharField(max_length=200, null=True)
@@ -19,6 +16,9 @@ class UploadRecord(models.Model):
             str(self.user) + " | " +\
             str(self.ip) + " | " +\
             str(self.uploaddate)
+
+class UploadMultipleRecord(models.Model):
+    uploadrecord = models.ForeignKey(UploadRecord)
     
 class UploadedRaces(models.Model):
     upload = models.ForeignKey(UploadRecord)

@@ -15,27 +15,20 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 {% block content %}
 
 <section class="full_width">
-<p></p>
-<section class="one_third">
-<section class="widget">
-	<h3>Select a track you want to upload race results for:</h3>
-	
-		{% if track_list %} 
-		{% for track in track_list %}
-		<a class="button blue" href="/easyupload_fileselect/{{ track.trackkey.id }}/"><span>{{ track.trackkey.trackname }}</span></a>
-		
-		{% endfor %}
-	
-		{% else %}
-		<p>No tracks are available.</p>
-		{% endif %}
-	
-</section><!-- /.widget -->
 
-<div class="message-box green">
-	<p>Don't see the track you are looking for? Please contact the administrator to have a track added. To ensure quality results we only allow administrators to add new tracks to the system.</p>
-</div><!-- /.message-box -->
-</section><!-- /.one_third -->
+	<h3>Select a track you want to upload race results for:</h3>
+	{% if track_list %} 
+	{% for track in track_list %}
+	<a class="button blue" href="/easyupload_fileselect/{{ track.trackkey.id }}/"><span>{{ track.trackkey.trackname }}</span></a>
+	</br>
+	{% endfor %}	
+	{% else %}
+	<p>No tracks are available.</p>
+	{% endif %}
+
+	<div class="message-box green">
+		<p>Don't see the track you are looking for? Please contact the administrator to have a track added. To ensure quality results we only allow administrators to add new tracks to the system.</p>
+	</div><!-- /.message-box -->
 
 </section><!-- /.full_width --> 
 
