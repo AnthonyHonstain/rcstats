@@ -15,13 +15,7 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 {% block content %}
 
 <section class="full_width">
-<h2>Please select a file to upload.</h2>
-<h3>This should be the file created by RCScoringPro that contains the results and lap times.</h3>
-<div class="message-box red">
-	<h2>WARNING</h2>
-	<p>This is important step, it must be a text file in the correct format. Do not try to upload a PDF or similar format (do not try to paste pdf results into a text file, that will not work).</p>	
-</div><!-- /.message-box -->
-
+<h2>Please select a RCScoringPro .txt file to upload.</h2>
 <h2>{{ error_status }}</h2>
 <form action="/upload_start/" method="post" enctype="multipart/form-data">
 	{% csrf_token %}
@@ -31,7 +25,16 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 {{ form.errors }}
 {{ form.non_field_errors }}
 
-<h3>When viewed in notepad, your results should look similar to these in format:</h3>
+</br>
+</br>
+</br>
+
+<h4>This should be the file created by RCScoringPro that contains the results and lap times.</h4>
+<div class="message-box red">
+	<h4>WARNING</h4>
+	<p>This is an important step, it must be a text file in the correct format. Do not try to upload a PDF or similar format (do not try to paste pdf results into a text file, that will not work).</p>	
+</div><!-- /.message-box -->
+<h4>Example: When viewed in notepad, your results should look similar to these in format:</h4>
 <img src="/media/images/exampleformat.png" alt="Example race results" />
 
 </section><!-- /.full_width --> 

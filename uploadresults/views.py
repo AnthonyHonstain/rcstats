@@ -70,6 +70,10 @@ class UploadFileForm(forms.Form):
 
 @login_required(login_url='/login')
 def easyupload_track(request):
+    '''
+    Initial page in the easy upload, provide a list of buttons (each track)
+    that can be clicked to navigate to the next step.
+    '''
     track_list = SupportedTrackName.objects.all().order_by('trackkey__trackname')
     return render_to_response('easyupload/easyupload_track.html', {'track_list':track_list}, context_instance=RequestContext(request))
 
@@ -102,11 +106,11 @@ def easyupload_fileselect(request, track_id):
             # Need to make sure the key used for FILES[ ] matches up with the
             # form in the template.
             
-            print "\nTEST----\n"
+            # Example: print request.FILES
+            # <MultiValueDict: {u'file': [<InMemoryUploadedFile: 912503d1335331695-race-results-round3.txt (text/plain)>, 
+            #     <InMemoryUploadedFile: 913274d1335482296-race-results-round1.txt (text/plain)>, 
+            #     <InMemoryUploadedFile: 913275d1335482311-race-results-round2.txt (text/plain)>]}>
             
-            print request.FILES
-            print
-               
             # Bug - This is not the ideal solution but I need quick 
             # way for this to work in production and in development.
             #     In the dev enviro, 'HTTP_X_FORWARD_FOR' is not a 
@@ -114,18 +118,18 @@ def easyupload_fileselect(request, track_id):
             ip = "127.0.0.1" 
             if 'HTTP_X_FORWARDED_FOR' in request.META:
                 ip = request.META['HTTP_X_FORWARDED_FOR']
-            
-            for inmem_file in request.FILES['file']:
-                _process_inmemmory_file(ip, request.user, inmem_file)
-                
-            return HttpResponseRedirect('/upload_start/' + str(log_entry.id))
+
+#            for inmem_file in request.FILES['file']:
+#                _process_inmemmory_file(ip, request.user, inmem_file)
+#                
+#            return HttpResponseRedirect('/upload_start/' + str(log_entry.id))
         else:
             error = "Failed to upload file."
             return render_to_response('upload_start.html', {'form':form, 'error_status': error}, context_instance=RequestContext(request))
 
     else:
         form = UploadFileForm()
-    return render_to_response('upload_start.html',
+    return render_to_response('easyupload/easyupload_fileselect.html',
                               {'form': form},
                               context_instance=RequestContext(request))
 
