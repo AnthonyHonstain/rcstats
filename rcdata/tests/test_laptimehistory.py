@@ -3,17 +3,10 @@ Created on Aug 19, 2012
 
 @author: Anthony Honstain
 '''
-from django.test import TestCase
-from django.test.client import Client
-
-from rcstats.rcdata.models import LapTimes
 from rcstats.rcdata.models import SingleRaceDetails
-from rcstats.rcdata.models import SingleRaceResults
-from rcstats.rcdata.models import SupportedTrackName
-from rcstats.rcdata.models import TrackName
 from rcstats.rcdata.models import RacerId
 
-import rcstats.uploadresults.tests as uploadresultstests
+import rcstats.uploadresults.tests.general_race_uploader as uploadresultstests
 
 from rcstats.rcdata.laptimehistory import _get_lap_time_history
   

@@ -1,11 +1,14 @@
 '''
-Created on July 2012
+Created on April 2013
 
-This handles the bulk of the heavy lifting in the upload process, organizing them 
-for storage, validating and guiding the user, and pushing into the database.
+The revised uploader, I further stream lined the user scenario so that
+you need to click less buttons to get the nights race results uploaded.
 
-There is lots of special logic to collect and process metadata like ranking or
-fixing of the class names or racer names.
+    This handles the bulk of the heavy lifting in the upload process, organizing them 
+    for storage, validating and guiding the user, and pushing into the database.
+    
+    There is lots of special logic to collect and process metadata like ranking or
+    fixing of the class names or racer names.
 
 @author: Anthony Honstain
 '''
@@ -19,6 +22,7 @@ from django.http import HttpResponseRedirect
 from django import forms
 
 from django.conf import settings
+from models import UploadMultipleRecord
 from models import UploadRecord
 from models import UploadedRaces
 from process_singlerace import process_singlerace, FileAlreadyUploadedError
@@ -39,34 +43,106 @@ import time
 import traceback
 
 
-def login_user(request):
-    state = "Please log in below..."
-    username = password = ''
-    if request.POST:
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                state = "You're successfully logged in!"
-                return render_to_response('upload_start.html', {}, context_instance=RequestContext(request))
-            
-            else:
-                state = "Your account is not active, please contact the site admin."
-        else:
-            state = "Your username and/or password were incorrect."
-
-    return render_to_response('auth.html',
-                              {'state':state, 'username': username},
-                              context_instance=RequestContext(request))
-
-
 class UploadFileForm(forms.Form):
     #title = forms.CharField(max_length=50)
     file = forms.FileField()
-   
+
+@login_required(login_url='/login')
+def easyupload_track(request):
+    '''
+    Initial page in the easy upload, provide a list of buttons (each track)
+    that can be clicked to navigate to the next step.
+    '''
+    track_list = SupportedTrackName.objects.all().order_by('trackkey__trackname')
+    return render_to_response('easyupload/easyupload_track.html', {'track_list':track_list}, context_instance=RequestContext(request))
+
+@login_required(login_url='/login')
+def easyupload_fileselect(request, track_id):
+    '''
+    The controller responsible for the file upload.n
+    
+    I have modified the post to support multiple file at a single time. I have not attempted
+    to user any fancy jquery, I am going to attempt the easy route.
+    nn
+    Example of request.FILES when I attempt multiple uploads.
+        <MultiValueDict: {u'file': 
+            [<InMemoryUploadedFile: 912503d1335331695-race-results-round3.txt (text/plain)>, 
+            <InMemoryUploadedFile: 913274d1335482296-race-results-round1.txt (text/plain)>, 
+            <InMemoryUploadedFile: 913275d1335482311-race-results-round2.txt (text/plain)>]}>
+    Example when I request only a single file:
+        <MultiValueDict: {u'file': 
+        [<InMemoryUploadedFile: 912503d1335331695-race-results-round3.txt (text/plain)>]}>
+    '''
+    track = get_object_or_404(TrackName, pk=track_id)
+    
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+                
+        # What causes the form to not be valid? You can check by putting
+        # {{ form.errors }} {{ form.non_field_errors }} in the template.
+        
+        if (form.is_valid() and 'file' in request.FILES):
+            # Need to make sure the key used for FILES[ ] matches up with the
+            # form in the template.
+            
+            # Example: print request.FILES
+            # <MultiValueDict: {u'file': [<InMemoryUploadedFile: 912503d1335331695-race-results-round3.txt (text/plain)>, 
+            #     <InMemoryUploadedFile: 913274d1335482296-race-results-round1.txt (text/plain)>, 
+            #     <InMemoryUploadedFile: 913275d1335482311-race-results-round2.txt (text/plain)>]}>
+            
+            # Bug - This is not the ideal solution but I need quick 
+            # way for this to work in production and in development.
+            #     In the dev enviro, 'HTTP_X_FORWARD_FOR' is not a 
+            #     key in request.META
+            ip = "127.0.0.1" 
+            if 'HTTP_X_FORWARDED_FOR' in request.META:
+                ip = request.META['HTTP_X_FORWARDED_FOR']
+
+#            for inmem_file in request.FILES['file']:
+#                _process_inmemmory_file(ip, request.user, inmem_file)
+#                
+#            return HttpResponseRedirect('/upload_start/' + str(log_entry.id))
+        else:
+            error = "Failed to upload file."
+            return render_to_response('upload_start.html', {'form':form, 'error_status': error}, context_instance=RequestContext(request))
+
+    else:
+        form = UploadFileForm()
+    return render_to_response('easyupload/easyupload_fileselect.html',
+                              {'form': form},
+                              context_instance=RequestContext(request))
+
+def _process_inmemmory_file(ip, user, inmem_file):
+    '''
+    ip: the ip recorded with the upload
+    user: the django user recorded in the request
+    file: the InMemoryUploadedFile
+    '''
+    # Record the information we need about the fileupload. Not everything
+    # is immediately recorded (we record the hash and local file name later).
+    log_entry = UploadRecord(origfilename=inmem_file.name,
+                       ip=ip,
+                       user=user,
+                       filesize=inmem_file.size,
+                       uploaddate=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
+                       processed=False)
+    log_entry.save()
+    
+    # Set the filename, for now I want to use the primary key, but in the future I may change it.
+    # WARNING - do not use any user data for the filename.            
+    md5hexdigest = _handle_uploaded_file(inmem_file, str(log_entry.id))
+                            
+    updatelog = UploadRecord.objects.get(pk=log_entry.id)
+    updatelog.filename = str(log_entry.id)
+    updatelog.filemd5 = md5hexdigest
+    updatelog.save()
+
+@login_required(login_url='/login')
+def easyupload_results(request, track_id, upload_id):
+    upload_record = get_object_or_404(UploadRecord, pk=upload_id)
+    track = get_object_or_404(TrackName, pk=track_id)
+    pass
+    
 @login_required(login_url='/login')
 def upload_start(request):
     '''

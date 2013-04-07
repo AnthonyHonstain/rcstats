@@ -13,7 +13,7 @@ from rcstats.rcdata.models import SupportedTrackName
 from rcstats.rcdata.models import TrackName
 from rcstats.rcdata.models import RacerId
 
-import rcstats.uploadresults.tests as uploadresultstests
+import rcstats.uploadresults.tests.general_race_uploader as uploadresultstests
 
 from rcstats.rcdata.database_cleanup import _ProcessRacerId, collapse_racer_names
 
