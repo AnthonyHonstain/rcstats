@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}
+RC-Stats - Upload
+{% endblock %}
+
+{% block description %}    
+RC-Stats stores your remote control race results and gives you tools to track your race results. We support indoor, outdoor, on-road, and off-road RC racing.
+{% endblock %}
+
+{% block pagetitle %}Easy Upload Race Results{% endblock %}
+{% block pagetitle_description %}Upload race results from the scoring system.{% endblock %}
+
+
+{% block content %}
+
+<section class="full_width">
+
+{% if general_error %}
+<div class="message-box red">
+	<h2>Error</h2>
+	<p>At least one of the files uploaded encountered a problem.</p>
+	<p>{{ general_error_message }}</p>	
+</div><!-- /.message-box -->
+{% endif %}
+
+{% if upload_records %}
+{% for record in upload_records %}
+<section class="content_heading">
+	<a class="gotop" href="#"></a>
+	<h3>{{ record.origfilename }}</h3>
+</section> <!--  END content_heading -->
+<p>
+
+{% endfor %}
+{% else %}
+<h2>ERROR - No files uploaded.</h2>
+{% endif %}
+     
+</section><!-- /.full_width --> 
+{% endblock %}

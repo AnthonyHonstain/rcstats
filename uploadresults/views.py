@@ -94,11 +94,6 @@ def upload_start(request):
             # Need to make sure the key used for FILES[ ] matches up with the
             # form in the template.
             
-            print "\nTEST----\n"
-            
-            print request.FILES
-            print
-            
             # Bug - This is not the ideal solution but I need quick 
             # way for this to work in production and in development.
             #     In the dev enviro, 'HTTP_X_FORWARD_FOR' is not a 

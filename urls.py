@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     
     url(r'^easyupload_track/$', 'rcstats.uploadresults.views_easy.easyupload_track', name="upload_url_name"),    
     url(r'^easyupload_fileselect/(?P<track_id>\d+)/$', 'rcstats.uploadresults.views_easy.easyupload_fileselect', name="upload_url_name"),
-    url(r'^easyupload_results/(?P<track_id>\d+)/(?P<upload_id>\d+)/$', 'rcstats.uploadresults.views_easy.easyupload_results', name="upload_url_name"),
+    url(r'^easyupload_results/(?P<upload_id>\d+)/$', 'rcstats.uploadresults.views_easy.easyupload_results', name="upload_url_name"),
     
     url(r'^trackdata/$', 'rcstats.trackdata.views.trackdata', name="trackdata_url_name"),    
     url(r'^trackdata/(?P<track_id>\d+)/$', 'rcstats.trackdata.views.trackdetail', name="trackdata_url_name"),

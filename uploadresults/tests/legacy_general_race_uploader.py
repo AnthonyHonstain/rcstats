@@ -1,6 +1,10 @@
 '''
 Created on July 2012
 
+April 20 2013 Anthony Honstain - I am pulling the test for the original race uploader aside and marking
+    it as legacy. I want to maintain this uploader, but I do not intent to do any additional developement
+    work on it, I will use the new easy uploader which has it's own seperate module.
+
 @author: Anthony Honstain
 '''
 from django.conf import settings
@@ -19,7 +23,7 @@ from rcstats.rcdata.models import TrackName
 from rcstats.rcdata.models import RacerId
 
 
-class GeneralRaceUploader(TestCase):
+class LegacyGeneralRaceUploader(TestCase):
 
     singlerace_testfile1 = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/17/2012
 
@@ -125,8 +129,6 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         
                 
         # Need to fake the file upload.
-        #     NEW - we are going to assume they were all uploaded at the same time.
-        #
         #     Make sure its is created in the right location
         #     Make sure there is a record of its upload in the logs.
         for upload in self.racelist_to_upload:

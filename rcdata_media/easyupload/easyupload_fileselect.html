@@ -8,7 +8,7 @@ RC-Stats - Upload
 RC-Stats stores your remote control race results and gives you tools to track your race results. We support indoor, outdoor, on-road, and off-road RC racing.
 {% endblock %}
 
-{% block pagetitle %}Upload Race Results{% endblock %}
+{% block pagetitle %}Easy Upload Race Results{% endblock %}
 {% block pagetitle_description %}Upload race results from the scoring system.{% endblock %}
 
 
@@ -17,7 +17,7 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 <section class="full_width">
 <h2>Please select a RCScoringPro .txt file to upload.</h2>
 <h2>{{ error_status }}</h2>
-<form action="/upload_start/" method="post" enctype="multipart/form-data">
+<form action="/easyupload_fileselect/{{ track.id }}/" method="post" enctype="multipart/form-data">
 	{% csrf_token %}
 	<input type="file" name="file" multiple />
 	<input type="submit" name="submit" value="Upload" />
