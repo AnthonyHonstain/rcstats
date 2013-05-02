@@ -38,15 +38,16 @@ class EasyUploadRecord(models.Model):
     ip = models.IPAddressField()
     filesize = models.BigIntegerField()
     filemd5 = models.CharField(max_length=200, null=True)
-    uploadstart = models.DateTimeField('Date the file was uploaded.')
+    uploadstart = models.DateTimeField('Date the file was uploaded.', null=True)
     uploadfinish = models.DateTimeField('Date the file was finished uploaded and processed', null=True)
+    trackname = models.ForeignKey(TrackName, null=True)
     processed = models.BooleanField()
     errorenum = models.IntegerField(null=True)
     def __str__(self):
         return str(self.filename) + " | " +\
             str(self.user) + " | " +\
             str(self.ip) + " | " +\
-            str(self.uploaddate)
+            str(self.uploadstart)
 
 class EasyUploadedRaces(models.Model):
     """

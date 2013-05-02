@@ -18,20 +18,45 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 
 {% if general_error %}
 <div class="message-box red">
-	<h2>Error</h2>
-	<p>At least one of the files uploaded encountered a problem.</p>
-	<p>{{ general_error_message }}</p>	
+	<h3>General Error</h3>
+	<h4>At least one of the files uploaded encountered a problem.</h4>
+	{% if general_error_message %}
+	<p>{{ general_error_message }}</p>
+	{% endif %}	
 </div><!-- /.message-box -->
 {% endif %}
-
-{% if upload_records %}
-{% for record in upload_records %}
-<section class="content_heading">
-	<a class="gotop" href="#"></a>
-	<h3>{{ record.origfilename }}</h3>
-</section> <!--  END content_heading -->
+<h4>Upload Information:</h4>
 <p>
+Number of files that succeeded: {{ success_count }}</br>
+Number of files that failed: {{ fail_count }}</br>
+Total time required for upload: {{ total_uploadtime }}
+</p>
 
+{% if resultpage_list %}
+{% for resultpage in resultpage_list %}
+	<section class="content_heading">
+		<a class="gotop" href="#"></a>
+		<h3>{{ resultpage.upload_record.origfilename }}</h3>
+	</section> <!--  END content_heading -->
+
+	{% if resultpage.error_message %}
+		<div class="message-box red">
+			<h4>Error Uploading This File</h4>
+			<p>{{ resultpage.error_message }}</p>	
+		</div><!-- /.message-box -->	
+	{% else %}
+	
+	<h4>{{ resultpage.upload_record.trackname }}</h4>
+	<p>
+	Upload Start: {{ resultpage.upload_record.uploadstart }}</br>
+	Upload Finish: {{ resultpage.upload_record.uploadfinish }}</br>
+	Total Time: {{ resultpage.upload_time }} </br>
+	
+	{% for race_result in resultpage.uploaded_race_list %}
+		Race class: {{ race_result.0 }}</br>
+	{% endfor %}
+	</p>
+	{% endif %}
 {% endfor %}
 {% else %}
 <h2>ERROR - No files uploaded.</h2>

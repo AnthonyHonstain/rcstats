@@ -32,9 +32,7 @@ from django.http import HttpResponseRedirect
 from django import forms
 
 from django.conf import settings
-from models import EasyUploaderPrimaryRecord, EasyUploadRecord
-from models import UploadRecord
-from models import UploadedRaces
+from models import EasyUploaderPrimaryRecord, EasyUploadRecord, EasyUploadedRaces
 from process_singlerace import process_singlerace, FileAlreadyUploadedError
 from rcstats.ranking.models import RankedClass
 from rcstats.ranking.views import process_ranking 
@@ -49,6 +47,8 @@ import logging
 import os.path
 import re
 import sys
+import datetime
+import pytz
 import time
 import traceback
 
@@ -114,12 +114,15 @@ def easyupload_fileselect(request, track_id):
 
             file_list = request.FILES.getlist('file')
             
+            
+            utcnow = datetime.datetime.utcnow()
+            utcnow = utcnow.replace(tzinfo=pytz.utc)
             # First create a record for this upload action
             primary_record = EasyUploaderPrimaryRecord(user=request.user, 
                                                        ip=ip, 
                                                        filecount=len(file_list), 
                                                        filecountsucceed=0, 
-                                                       uploadstart=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
+                                                       uploadstart=utcnow,
                                                        trackname=track)
             primary_record.save()
 
@@ -158,7 +161,6 @@ def _process_inmemmory_file(primary_record, ip, user, inmem_file):
                                  ip=ip,
                                  user=user,
                                  filesize=inmem_file.size,
-                                 uploadstart=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
                                  processed=False)
     log_entry.save()
     
@@ -186,6 +188,20 @@ def _handle_uploaded_file(f, filename):
     # encoding it.
     return md5.hexdigest()
 
+class ResultPage():
+        '''
+        Contains all the data associated with a single file of race results.
+        Including results prior to database upload, and what to display to the users.
+        '''
+        def __init__(self, upload_record, parsed_races):
+            self.upload_record = upload_record
+            self.parsed_races = parsed_races # List of parsed races from a single file upload
+            self.uploaded_race_list = [] # For display to the user.
+            # TODO - ranking
+            self.uploaded_raceid_list = [] # For ranking
+            self.display_error = None
+            self.upload_time = None
+
 @login_required(login_url='/login')
 def easyupload_results(request, upload_id):
     """
@@ -204,33 +220,67 @@ def easyupload_results(request, upload_id):
                                   {'general_error': True, 'general_error_message':general_error_message},
                                   context_instance=RequestContext(request))
     
-    # TODO - move this up to a global so I reference it here and in the template and comment on it.
+    # TODO - move this to a better spot, so it is easy to understand when coming from the database
     upload_errors = ['Pass',
-                     'Invalid filename - it is possible the upload to the server drive failed'
-                     'Unable to parse the file - likely is has incompatible format'
+                     'Invalid filename - it is possible the upload to the server drive failed',
+                     'Unable to parse the file - likely is has incompatible format',
                      'No races found in the file',
                      'There was no trackname/header set',
-                     'Not all races in the file had the same trackname/header']
+                     'Not all races in the file had the same trackname/header',
+                     'This race has ALREADY been uploaded.',
+                     'Unknown error processing the file.',]
         
     upload_records = EasyUploadRecord.objects.filter(uploadrecord=primary_upload_record)
+         
+    resultpage_list = []
     
-    prevalidated_file_races = []
     # =======================================================================
     # Primary loop - process each file uploaded.
+    #     Note we keep this as a separate lookup so that we get them all saved to disk before validation
     # =======================================================================
     for record in upload_records:
-        prevalidated_races = _initial_validation_of_uploaded_file(record)
-        if prevalidated_races:
-            prevalidated_file_races.append(prevalidated_races)
-            
-    print
-    print "READY TO START UPLOADING"
-    print
+        resultpage_prevalidated = _initial_validation_of_uploaded_file(record)
+        if resultpage_prevalidated:
+            resultpage_list.append(ResultPage(record, resultpage_prevalidated))
     
-    error_list = [x.errorenum for x in upload_records if x.errorenum]
+    for result_page in resultpage_list:
+        utcnow = datetime.datetime.utcnow()
+        utcnow = utcnow.replace(tzinfo=pytz.utc)
+        result_page.upload_record.uploadstart = utcnow
+        result_page.upload_record.save()
+        
+        # DATA RESTORATION - This is to hopefully simplify restoring data in the event of
+        # an emergency (all that would be needed would be these text files).
+        first_trackname_on_page = result_page.parsed_races[0].trackName
+        _modify_trackname(result_page.upload_record.filename, first_trackname_on_page, track.trackname)
+        
+        # Short term fix - set the trackname here in case in the future we want to break it out
+        result_page.upload_record.trackname = track
+        
+        _final_validation_and_upload(result_page)
+        
+        # Set all the error messages to display
+        if result_page.upload_record.errorenum:
+            result_page.error_message = upload_errors[result_page.upload_record.errorenum]
+        else:
+            result_page.upload_time = str(result_page.upload_record.uploadfinish - result_page.upload_record.uploadstart)
     
-    context = {'upload_records':upload_records,
-               'general_error':len(error_list) > 0,
+    utcnow = datetime.datetime.utcnow()
+    utcnow = utcnow.replace(tzinfo=pytz.utc)
+    primary_upload_record.uploadfinish = utcnow
+    primary_upload_record.save()
+    
+    # Get basic information about the upload to display to the user
+    total_uploadtime = str(primary_upload_record.uploadfinish - primary_upload_record.uploadstart)
+    error_list = [x.errorenum for x in upload_records if x.errorenum] # Just want to know if any other errors occured.
+    success_count = len(upload_records) - len(error_list)
+    fail_count = len(error_list)    
+        
+    context = {'resultpage_list':resultpage_list,
+               'total_uploadtime':total_uploadtime,
+               'success_count':success_count,
+               'fail_count':fail_count,
+               'general_error':fail_count > 0,
                'general_error_message':None }
     return render_to_response('easyupload/easyupload_validate.html',
                               context,
@@ -297,6 +347,45 @@ def _initial_validation_of_uploaded_file(easy_upload_record):
 
     return prevalidation_race_list
 
+def _final_validation_and_upload(result_page):
+    logger = logging.getLogger("uploadprocessing")
+    
+    # Process each race and load it into the DB.             
+    for race in result_page.parsed_races:
+        # Set the new trackname on each of the race objects.
+        race.trackName = result_page.upload_record.trackname.trackname
+        
+        try:
+            new_singleracedetails = process_singlerace(race)
+            # We are going to track who uploaded this race.
+            EasyUploadedRaces.objects.create(upload=result_page.upload_record, racedetails=new_singleracedetails)
+            result_page.uploaded_race_list.append((race.raceClass, new_singleracedetails.id))
+            result_page.uploaded_raceid_list.append(new_singleracedetails.id)
+        except FileAlreadyUploadedError:
+            # result_page.upload_record.filename
+            logger.error("This race has already been uploaded, filename=" + result_page.upload_record.filename + " raceobject:" + str(race))        
+            result_page.upload_record.errorenum = 6
+            result_page.upload_record.save()             
+        except Exception as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            trace = traceback.format_exception(exc_type, exc_value, exc_traceback)
+            logger.error("Unable to process file: {0} exception:{1} \n {2}".format(result_page.upload_record.filename, str(e), trace))
+            result_page.upload_record.errorenum = 7
+            result_page.upload_record.save()
+             
+    
+    # TODO - push out and run in Celery so we wont wait forever here.
+    #
+    #_update_ranking(track, uploaded_raceid_list)        
+                
+    # Log this upload as processed (we do NOT want to support
+    # multiple attempts at uploading the file).
+    result_page.upload_record.processed = True
+    utcnow = datetime.datetime.utcnow()
+    utcnow = utcnow.replace(tzinfo=pytz.utc)
+    result_page.upload_record.uploadfinish = utcnow  
+    result_page.upload_record.save()
+
 
 def _parse_file(filename):
     """
@@ -342,3 +431,30 @@ def _parse_file(filename):
         raceresults_list.append(singlerace)
     
     return raceresults_list
+
+def _modify_trackname(uploaded_filename, origional_trackname, new_trackname):
+    '''
+    _modify_trackname is a helper function handle replacing the trackname
+    in the file the user uploaded and creating an updated version of the uploaded
+    file. 
+    
+    This could be done with a one line command in bash, but I think at this
+    stage in development, I feel more better having python handle it than 
+    trying to run a special command (espcially on the live server).
+    '''
+    origional_filepath = os.path.join(settings.MEDIA_USER_UPLOAD, uploaded_filename)
+    new_filepath = os.path.join(settings.MEDIA_USER_UPLOAD, uploaded_filename + "_validated")
+    
+    pattern = re.compile(origional_trackname, re.IGNORECASE)
+            
+    with open(origional_filepath) as f, open(new_filepath, 'wb+') as destination: 
+        content = f.readlines()
+        for line in content:
+            search_result = pattern.search(line)
+            if (search_result):
+                newline = " " * search_result.start(0)
+                newline += new_trackname + "\n"
+                destination.write(newline)
+            else:
+                destination.write(line)
+    return
