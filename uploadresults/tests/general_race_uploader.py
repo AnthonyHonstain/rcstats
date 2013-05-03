@@ -1,5 +1,7 @@
 '''
-Created on July 2012
+Created on April 2012
+
+Updated this to use the new easy race uploader.
 
 @author: Anthony Honstain
 '''
@@ -7,7 +9,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
 
+import datetime
 import os
+import pytz
 
 import rcstats.uploadresults.models as models
 import rcstats.utils as utils
@@ -129,30 +133,39 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         #
         #     Make sure its is created in the right location
         #     Make sure there is a record of its upload in the logs.
+        utcnow = datetime.datetime.utcnow()
+        utcnow = utcnow.replace(tzinfo=pytz.utc)
+        primary_record = models.EasyUploaderPrimaryRecord(user=uploaduser, 
+                                                          ip="1.1.1.1", 
+                                                          filecount=len(self.racelist_to_upload), 
+                                                          filecountsucceed=0, 
+                                                          uploadstart=utcnow,
+                                                          trackname=trackname_obj)
+        primary_record.save()
+        self.primary_record = primary_record
+        
         for upload in self.racelist_to_upload:
         
             filename = upload['filename']
             with open(os.path.join(settings.MEDIA_USER_UPLOAD, filename), "wb") as f:
                 f.write(upload['filecontent'])
                     
-            log_entry = models.UploadRecord(origfilename="NO_origional_filename",
-                                            ip="1.1.1.1",
-                                            user=uploaduser,
-                                            filesize="56",
-                                            filename=filename,
-                                            uploaddate=utils.formated_local_time_for_orm(),
-                                            processed=False)
+            log_entry = models.EasyUploadRecord(uploadrecord=primary_record,
+                                                origfilename="NO_origional_filename",
+                                                ip="1.1.1.1",
+                                                user=uploaduser,
+                                                filesize="56",
+                                                processed=False,
+                                                filename=filename)
             log_entry.save()
             
-            response = self.client.get("/upload_start/" + str(log_entry.id) + "/")
-            self.assertEqual(response.status_code, 200)
-            
-            response = self.client.post('/upload_start/' + str(log_entry.id) + '/', {'track_id': sup_trackname_obj.id})
-            self.assertEqual(response.status_code, 200)
-
+        response = self.client.get("/easyupload_fileselect/" + str(trackname_obj.id) + "/")
+        self.assertEqual(response.status_code, 200)
+        
+        # This starts the processing, bulk of the work is done here.
+        response = self.client.post('/easyupload_results/' + str(primary_record.id) + '/')
+        self.assertEqual(response.status_code, 200)
         # The race has now been uploaded into the system.
-
-
 
     def test_multipleraces_upload(self):
         #====================================================
@@ -163,6 +176,10 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         #
         # WARNING - if this fails it means one of the uploads probably failed.
         #
+        # TO DEBUG - just use this printline and see what comes out.
+        # all_races = SingleRaceDetails.objects.all()
+        # for race in all_races:
+        #     print race        
         raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=2,
@@ -226,4 +243,14 @@ Golf, Jon            #7         17         6:16.439         18.222            13
                                       carnum=6,
                                       lapcount=17)
         
-        
+        #====================================================
+        # Validate Upload Records
+        #====================================================
+        primary_record = models.EasyUploaderPrimaryRecord.objects.get(pk=self.primary_record.id)
+        self.assertEqual(primary_record.filecount, 2)
+        self.assertEqual(primary_record.filecountsucceed, 2)
+        self.assert_(primary_record.uploadfinish)
+ 
+        records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record)
+        for record in records:
+            self.assert_(record.processed)

@@ -223,6 +223,10 @@ Echo, Jon            #3          3         1:05.720         17.099
         #
         # WARNING - if these fail, it likely means the upload failed.
         #
+        #all_races = SingleRaceDetails.objects.all()
+        #for race in all_races:
+        #    print race        
+        
         raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=2,

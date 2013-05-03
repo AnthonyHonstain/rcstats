@@ -230,7 +230,7 @@ def easyupload_results(request, upload_id):
                      'This race has ALREADY been uploaded.',
                      'Unknown error processing the file.',]
         
-    upload_records = EasyUploadRecord.objects.filter(uploadrecord=primary_upload_record)
+    upload_records = EasyUploadRecord.objects.filter(uploadrecord=primary_upload_record).order_by('id')
          
     resultpage_list = []
     
@@ -265,20 +265,22 @@ def easyupload_results(request, upload_id):
         else:
             result_page.upload_time = str(result_page.upload_record.uploadfinish - result_page.upload_record.uploadstart)
     
+    error_list = [x.errorenum for x in upload_records if x.errorenum] # Just want to know if any other errors occured.
+    fail_count = len(error_list)    
+    
+    # Need to record the finals stats on the upload.
     utcnow = datetime.datetime.utcnow()
     utcnow = utcnow.replace(tzinfo=pytz.utc)
     primary_upload_record.uploadfinish = utcnow
+    primary_upload_record.filecountsucceed = primary_upload_record.filecount - fail_count
     primary_upload_record.save()
     
     # Get basic information about the upload to display to the user
     total_uploadtime = str(primary_upload_record.uploadfinish - primary_upload_record.uploadstart)
-    error_list = [x.errorenum for x in upload_records if x.errorenum] # Just want to know if any other errors occured.
-    success_count = len(upload_records) - len(error_list)
-    fail_count = len(error_list)    
-        
+            
     context = {'resultpage_list':resultpage_list,
                'total_uploadtime':total_uploadtime,
-               'success_count':success_count,
+               'success_count':primary_upload_record.filecountsucceed,
                'fail_count':fail_count,
                'general_error':fail_count > 0,
                'general_error_message':None }
