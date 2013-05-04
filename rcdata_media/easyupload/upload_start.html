@@ -25,7 +25,7 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 <h2>{{ error_status }}</h2>
 <form action="/upload_start/" method="post" enctype="multipart/form-data">
 	{% csrf_token %}
-	<input type="file" name="file" multiple />
+	<input type="file" name="file" />
 	<input type="submit" name="submit" value="Upload" />
 </form>        
 {{ form.errors }}

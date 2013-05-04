@@ -69,21 +69,6 @@ class UploadFileForm(forms.Form):
    
 @login_required(login_url='/login')
 def upload_start(request):
-    '''
-    The controller responsible for the file upload.n
-    
-    I have modified the post to support multiple file at a single time. I have not attempted
-    to user any fancy jquery, I am going to attempt the easy route.
-    nn
-    Example of request.FILES when I attempt multiple uploads.
-        <MultiValueDict: {u'file': 
-            [<InMemoryUploadedFile: 912503d1335331695-race-results-round3.txt (text/plain)>, 
-            <InMemoryUploadedFile: 913274d1335482296-race-results-round1.txt (text/plain)>, 
-            <InMemoryUploadedFile: 913275d1335482311-race-results-round2.txt (text/plain)>]}>
-    Example when I request only a single file:
-        <MultiValueDict: {u'file': 
-        [<InMemoryUploadedFile: 912503d1335331695-race-results-round3.txt (text/plain)>]}>
-    '''
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
                 
