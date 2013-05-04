@@ -16,11 +16,12 @@
   <link rel="stylesheet" href="/media/css/flexslider.css" type="text/css" media="screen" />
   <link rel="stylesheet" href="/media/css/prettyPhoto.css" type="text/css" media="screen" title="prettyPhoto main stylesheet" />
   <link rel="stylesheet" href="/media/css/custom-rebuild.css" media="screen"  />
-  
+
   <link href='http://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
   <script src="/media/js/libs/modernizr-2.0.6.min.js"></script>
   
   {{ analytics_code }}
+
 </head>
 <body>
 
@@ -50,7 +51,7 @@
                 <li class="{% active request trackdata %}"><a href="/trackdata">TrackData</a></li>
                 <li class="{% active request ranking %}"><a href="/ranking">Ranking</a></li>
                 <li class="{% active request faq %}"><a href="/faq">FAQ</a></li>
-                <li class="{% active request upload %}"><a href="/upload_start">Upload</a></li>
+                <li class="{% active request upload %}"><a href="/easyupload_track">Upload</a></li>
             </ul>
         	</section><!-- /.nav_fix_in -->
         </section><!-- /.nav_fix -->
@@ -123,7 +124,6 @@
 </div> <!-- /#container -->
 
   <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary -->
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
   <script>window.jQuery || document.write('<script src="/media/js/libs/jquery-1.7.2.min.js"><\/script>')</script>
   
   <script type="text/javascript">   
@@ -175,7 +175,7 @@
 	  fjs.parentNode.insertBefore(js, fjs);
       }(document, 'script', 'facebook-jssdk'));
   </script>
-
+  
   {% block scripts %}
        
   {% endblock %}

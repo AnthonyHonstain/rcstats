@@ -1,3 +1,8 @@
+'''
+Original django test that I wrote, will manually push results into the database.
+
+@author: Anthony Honstain
+'''
 from django.test import TestCase
 from django.test.client import Client
 

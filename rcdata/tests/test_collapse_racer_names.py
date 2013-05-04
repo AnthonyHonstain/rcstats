@@ -13,7 +13,7 @@ from rcstats.rcdata.models import SupportedTrackName
 from rcstats.rcdata.models import TrackName
 from rcstats.rcdata.models import RacerId
 
-import rcstats.uploadresults.tests as uploadresultstests
+import rcstats.uploadresults.tests.general_race_uploader as uploadresultstests
 
 from rcstats.rcdata.database_cleanup import _ProcessRacerId, collapse_racer_names
 
@@ -223,6 +223,10 @@ Echo, Jon            #3          3         1:05.720         17.099
         #
         # WARNING - if these fail, it likely means the upload failed.
         #
+        #all_races = SingleRaceDetails.objects.all()
+        #for race in all_races:
+        #    print race        
+        
         raceobj1 = SingleRaceDetails.objects.get(trackkey=self.trackname_obj,
                                                  racedata="MODIFIED BUGGY",
                                                  racenumber=2,

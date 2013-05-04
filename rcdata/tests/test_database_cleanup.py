@@ -4,10 +4,9 @@ Created on Aug 24, 2012
 @author: Anthony Honstain
 '''
 from django.test import TestCase
-from django.test.client import Client
 
 import rcstats.rcdata.database_cleanup as database_cleanup
-import rcdata.models as models
+import rcstats.rcdata.models as models
 
 import datetime
 
