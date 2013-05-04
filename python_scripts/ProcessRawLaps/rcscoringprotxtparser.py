@@ -343,6 +343,8 @@ class RCScoringProTXTParser(SingleRace):
         #
         # Step 1 - is to get the general race information.
         #
+        if len(self._raceHeaderData_RAW) < 5:
+            raise Exception("The header for this race is malformed:%s" % self._raceHeaderData_RAW)
         self.date = self._parse_Header_Date(self._raceHeaderData_RAW[0])
         
         self.trackName = self._raceHeaderData_RAW[2].strip()

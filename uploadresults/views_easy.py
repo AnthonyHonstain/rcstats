@@ -409,6 +409,13 @@ def _parse_file(filename):
         #Process the first race.
         for i in range(1, len(content)):
             
+            # We have marked the start at 'currentRaceStartIndex' and we are looking for the
+            # end of the race which we track with 'i'
+            
+            # We scan until we see something like this:
+            #  Scoring Software by www.RCScoringPro.com                5:52:23 PM  04/27/2013
+            #
+            #                  TACOMA RC RACEWAY PRESENTS SHOWDOWN ROUND 7
             if (content[i].find('www.RCScoringPro.com') != -1):
                 # This means we have found a new race in the file.
           

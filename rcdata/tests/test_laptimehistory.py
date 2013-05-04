@@ -3,6 +3,8 @@ Created on Aug 19, 2012
 
 @author: Anthony Honstain
 '''
+from django.test import TestCase
+from rcstats.rcdata.models import LapTimes
 from rcstats.rcdata.models import SingleRaceDetails
 from rcstats.rcdata.models import RacerId
 

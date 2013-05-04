@@ -269,22 +269,84 @@ SCOVRONSKI, JEREMY            #1         17         6:00.082         18.588
      17/     18/     19/     18/     20/     21/     20/                        
   6:00.0  6:13.8  6:12.4  6:07.7  6:11.0  6:14.5  6:06.6 
 '''
+    
+    # NOTE - this is a problem result because there are more racers in the header than
+    # there are in the actual laps.
+    singlerace_testfile7 = '''Scoring Software by www.RCScoringPro.com                3:30:20 PM  04/27/2013
+
+                  TACOMA RC RACEWAY PRESENTS SHOWDOWN ROUND 7
+
+DASH FOR CASH MOD BUGGY                                       Round# 4, Race# 2
+
+________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
+TRAN, THOMAS            #4         14         4:10.838         16.768                  
+WALENTIA, JOHN            #6         14         4:13.880         14.221             3.042
+DUNLAP, SHAUN            #9         13         4:00.407         16.444                  
+COURTWAY, ZANE            #3         13         4:04.235         16.737             3.828
+RYAN MATESA            #2         13         4:04.446         16.386             4.039
+BROWN, MIKE            #5         13         4:05.240         16.218             4.833
+Barnes, Marty            #7         13         4:06.547         16.587             6.140
+LEIGHAN, JACK            #10        13         4:12.449         16.985            12.042
+GOULD, CHRIS            #1          2           43.375         16.495                  
+RYAN MATESA            #11         0            0.000          0.000                  
+
+ ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
+ 2/26.88 5/28.62 7/30.70 1/26.14 6/30.30 4/28.23 9/32.00         3/27.48 8/31.07
+ 1/16.49 5/16.94 7/17.16 2/17.77 6/16.73 4/16.43 8/16.91         3/16.69 9/18.52
+         4/16.98 8/20.76 1/16.93 5/18.88 3/17.17 6/17.51         2/17.12 7/17.59
+         4/16.55 8/19.46 1/16.76 5/16.21 3/16.98 6/16.58         2/17.17 7/16.98
+         5/21.41 7/17.33 1/17.09 3/16.91 6/23.53 4/17.02         2/17.35 8/24.44
+         4/16.90 7/17.23 1/17.37 5/19.11 6/17.05 3/16.92         2/20.10 8/17.74
+         6/20.55 7/17.38 1/16.76 4/16.96 5/17.20 3/17.85         2/18.02 8/17.27
+         6/16.74 7/17.18 1/17.13 2/16.49 4/16.68 3/18.00         5/19.83 8/17.63
+         6/16.38 7/16.89 1/17.62 2/16.78 4/16.60 3/16.77         5/16.76 8/17.35
+         6/17.85 7/16.73 1/17.14 5/20.30 4/18.47 2/17.05         3/17.43 8/17.05
+         5/17.54 6/16.85 1/17.27 7/20.84 4/17.25 2/17.36         3/16.44 8/21.65
+         4/17.11 6/17.55 1/17.50 7/16.85 2/17.23 5/20.73         3/18.73 8/17.76
+         5/20.83 4/18.95 1/17.61 6/18.81 2/16.78 7/21.78         3/17.21 8/17.34
+                         1/17.68         2/14.22                                
+ ------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+      2/     13/     13/     14/     13/     14/     13/             13/     13/
+    43.3  4:04.4  4:04.2  4:10.8  4:05.2  4:13.8  4:06.5          4:00.4  4:12.4
+
+
+
+Top Qualifiers for DASH FOR CASH MOD BUGGY              04/27/2013 3:30:21 PM
+
+Qual#  Name                          Laps  Race Time  Rnd  Pos  Behind FastLap
+-----  ----------------------------  ----  ---------  ---  ---  ------ -------
+  1.   TRAN, THOMAS                   14    4:10.838   4    1    
+  2.   WALENTIA, JOHN                 14    4:13.880   4    2    3.042
+  3.   DUNLAP, SHAUN                  13    4:00.407   4    3    
+  4.   COURTWAY, ZANE                 13    4:04.235   4    4    3.828
+  5.   RYAN MATESA                    13    4:04.446   4    5    4.039
+  6.   BROWN, MIKE                    13    4:05.240   4    6    4.833
+  7.   Barnes, Marty                  13    4:06.547   4    7    6.140
+  8.   LEIGHAN, JACK                  13    4:12.449   4    8    12.042
+  9.   GOULD, CHRIS                    2      43.375   4    9    
+  9.   RYAN MATESA                     0         DNS   4   10    
+
+
+'''
 
     racelist_to_upload = [{'filename':'upload1', 'filecontent':singlerace_testfile1},
                           {'filename':'upload2', 'filecontent':doublerace_testfile2},
                           {'filename':'upload3', 'filecontent':singlerace_testfile3},
                           {'filename':'upload4', 'filecontent':singlerace_testfile4},
                           {'filename':'upload5', 'filecontent':singlerace_testfile5},
-                          {'filename':'upload6', 'filecontent':singlerace_testfile6},]
+                          {'filename':'upload6', 'filecontent':singlerace_testfile6},
+                          {'filename':'upload7', 'filecontent':singlerace_testfile7},]
     
 
     def test_multipleraces_upload(self):
         #====================================================
         # Validate that an error was recorded in the db.
+        #
+        # DEBUGGING - CHECK THE UPLOAD LOG - All these are recorded there.
         #====================================================
         primary_record = models.EasyUploaderPrimaryRecord.objects.get(pk=self.primary_record.id)
-        self.assertEqual(primary_record.filecount, 6)
-        self.assertEqual(primary_record.filecountsucceed, 1)
+        self.assertEqual(primary_record.filecount, 7)
+        self.assertEqual(primary_record.filecountsucceed, 2)
         self.assert_(primary_record.uploadfinish)
  
         records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload1')
@@ -317,3 +379,7 @@ SCOVRONSKI, JEREMY            #1         17         6:00.082         18.588
         records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload6')
         self.assert_(records[0].processed)
         self.assertEqual(records[0].errorenum, 6)
+        
+        records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload7')
+        self.assert_(records[0].processed)
+        self.assertEqual(records[0].errorenum, None)
