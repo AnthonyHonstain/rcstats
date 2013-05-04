@@ -79,35 +79,7 @@
 
 
     <footer>
-    	<section class="footer_fix">
-            <section class="footer_widgets">
-            
-            	<section class="footer_widget_12">
-                	<h3>About rc-stats.com</h3>
-                    <article>
-                    
-                    <p>rc-stats.com is dedicated to the rc racing community. This is a site to store race results so that they can be easily organized and reviewed. Whether your goal is improving your lap times or just taking your bench racing to the next level, rc-stats will have the tools for you.</p>
-                    <img src="/media/images/icons/retina-icons/globe_64.png" class="float-left" alt="globe" />
-                    <p>This site was designed to be extensible, so you if you want your track or event included please contact an admin. Created by racers for racers.  </p>
-                    </article>
-                </section><!-- /.footer_widget_12 -->
-                
-                <section class="footer_widget_12">
-                	<h3>Share</h3>
-                    <article>                          
-                          <div class="fb-like" data-href="http://www.facebook.com/RCStats" data-send="true" data-width="450" data-show-faces="true" data-colorscheme="dark"></div>
-                    </article>
-                	<h3>Contact Information</h3>
-                    <article>
-                          <p>
-                          Creator: Anthony Honstain<br>
-                          Email: rcstats.site@gmail.com<br>
-                          </p>
-                    </article>
-                </section><!-- /.footer_widget_12 -->
-            
-            </section><!-- /.footer_widgets --> 
-            
+    	<section class="footer_fix"> 
             <section class="footer_meta">
                 <ul class="footer_menu">
             	    <li class="{% active request index %}"><a href="/">Home</a></li>
@@ -164,17 +136,6 @@
   <script src="/media/js/scripts.js"></script>
   <!-- scripts concatenated and minified via ant build script-->
   <script src="/media/js/helper.js"></script>
-
-  <!-- Facebook sdk -->
-  <div id="fb-root"></div>
-  <script>(function(d, s, id) {
-	  var js, fjs = d.getElementsByTagName(s)[0];
-	  if (d.getElementById(id)) return;
-	  js = d.createElement(s); js.id = id;
-	  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-	  fjs.parentNode.insertBefore(js, fjs);
-      }(document, 'script', 'facebook-jssdk'));
-  </script>
   
   {% block scripts %}
        
