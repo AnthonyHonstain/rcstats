@@ -41,13 +41,16 @@ class EasyUploadRecord(models.Model):
     uploadstart = models.DateTimeField('Date the file was uploaded.', null=True)
     uploadfinish = models.DateTimeField('Date the file was finished uploaded and processed', null=True)
     trackname = models.ForeignKey(TrackName, null=True)
-    processed = models.BooleanField()
+    processed = models.BooleanField('We processed some or all of the file (still possible there was an error)')
     errorenum = models.IntegerField(null=True)
     def __str__(self):
         return str(self.filename) + " | " +\
             str(self.user) + " | " +\
             str(self.ip) + " | " +\
-            str(self.uploadstart)
+            str(self.uploadstart) + "|" +\
+            str(self.uploadfinish) + "|" +\
+            str(self.processed) + "|" +\
+            str(self.errorenum)
 
 class EasyUploadedRaces(models.Model):
     """

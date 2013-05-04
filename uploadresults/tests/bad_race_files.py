@@ -180,8 +180,102 @@ Golf, Jon            #7         17         6:16.439         18.222            13
   6:14.6  6:11.9  6:07.1  6:02.4  6:05.1  6:03.3  6:16.4   
 '''
 
+    singlerace_testfile3 = '''Scoring Software by www.RCScoringPro.com                3:09:41 PM  08/18/2012
+                                
+ '''
+
+    singlerace_testfile4 = ''' '''
+
+    singlerace_testfile5 = '''Scoring Software by www.RCScoringPro.com                7:09:52 PM  04/08/2013
+
+                     TACOMA RC RACEWAY TUESDAY NIGHT RACING
+
+STOCK BUGGY                                                   Round# 1, Race# 1
+
+________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
+SHIRK, MIKE            #6         21         6:14.594         16.940                  
+JUSTIN GILKISON            #7         20         6:06.675         17.252                  
+AUTRY, BRIAN            #5         20         6:11.090         17.058             4.415
+MIKE MOLOSEAU            #3         19         6:12.442         17.760                  
+MOREHEAD, PATRICK            #4         18         6:07.798         17.560                  
+HENDERSON, JEFF            #2         18         6:13.828         18.209             6.030
+SCOVRONSKI, JEREMY            #1         17         6:00.082         18.588                  
+
+ ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
+ 6/32.51 5/30.02 4/28.86 7/32.67 2/27.82 1/26.50 3/28.09                        
+ 7/19.80 5/18.86 4/18.61 6/18.58 2/17.18 1/17.37 3/17.63                        
+ 7/19.72 4/19.82 6/23.32 5/17.90 2/18.96 1/17.44 3/18.83                        
+ 6/20.15 4/19.57 5/18.47 7/23.61 2/17.41 1/17.48 3/17.25                        
+ 7/19.90 4/18.89 5/18.27 6/18.60 2/17.61 1/17.53 3/18.07                        
+ 7/19.70 4/19.06 5/19.01 6/18.78 2/18.43 1/17.23 3/18.07                        
+ 6/19.24 5/23.02 4/19.60 7/26.32 2/17.47 1/17.47 3/17.46                        
+ 6/20.05 5/18.60 4/18.43 7/17.56 2/17.70 1/17.64 3/18.10                        
+ 6/20.00 5/18.47 4/18.24 7/18.10 3/22.92 1/17.86 2/17.96                        
+ 5/19.61 6/24.42 4/17.76 7/22.41 3/17.51 1/17.66 2/17.59                        
+ 7/24.05 6/23.03 4/18.61 5/18.58 3/17.29 1/16.95 2/17.93                        
+ 5/21.13 6/23.73 4/20.11 7/24.77 3/17.70 1/17.24 2/17.99                        
+ 6/20.36 7/23.29 4/18.37 5/18.22 3/17.05 1/17.66 2/17.39                        
+ 6/21.89 7/18.47 4/18.12 5/17.91 3/17.54 1/17.98 2/18.20                        
+ 7/21.63 6/18.63 4/17.88 5/17.94 3/17.86 1/17.58 2/17.52                        
+ 7/21.70 6/18.96 4/23.34 5/19.47 3/17.48 1/16.94 2/17.52                        
+ 7/18.58 6/18.70 4/18.60 5/17.91 3/17.66 1/17.56 2/17.65                        
+         6/18.20 4/18.28 5/18.39 3/17.28 1/17.06 2/17.76                        
+                 4/18.52         3/18.34 1/17.08 2/17.46                        
+                                 3/19.80 1/17.01 2/18.10                        
+                                         1/17.24                                
+ ------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+     17/     18/     19/     18/     20/     21/     20/                        
+  6:00.0  6:13.8  6:12.4  6:07.7  6:11.0  6:14.5  6:06.6 
+'''
+
+    singlerace_testfile6 = '''Scoring Software by www.RCScoringPro.com                7:09:52 PM  04/08/2013
+
+                     TACOMA RC RACEWAY TUESDAY NIGHT RACING
+
+STOCK BUGGY                                                   Round# 1, Race# 1
+
+________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
+SHIRK, MIKE            #6         21         6:14.594         16.940                  
+JUSTIN GILKISON            #7         20         6:06.675         17.252                  
+AUTRY, BRIAN            #5         20         6:11.090         17.058             4.415
+MIKE MOLOSEAU            #3         19         6:12.442         17.760                  
+MOREHEAD, PATRICK            #4         18         6:07.798         17.560                  
+HENDERSON, JEFF            #2         18         6:13.828         18.209             6.030
+SCOVRONSKI, JEREMY            #1         17         6:00.082         18.588                  
+
+ ___1___ ___2___ ___3___ ___4___ ___5___ ___6___ ___7___ ___8___ ___9___ ___10__
+ 6/32.51 5/30.02 4/28.86 7/32.67 2/27.82 1/26.50 3/28.09                        
+ 7/19.80 5/18.86 4/18.61 6/18.58 2/17.18 1/17.37 3/17.63                        
+ 7/19.72 4/19.82 6/23.32 5/17.90 2/18.96 1/17.44 3/18.83                        
+ 6/20.15 4/19.57 5/18.47 7/23.61 2/17.41 1/17.48 3/17.25                        
+ 7/19.90 4/18.89 5/18.27 6/18.60 2/17.61 1/17.53 3/18.07                        
+ 7/19.70 4/19.06 5/19.01 6/18.78 2/18.43 1/17.23 3/18.07                        
+ 6/19.24 5/23.02 4/19.60 7/26.32 2/17.47 1/17.47 3/17.46                        
+ 6/20.05 5/18.60 4/18.43 7/17.56 2/17.70 1/17.64 3/18.10                        
+ 6/20.00 5/18.47 4/18.24 7/18.10 3/22.92 1/17.86 2/17.96                        
+ 5/19.61 6/24.42 4/17.76 7/22.41 3/17.51 1/17.66 2/17.59                        
+ 7/24.05 6/23.03 4/18.61 5/18.58 3/17.29 1/16.95 2/17.93                        
+ 5/21.13 6/23.73 4/20.11 7/24.77 3/17.70 1/17.24 2/17.99                        
+ 6/20.36 7/23.29 4/18.37 5/18.22 3/17.05 1/17.66 2/17.39                        
+ 6/21.89 7/18.47 4/18.12 5/17.91 3/17.54 1/17.98 2/18.20                        
+ 7/21.63 6/18.63 4/17.88 5/17.94 3/17.86 1/17.58 2/17.52                        
+ 7/21.70 6/18.96 4/23.34 5/19.47 3/17.48 1/16.94 2/17.52                        
+ 7/18.58 6/18.70 4/18.60 5/17.91 3/17.66 1/17.56 2/17.65                        
+         6/18.20 4/18.28 5/18.39 3/17.28 1/17.06 2/17.76                        
+                 4/18.52         3/18.34 1/17.08 2/17.46                        
+                                 3/19.80 1/17.01 2/18.10                        
+                                         1/17.24                                
+ ------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+     17/     18/     19/     18/     20/     21/     20/                        
+  6:00.0  6:13.8  6:12.4  6:07.7  6:11.0  6:14.5  6:06.6 
+'''
+
     racelist_to_upload = [{'filename':'upload1', 'filecontent':singlerace_testfile1},
-                          {'filename':'upload2', 'filecontent':doublerace_testfile2},]
+                          {'filename':'upload2', 'filecontent':doublerace_testfile2},
+                          {'filename':'upload3', 'filecontent':singlerace_testfile3},
+                          {'filename':'upload4', 'filecontent':singlerace_testfile4},
+                          {'filename':'upload5', 'filecontent':singlerace_testfile5},
+                          {'filename':'upload6', 'filecontent':singlerace_testfile6},]
     
 
     def test_multipleraces_upload(self):
@@ -189,8 +283,8 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         # Validate that an error was recorded in the db.
         #====================================================
         primary_record = models.EasyUploaderPrimaryRecord.objects.get(pk=self.primary_record.id)
-        self.assertEqual(primary_record.filecount, 2)
-        self.assertEqual(primary_record.filecountsucceed, 0)
+        self.assertEqual(primary_record.filecount, 6)
+        self.assertEqual(primary_record.filecountsucceed, 1)
         self.assert_(primary_record.uploadfinish)
  
         records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload1')
@@ -200,3 +294,26 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload2')
         self.assert_(not records[0].processed)
         self.assertEqual(records[0].errorenum, 5)
+        
+        records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload3')
+        self.assert_(not records[0].processed)
+        self.assertEqual(records[0].errorenum, 2)
+        
+        records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload4')
+        self.assert_(not records[0].processed)
+        self.assertEqual(records[0].errorenum, 2) # This should probably be a 3, but I am not going to sweat it.
+                
+#         all_races = SingleRaceDetails.objects.all()
+#         for race in all_races:
+#             print race
+#         all_records = models.EasyUploadRecord.objects.all()
+#         for record in all_records:
+#             print record
+                
+        records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload5')
+        self.assert_(records[0].processed)
+        self.assertEqual(records[0].errorenum, None)
+        
+        records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload6')
+        self.assert_(records[0].processed)
+        self.assertEqual(records[0].errorenum, 6)

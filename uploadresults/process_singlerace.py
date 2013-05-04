@@ -51,8 +51,7 @@ def process_singlerace(race):
     formatedtime = time.strftime('%Y-%m-%d %H:%M:%S', timestruct)
     currenttime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     
-    # We want to stop if this race is already in the database
-    
+    # We want to stop if this race is already in the database    
     test_objs = SingleRaceDetails.objects.filter(trackkey=track_obj,
                                             racedata=race.raceClass,    
                                             roundnumber=race.roundNumber,
