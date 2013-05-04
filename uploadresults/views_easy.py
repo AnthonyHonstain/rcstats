@@ -215,8 +215,8 @@ def easyupload_results(request, upload_id):
     # We have already recorded this file as processed, there is nothing more
     # this script can do at this point. It is likely a user error.
     if (primary_upload_record.filecount == primary_upload_record.filecountsucceed):
-        general_error_message = "All of these files have been processed. It is likely that the races are already in the system. If they missing an administrator can probably fix the problem quickly."
-        return render_to_response('upload_validate.html',
+        general_error_message = "All of these files have been processed. It is likely that the races are already in the system. An administrator can probably fix the problem quickly."
+        return render_to_response('easyupload/easyupload_validate.html',
                                   {'general_error': True, 'general_error_message':general_error_message},
                                   context_instance=RequestContext(request))
     

@@ -51,7 +51,7 @@ def login_user(request):
             if user.is_active:
                 login(request, user)
                 state = "You're successfully logged in!"
-                return render_to_response('upload_start.html', {}, context_instance=RequestContext(request))
+                return render_to_response('easyupload/upload_start.html', {}, context_instance=RequestContext(request))
             
             else:
                 state = "Your account is not active, please contact the site admin."
@@ -124,11 +124,11 @@ def upload_start(request):
             return HttpResponseRedirect('/upload_start/' + str(log_entry.id))
         else:
             error = "Failed to upload file."
-            return render_to_response('upload_start.html', {'form':form, 'error_status': error}, context_instance=RequestContext(request))
+            return render_to_response('easyupload/upload_start.html', {'form':form, 'error_status': error}, context_instance=RequestContext(request))
 
     else:
         form = UploadFileForm()
-    return render_to_response('upload_start.html',
+    return render_to_response('easyupload/upload_start.html',
                               {'form': form},
                               context_instance=RequestContext(request))
 
@@ -189,7 +189,7 @@ def upload_validate(request, upload_id):
     if (upload_record.processed):
         state = "File has already been processed. If you believe there was an ERROR, than instead " +\
             "of trying to re-upload the race you should contact an administrator for help."
-        return render_to_response('upload_validate.html',
+        return render_to_response('easyupload/upload_validate.html',
                                   {'state':state,},
                                   context_instance=RequestContext(request))
     
@@ -212,14 +212,14 @@ def upload_validate(request, upload_id):
         prevalidation_race_list = _parse_file(filename)
     except IOError:
         logger.error("Invalid filename=" + filename)        
-        return render_to_response('upload_validate.html',
+        return render_to_response('easyupload/upload_validate.html',
                                   {'state':state,},
                                   context_instance=RequestContext(request))         
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         trace = traceback.format_exception(exc_type, exc_value, exc_traceback)
         logger.error("Unable to process file: {0} exception:{1} \n {2}".format(filename, str(e), trace))
-        return render_to_response('upload_validate.html',
+        return render_to_response('easyupload/upload_validate.html',
                                   {'state':state,},
                                   context_instance=RequestContext(request)) 
         
@@ -230,7 +230,7 @@ def upload_validate(request, upload_id):
     # There must be at least 1 race.
     if (len(prevalidation_race_list) < 1):
         logger.error("No races found in the file=" + filename)        
-        return render_to_response('upload_validate.html',
+        return render_to_response('easyupload/upload_validate.html',
                                   {'state':state,},
                                   context_instance=RequestContext(request)) 
     
@@ -243,7 +243,7 @@ def upload_validate(request, upload_id):
     if (upload_trackname.strip() == ""):
         state = "You MUST have a trackname set in the race results to proceed."
         logger.error("There was no trackname set in the file=" + filename)        
-        return render_to_response('upload_validate.html',
+        return render_to_response('easyupload/upload_validate.html',
                                   {'state':state,},
                                   context_instance=RequestContext(request)) 
     
@@ -253,7 +253,7 @@ def upload_validate(request, upload_id):
     for race in prevalidation_race_list:
         if (race.trackName != upload_trackname):
             logger.error("Not all races have the same trackname in the file=" + filename)        
-            return render_to_response('upload_validate.html',
+            return render_to_response('easyupload/upload_validate.html',
                                       {'state':state,},
                                       context_instance=RequestContext(request)) 
 
@@ -293,14 +293,14 @@ def upload_validate(request, upload_id):
                     uploaded_raceid_list.append(new_singleracedetails.id)
                 except FileAlreadyUploadedError:
                     logger.error("This race has already been uploaded, filename=" + filename + " raceobject:" + str(race))        
-                    return render_to_response('upload_validate.html',
+                    return render_to_response('easyupload/upload_validate.html',
                                               {'state':"This race has ALREADY been uploaded. " + state,},
                                               context_instance=RequestContext(request)) 
                 except Exception as e:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
                     trace = traceback.format_exception(exc_type, exc_value, exc_traceback)
                     logger.error("Unable to process file: {0} exception:{1} \n {2}".format(filename, str(e), trace))
-                    return render_to_response('upload_validate.html',
+                    return render_to_response('easyupload/upload_validate.html',
                                               {'state':state,},
                                               context_instance=RequestContext(request)) 
             
@@ -311,7 +311,7 @@ def upload_validate(request, upload_id):
             upload_record.processed = True
             upload_record.save()
             
-            return render_to_response('upload_complete.html',
+            return render_to_response('easyupload/upload_complete.html',
                                       {'uploaded_races_list':uploaded_races_list},
                                       context_instance=RequestContext(request))
     
@@ -319,7 +319,7 @@ def upload_validate(request, upload_id):
             
         else:
             logger.error("Invalid form, file=" + filename + " form.error:" + str(form.errors))        
-            return render_to_response('upload_validate.html',
+            return render_to_response('easyupload/upload_validate.html',
                                       {'state':"Invalid option selected.",},
                                       context_instance=RequestContext(request))
     
@@ -327,7 +327,7 @@ def upload_validate(request, upload_id):
     # I can see this behavior changing the future to streamline the process.
     form = TrackNameForm()
                    
-    return render_to_response('upload_validate.html',
+    return render_to_response('easyupload/upload_validate.html',
                               {'form':form,
                                'uploadtrackname': upload_trackname,
                                'prevalidation_race_list':prevalidation_race_list,},
