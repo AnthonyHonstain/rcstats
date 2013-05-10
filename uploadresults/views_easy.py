@@ -165,11 +165,12 @@ def _process_inmemmory_file(primary_record, ip, user, inmem_file):
     log_entry.save()
     
     # Set the filename, for now I want to use the primary key, but in the future I may change it.
-    # WARNING - do not use any user data for the filename.            
-    md5hexdigest = _handle_uploaded_file(inmem_file, str(log_entry.id))
+    # WARNING - do not use any user data for the filename.    
+    filename = 'e' + str(log_entry.id)
+    md5hexdigest = _handle_uploaded_file(inmem_file, filename)
                             
     updatelog = EasyUploadRecord.objects.get(pk=log_entry.id)
-    updatelog.filename = str(log_entry.id)
+    updatelog.filename = filename
     updatelog.filemd5 = md5hexdigest
     updatelog.save()
 
