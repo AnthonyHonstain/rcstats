@@ -83,7 +83,8 @@ def process_singlerace(race):
     
     # ====================================================
     # Insert Race Laps
-    # ====================================================    
+    # ====================================================
+    bulk_laptimes = []    
     # For each racer in the raceHeaderData
     for racer in race.raceHeaderData:        
         # Upload each lap for this racer, their care number - 1 indicates
@@ -110,7 +111,9 @@ def process_singlerace(race):
                                racelap=row, 
                                raceposition=race.lapRowsPosition[index][row],
                                racelaptime=race.lapRowsTime[index][row])
-            lap_obj.save()
+            bulk_laptimes.append(lap_obj)
+            #lap_obj.save()
+    LapTimes.objects.bulk_create(bulk_laptimes)
             
     # ====================================================
     # Insert Race Results
@@ -125,6 +128,7 @@ def process_singlerace(race):
                           "Behind":"6.008",
                           "Final Position":9} , ...]
     '''
+    bulk_raceheader = []
     for racer in race.raceHeaderData:
         if (racer['RaceTime'] == ''):
             racer['RaceTime'] = None
@@ -147,8 +151,10 @@ def process_singlerace(race):
                                               fastlap=racer['Fast Lap'],
                                               behind=racer['Behind'],
                                               finalpos=racer['Final Position'])
-        individual_result.save()       
-
+        #individual_result.save()       
+        bulk_raceheader.append(individual_result)
+    
+    SingleRaceResults.objects.bulk_create(bulk_raceheader)
     # TODO - I can see the following code being good stuff to log.    
     
     # ===============================================================
