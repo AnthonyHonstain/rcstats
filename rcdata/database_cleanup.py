@@ -175,19 +175,13 @@ def collapse_racer_names():
             # ===================================
             # Update the race results
             # ===================================
-            raceresult_set = SingleRaceResults.objects.filter(racerid__exact=alias_id)       
-            for raceresult in raceresult_set:
-                raceresult.racerid = new_racerid_obj
-                raceresult.save()
+            raceresult_set = SingleRaceResults.objects.filter(racerid__exact=alias_id).update(racerid = new_racerid_obj)
         
             # ===================================
             # Update the lap times
             # ===================================
-            laptimes_set = LapTimes.objects.filter(racerid__exact=alias_id)
-            for laptime in laptimes_set:
-                laptime.racerid = new_racerid_obj
-                laptime.save()
-        
+            laptimes_set = LapTimes.objects.filter(racerid__exact=alias_id).update(racerid = new_racerid_obj)
+            
             # ===================================
             # Remove the alias racerid
             # ===================================

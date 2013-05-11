@@ -1,10 +1,10 @@
 import os
 import sys
 
-path = '/home/asymptote/Desktop/rcstats'
+path = '/home/asymptote/Desktop/rcstats_pydev/rcstats'
 if path not in sys.path:
    sys.path.append(path)
-path = '/home/asymptote/Desktop'
+path = '/home/asymptote/Desktop/rcstats_pydev'
 if path not in sys.path:
    sys.path.append(path)
 

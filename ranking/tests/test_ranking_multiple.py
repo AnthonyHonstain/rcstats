@@ -10,20 +10,14 @@ NOT going to rank as three separate races.
 This also depends on chronological order, if your pc time clock is
 bouncing all over the place, we are not going to help you.
 '''
-from rcstats.rcdata.models import LapTimes
 from rcstats.rcdata.models import SingleRaceDetails
-from rcstats.rcdata.models import SingleRaceResults
-from rcstats.rcdata.models import SupportedTrackName
-from rcstats.rcdata.models import TrackName
 from rcstats.rcdata.models import RacerId
 
 from rcstats.ranking.models import RankedClass
-from rcstats.ranking.models import RankEvent
-from rcstats.ranking.models import RankEventDetails
 from rcstats.ranking.models import Ranking
 
 from rcstats.ranking.views import process_ranking 
-import rcstats.uploadresults.tests as uploadresultstests
+import rcstats.uploadresults.tests.general_race_uploader as uploadresultstests
 
 
 class RankMultipleRace(uploadresultstests.GeneralRaceUploader):

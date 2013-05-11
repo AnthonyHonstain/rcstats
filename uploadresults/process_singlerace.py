@@ -51,8 +51,7 @@ def process_singlerace(race):
     formatedtime = time.strftime('%Y-%m-%d %H:%M:%S', timestruct)
     currenttime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     
-    # We want to stop if this race is already in the database
-    
+    # We want to stop if this race is already in the database    
     test_objs = SingleRaceDetails.objects.filter(trackkey=track_obj,
                                             racedata=race.raceClass,    
                                             roundnumber=race.roundNumber,
@@ -67,7 +66,7 @@ def process_singlerace(race):
     if (len(test_objs) != 0):    
         # We want to tell the user since this not what they wanted.
         # We can be reasonably certain this file has already been uploaded.
-        raise FileAlreadyUploadedError(race, "File already uploaded")
+        raise FileAlreadyUploadedError("File already uploaded")
         
     details_obj = SingleRaceDetails(trackkey=track_obj,
                                     racedata=race.raceClass,
@@ -84,7 +83,8 @@ def process_singlerace(race):
     
     # ====================================================
     # Insert Race Laps
-    # ====================================================    
+    # ====================================================
+    bulk_laptimes = []    
     # For each racer in the raceHeaderData
     for racer in race.raceHeaderData:        
         # Upload each lap for this racer, their care number - 1 indicates
@@ -94,6 +94,11 @@ def process_singlerace(race):
         # This would be a good place to check and see if there are enough laps, it
         # has been observed that the parser can fail to get everyone's lap data (another
         # pending bug).        
+        if index >= len(race.lapRowsTime):
+            # I am going to try and move on, it is not totally un-expected that the race director
+            # might mangle this part. SIMPLE - Racer in header, but no laps recorded.
+            continue
+            #raise FileUnableToParseError("This racer %s is missing his laps: %s" % (index, race.raceHeaderData))
         for row in range(0, len(race.lapRowsTime[index])):
             # print "Debug: ", racer
             # print "Debug: ", lapRowsPosition[index]
@@ -106,7 +111,9 @@ def process_singlerace(race):
                                racelap=row, 
                                raceposition=race.lapRowsPosition[index][row],
                                racelaptime=race.lapRowsTime[index][row])
-            lap_obj.save()
+            bulk_laptimes.append(lap_obj)
+            #lap_obj.save()
+    LapTimes.objects.bulk_create(bulk_laptimes)
             
     # ====================================================
     # Insert Race Results
@@ -121,6 +128,7 @@ def process_singlerace(race):
                           "Behind":"6.008",
                           "Final Position":9} , ...]
     '''
+    bulk_raceheader = []
     for racer in race.raceHeaderData:
         if (racer['RaceTime'] == ''):
             racer['RaceTime'] = None
@@ -143,8 +151,10 @@ def process_singlerace(race):
                                               fastlap=racer['Fast Lap'],
                                               behind=racer['Behind'],
                                               finalpos=racer['Final Position'])
-        individual_result.save()       
-
+        #individual_result.save()       
+        bulk_raceheader.append(individual_result)
+    
+    SingleRaceResults.objects.bulk_create(bulk_raceheader)
     # TODO - I can see the following code being good stuff to log.    
     
     # ===============================================================
@@ -181,19 +191,10 @@ def _calculate_race_length(raceHeaderData):
     
     return maxNumMinutes
 
-
-class Error(Exception):
-    """Base class for exceptions in this module."""
+class FileUnableToParseError(Exception):
+    """Exception raised when we fail some basic parsing/processing of the race. Possible structural error in the results."""
     pass
 
-class FileAlreadyUploadedError(Error):
-    """Exception raised when a race has already been placed in the system..
-
-    Attributes:
-        singlerace -- singlerace object that was being processed.
-    """
-
-    def __init__(self, singlerace, msg):
-        self.singlerace = singlerace
-        self.msg = msg
-        
+class FileAlreadyUploadedError(Exception):
+    """Exception raised when a race has already been placed in the system."""
+    pass
