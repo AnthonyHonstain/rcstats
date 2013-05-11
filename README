@@ -21,8 +21,12 @@ Overview of the apps in this project.
 	ranking - The application for tracking the ranking of racers. Right 
 		now it is just a place holder.
 
-	uploadresults - The early stages of an application to support users
-		uploading new race results.
+	uploadresults - Auth loggin and two separate uploader scenarios.
+		- An easyuploader which lets you upload multiple races at once.
+			- This is the most up to date uploader, and I have taken an pass
+			  as performance since it was getting slow.
+		- The origional uploader I created which uploads a single race at atime
+		  but lets you change the track for each race.
 
 Better documentation is pending, I have the majority of information in a onenote
 and I am in the process of moving it to a series of blog posts.
