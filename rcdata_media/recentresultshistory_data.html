@@ -28,9 +28,6 @@
 </script>
 
 <p>Race results from race day {{ display_date }}, this will include all qualifiers and main events currently being tracked. Not all tracks record qualifying races.</p>
-{% for qual_links in qual_results %}
-	<a href="/displayresults/singleracedetailed/{{ qual_links.racedetail_id }}/" class="button button-small white"><span>{{  qual_links.racedata_summary  }}</span></a><br />
-{% endfor %}
 
 {% for result in raceresults %}
     <p>
@@ -43,6 +40,11 @@
     RaceDate:{{  result.racedate  }}
     </p>
     <div id="racedetails_tableplaceholder{{  result.racedetail_id  }}"></div>
+{% endfor %}
+
+<!-- Qualifying links -->
+{% for qual_links in qual_results %}
+	<a href="/displayresults/singleracedetailed/{{ qual_links.racedetail_id }}/" class="button button-small white"><span>{{  qual_links.racedata_summary  }}</span></a><br />
 {% endfor %}
 
 <a href="/trackdata/{{ supported_track_id }}/recentresultshistoryshare/{{ race_date }}/"" class="button button-small white" target="_self"><span>Share Results</span></a><br />	
