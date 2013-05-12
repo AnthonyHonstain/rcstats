@@ -70,7 +70,7 @@ def main_event_by_raceday_lookup(supported_track, date):
                 
         formated_result = []     
             
-        race_results = SingleRaceResults.objects.filter(raceid=race_detail.id)
+        race_results = SingleRaceResults.objects.filter(raceid=race_detail.id).select_related('racerid')
         for individual_result in race_results:
     
             formated_result.append([

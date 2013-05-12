@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}
+RC-Stats {{ race_date }}
+{% endblock %}
+
+{% block description %}    
+Summary of race results for {{ trackname }} from the race day {{ race_date }} with highlights for the main events and links to the qualifying rounds.
+{% endblock %}
+
+{% block pagetitle %}Race Day for {{ trackname }}{% endblock %}
+{% block pagetitle_description %}Race results from {{ race_date }}{% endblock %}
+  
+ 
+{% block content %}
+
+<section class="full_width">
+<p></p>
+
+{% include "trackdata/recentresultshistory_data.html" %}  
+
+</section><!-- /.full_width --> 
+
+{% endblock %}

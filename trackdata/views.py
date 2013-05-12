@@ -76,6 +76,39 @@ def trackdetail(request, track_id):
     ctx = Context({'trackname':supported_track.trackkey,
                    'formated_rankedclasses':formated_rankedclasses})
     return render_to_response('trackdatadetail.html', ctx, context_instance=RequestContext(request))
+
+def race_result_summary_by_track_day(request, track_id, race_date):
+    """
+    Show race summary for all the races at the track that happened
+    on the specified date.
+    """
+    supported_track = get_object_or_404(SupportedTrackName, pk=track_id)
+    
+    try:
+        date = datetime.datetime.strptime(race_date, "%Y-%m-%d").date()
+    except ValueError():
+        raise Http404
+    
+    # Note - Date Format (year, month, date)
+    
+    # ========================================================
+    # Qualifying - we just show links to detailed pages
+    # ========================================================
+    qual_results = result_history.qualifying_by_raceday_lookup(supported_track, date)
+    
+    # ========================================================
+    # Main Events - we want to show a summary table of the header
+    # ========================================================
+    results_template_format = result_history.main_event_by_raceday_lookup(supported_track, date)
+
+    ctx = Context({'supported_track_id':supported_track.id,
+                   'trackname':supported_track.trackkey.trackname,
+                   'race_date':race_date,
+                   'display_date':_display_Date_User(date), 
+                   'raceresults':results_template_format,
+                   'qual_results':qual_results})
+    
+    return render_to_response('trackdata/race_result_summary_for_day.html', ctx, context_instance=RequestContext(request))
     
 @cache_page(60 * 60)
 def trackdetail_data(request, track_id, time_frame='alltime'):
@@ -252,7 +285,7 @@ def recentresultshistory_data(request, track_id, race_date):
                    'raceresults':results_template_format,
                    'qual_results':qual_results})
     
-    return render_to_response('recentresultshistory_data.html', ctx, context_instance=RequestContext(request))
+    return render_to_response('trackdata/recentresultshistory_data.html', ctx, context_instance=RequestContext(request))
 
 
 def recentresultshistory_share(request, track_id, race_date):

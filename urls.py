@@ -29,6 +29,7 @@ urlpatterns = patterns('',
     
     url(r'^trackdata/(?P<track_id>\d+)/recentresultshistory/$', 'rcstats.trackdata.views.recentresultshistory'),
     url(r'^trackdata/(?P<track_id>\d+)/recentresultshistory/(?P<race_date>\d{4}-\d{1,2}-\d{2})/$', 'rcstats.trackdata.views.recentresultshistory_data'),
+    url(r'^trackdata/(?P<track_id>\d+)/results-by-day/(?P<race_date>\d{4}-\d{1,2}-\d{2})/$', 'rcstats.trackdata.views.race_result_summary_by_track_day'),
     url(r'^trackdata/(?P<track_id>\d+)/recentresultshistoryshare/(?P<race_date>\d{4}-\d{1,2}-\d{2})/$', 'rcstats.trackdata.views.recentresultshistory_share'),
     
     
