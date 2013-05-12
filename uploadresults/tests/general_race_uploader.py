@@ -126,7 +126,7 @@ Golf, Jon            #7         17         6:16.439         18.222            13
         
         sup_trackname_obj = SupportedTrackName(trackkey=trackname_obj)
         sup_trackname_obj.save()
-        
+        self.supported_trackname_obj = sup_trackname_obj 
                 
         # Need to fake the file upload.
         #     NEW - we are going to assume they were all uploaded at the same time.
