@@ -27,6 +27,15 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 {% endif %}
 <ul>
 
+<h3>Every race currently tracked in the system</h3>
+<div class="message-box green">
+	<h3>NEW</h3><p><b>Every</b> past race result organized by date, click on a row to see!</p>
+</div><!-- /.message-box -->
+
+<!-- note - highlighting is set in css/custom-rebuild.css -->
+<div id="trackdata_racedays_table" class="ex_highlight"></div>
+
+
 <h3>General Track Statistics</h3>
 <p>These tables will rank racers based on the total number of wins and race laps completed. This takes into account any qualifying rounds or main events currently being tracked in the system. The buttons below can be used to filter this stats by date.</p>
 <input type="submit" value="All Time" id="load_basic_alltime"></input>
@@ -71,4 +80,34 @@ RC-Stats stores your remote control race results and gives you tools to track yo
  $("#result-stats").html(ajax_load).load("alltime"); 
 </script>  
 
+  <script src="/media/js/datatables/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
+  <script type="text/javascript" charset="utf-8">  	
+/*-------------------------------
+* Datatables to display the past racedays
+-------------------------------*/
+
+		$(document).ready(function() {
+		    $('#trackdata_racedays_table').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="racedays_table"></table>' );
+		    var oTable = $('#racedays_table').dataTable( {
+		    			        			        
+		        "aaData": {% autoescape off %} {{  raceday_jsdata  }} {% endautoescape %},
+		        "sScrollX": "40%",
+		        "aoColumns": [
+		        				{ "sTitle": "Race Date" },
+							    { "sTitle": "id",
+							      "bVisible": false }
+		        ],
+		        "aaSorting": [[ 1, "desc" ]]
+		    } );			
+
+			$("#racedays_table").delegate("tr", "click", function() {
+				var iPos = oTable.fnGetPosition( this );
+				if(iPos!=null){
+				    var aData = oTable.fnGetData( iPos );//get data of the clicked row
+				    window.location.href = aData[1]
+				}				
+			} );
+		} );
+					
+  </script>
 {% endblock %}

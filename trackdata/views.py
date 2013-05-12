@@ -73,7 +73,18 @@ def trackdetail(request, track_id):
     # This is done so we can easily display a message indicating there are not rankings.
     if (formated_rankedclasses == []):
         formated_rankedclasses = None
-    ctx = Context({'trackname':supported_track.trackkey,
+
+    # Get all of the past race dates to display in the datatable
+    raw_race_dates = _get_Recent_Race_Dates(supported_track)
+    
+    race_dates = []
+    # Need to keep in mind there may be less races than expected for special events.
+    for racedate in raw_race_dates:
+        race_dates.append([ _display_Date_User(racedate), '/trackdata/' + str(supported_track.id) + '/results-by-day/' + racedate.strftime('%Y-%m-%d')])
+    raceday_jsdata = simplejson.dumps(race_dates)
+
+    ctx = Context({'trackname':supported_track.trackkey.trackname,
+                   'raceday_jsdata':raceday_jsdata,
                    'formated_rankedclasses':formated_rankedclasses})
     return render_to_response('trackdatadetail.html', ctx, context_instance=RequestContext(request))
 
@@ -238,7 +249,7 @@ def recentresultshistory(request, track_id):
     
     supported_track = get_object_or_404(SupportedTrackName, pk=track_id)
 
-    raw_race_dates = _get_Recent_Race_Dates(supported_track, NUMBER_OF_RESULTS_FOR_HISTORY)
+    raw_race_dates = _get_Recent_Race_Dates(supported_track, number_races=NUMBER_OF_RESULTS_FOR_HISTORY)
     
     race_dates = []
     # Need to keep in mind there may be less races than expected for special events.
@@ -322,7 +333,7 @@ def recentresultshistory_share(request, track_id, race_date):
     return render_to_response('recentresultshistory_share.html', ctx, context_instance=RequestContext(request))
 
 
-def _get_Recent_Race_Dates(supported_track, number_races):
+def _get_Recent_Race_Dates(supported_track, number_races=None):
     """
     Retrieve a list of python datetime objects for the most recent races.    
     
@@ -374,7 +385,7 @@ def _get_Recent_Race_Dates(supported_track, number_races):
     # TODO replace this with a sorted dict
     unique_dates = {}
     for date in racedates:
-        if (len(unique_dates) >= number_races):
+        if number_races and (len(unique_dates) >= number_races):
             # We want to stop when we have enough races.
             break
                 
@@ -388,8 +399,9 @@ def _get_Recent_Race_Dates(supported_track, number_races):
     unique_dates.sort(reverse=True)
     #print 'UNIQUE_DATES', unique_dates
     # [datetime.date(2012, 8, 7), datetime.date(2012, 8, 3), datetime.date(2012, 7, 31),
-    return unique_dates[:number_races]
-
+    if number_races:
+        return unique_dates[:number_races]
+    return unique_dates
 
 def _display_Date_User(datetime_object):
     """
