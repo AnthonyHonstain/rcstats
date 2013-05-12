@@ -80,7 +80,8 @@ def trackdetail(request, track_id):
     race_dates = []
     # Need to keep in mind there may be less races than expected for special events.
     for racedate in raw_race_dates:
-        race_dates.append([ _display_Date_User(racedate), '/trackdata/' + str(supported_track.id) + '/results-by-day/' + racedate.strftime('%Y-%m-%d')])
+        # TODO - clean up the copy or find a better way to get them to click on the row
+        race_dates.append([ "Race Results from: " + _display_Date_User(racedate) + " - Click Here", '/trackdata/' + str(supported_track.id) + '/results-by-day/' + racedate.strftime('%Y-%m-%d')])
     raceday_jsdata = simplejson.dumps(race_dates)
 
     ctx = Context({'trackname':supported_track.trackkey.trackname,
