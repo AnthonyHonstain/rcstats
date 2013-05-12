@@ -93,7 +93,7 @@ def singleracerlaps(request, race_detail, racer_id):
         if (lap['racelaptime'] != None):
             laps_stats.append(float(lap['racelaptime']))
 
-    # It is possible that they do now have any laps, they are the roster 
+    # It is possible that they do not have any laps, they are the roster 
     # but may have broke or not started the race.
     if (len(laps_stats) < 2):
         ctx = Context({'laps_id_js': str(race_detail) + str(racer_id) })    
@@ -234,7 +234,7 @@ def singleracedetailed(request, race_detail_id):
     laptime_jsdata = simplejson.dumps(laptime_data)
     
     # =======================================================
-    # Get the data to display the recent race times graph       
+    # Get the data to display the recent race times graph
     recent_laptimes_jsdata = lap_time_history_fastest_each_night_flot_data(racedetails_obj) 
     
     ctx = Context({'race_detail_id':race_detail_id,

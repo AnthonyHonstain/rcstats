@@ -36,7 +36,7 @@ def lap_time_history_fastest_each_night_flot_data(racedetails_obj):
                                      'color':"rgb(70, 120, 70)"})
        
     recent_laptimes_jsdata = simplejson.dumps(formated_recent_laptimes)
-    #print recent_laptimes_jsdata
+    print recent_laptimes_jsdata
     
     '''
      Example - 
@@ -105,7 +105,12 @@ def _get_lap_time_history(track, raceclass, racelength, startdate=None, racerid=
     # TODO - consider supplied racer id instead of winner.
     if not racerid:        
         for detail in details:
-            race_result = SingleRaceResults.objects.get(raceid=detail, finalpos=1)
+            # We want to query the winner.
+            race_results = SingleRaceResults.objects.filter(raceid=detail, finalpos=1)
+            if not race_results:
+                # Yes there are in fact races with no racers... dirty data ftw.
+                continue
+            race_result = race_results[0]
             
             # WARNING - HUGE ASSUMPTION/TWEAKABLE VALUE SELECTED HERE
             #     This is going to have large impact on how the results are displayed.
