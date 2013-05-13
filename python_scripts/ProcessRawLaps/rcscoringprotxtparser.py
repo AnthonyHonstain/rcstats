@@ -367,10 +367,10 @@ class RCScoringProTXTParser(SingleRace):
         We tackle this part in several distinct peices.
         
         1. Starting with the line:
-            'TOM WAGGONER\t\t\t#9 \t\t26\t\t 8:07.943\t\t 17.063\t\t     6.008\n'
+            'Fname RacerLastName\t\t\t#9 \t\t26\t\t 8:07.943\t\t 17.063\t\t     6.008\n'
             
         2. We break up the line based on the '#'
-            'TOM WAGGONER' and '#9 \t\t26\t\t 8:07.943\t\t 17.063\t\t     6.008\n'
+            'Fname RacerLastName' and '#9 \t\t26\t\t 8:07.943\t\t 17.063\t\t     6.008\n'
             
         3. Then we perform a split on the rest of the data 
             ['#9', '26', '8:07.943', '17.063', '6.008']
