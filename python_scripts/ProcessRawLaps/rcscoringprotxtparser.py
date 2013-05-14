@@ -379,12 +379,12 @@ class RCScoringProTXTParser(SingleRace):
             guaranteed to be there.
         '''
         for line in individualResult:
-            
+            carnum_start_index = line.rfind("#")
             finalRacePosition += 1
-            driver = line[:line.find("#")].strip()
+            driver = line[:carnum_start_index].strip()
             
             # Cut off the racer names to simplify things.
-            racedata = line[line.find("#"):]
+            racedata = line[carnum_start_index:]
             lineList = racedata.split()
                                 
             
