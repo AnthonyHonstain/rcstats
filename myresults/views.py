@@ -1,3 +1,4 @@
+import pytz
 import time
 import datetime
 import re
@@ -10,6 +11,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Count
 from django.db.models import Q
 from django.utils import simplejson
+from django.conf import settings
 
 from rcstats.rcdata.models import RacerId, TrackName, SingleRaceDetails, SingleRaceResults
 from rcstats.myresults.models import FeaturedRacer
@@ -239,7 +241,9 @@ def generalstats(request, racer_id):
             js_id_race = 0
             
             for race in racedetails:
-                race_dict = {'id':race.id, 'date':_display_Date_User(race.racedate), 'js_id':js_id_race}
+                tmz = pytz.timezone(settings.TIME_ZONE)
+                converted_date = race.racedate.astimezone(tmz).date() 
+                race_dict = {'id':race.id, 'date':_display_Date_User(converted_date), 'js_id':js_id_race}
                 js_id_race += 1
                 
                 class_dict['individual_racedata'].append(race_dict)
