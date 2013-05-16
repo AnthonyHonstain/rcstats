@@ -392,17 +392,15 @@ def _get_Recent_Race_Dates(supported_track, number_races=None):
                 
         converted_date = date['racedate'].astimezone(tmz).date()        
         if converted_date in unique_dates:
-            pass
+            unique_dates[converted_date] += 1
         else:
-            unique_dates[converted_date] = True
+            unique_dates[converted_date] = 1
     
     unique_dates = unique_dates.keys()
     unique_dates.sort(reverse=True)
     #print 'UNIQUE_DATES', unique_dates
     # [datetime.date(2012, 8, 7), datetime.date(2012, 8, 3), datetime.date(2012, 7, 31),
-    if number_races:
-        return unique_dates[:number_races]
-    return unique_dates
+    return unique_dates[:number_races]
 
 def _display_Date_User(datetime_object):
     """
