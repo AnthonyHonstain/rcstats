@@ -337,55 +337,13 @@ def recentresultshistory_share(request, track_id, race_date):
 def _get_Recent_Race_Dates(supported_track, number_races=None):
     """
     Retrieve a list of python datetime objects for the most recent races.    
-    
-    OVERIVEW:
-        A difficult bug (for me at least) came out of this original code. I did
-        not completely understand all the work django was doing automatically
-        to try and resolve the timezone (postgresql is storing it in UTC).
-        
-        This was a perfect example of TECHNICAL DEBT, I did not really
-        understand how django was modifying the datetimes, and I use the
-        code in a number of places.
-    
-        If you look at the origional code, I was doing all the grouping and 
-        extracting simple dates at the DB level (before any timezone
-        processing was done).
-    
-    # We only want races for the given track then we want to group by and order on the date
-    queryset = SingleRaceDetails.objects.filter(trackkey__exact=supported_track.trackkey.id).extra(select={'day': 'date( racedate )'}).values('day')
-    queryset.query.group_by = ['day']
-    racedates = queryset.order_by( '-day' )[:number_races]
-    #print racedates
-    # [{'day': datetime.date(2011, 1, 1)}, {'day': datetime.date(2011, 1, 3)}, 
-    racedates_flat = []
-    for datedict in racedates:
-        racedates_flat.append(datedict['day'])
-    #print racedates_flat     
-    # [datetime.date(2012, 8, 7), datetime.date(2012, 8, 3), datetime.date(2012, 7, 31),
-    return racedates_flat
-    """
-    
-    # TODO - there is allot of room for optimization in this code, it is pretty inefficient.
-    
+    """       
     # This is a quick re-write to take advantage for the time zone conversion.
-    queryset = SingleRaceDetails.objects.filter(trackkey__exact=supported_track.trackkey.id).values('racedate')
-    
-    '''
-    Business Logic - 
-     I assumed that I could make reasonable guess at the number of classes in a 
-     single day at the track.
-    
-     What I was doing before (try to pick a reasonable number that works for everyone).
-            #We do not want all the races, but hopefully enough that we can find the last 5 race days.
-            racedates = queryset.order_by( '-racedate' )[:number_races*10]
-    
-    '''
-    racedates = queryset.order_by('-racedate')
-    
+    queryset = SingleRaceDetails.objects.filter(trackkey__exact=supported_track.trackkey.id).values('racedate').order_by('-racedate')
+        
     tmz = pytz.timezone(settings.TIME_ZONE)    
-    # TODO replace this with a sorted dict
     unique_dates = {}
-    for date in racedates:
+    for date in queryset:
         if number_races and (len(unique_dates) >= number_races):
             # We want to stop when we have enough races.
             break
