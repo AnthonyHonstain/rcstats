@@ -7,15 +7,62 @@ come in handy for future testing.
 @author: Anthony Honstain
 '''
 import datetime
+import pytz
 
-# from django.test import TestCase
-from rcstats.rcdata.models import LapTimes
+from django.test import TestCase
+from rcstats.rcdata.models import TrackName
+from rcstats.rcdata.models import SupportedTrackName
 from rcstats.rcdata.models import SingleRaceDetails
 from rcstats.rcdata.models import RacerId
 
 import rcstats.uploadresults.tests.general_race_uploader as uploadresultstests
-from rcstats.trackdata.views import _get_Recent_Race_Dates
+from rcstats.trackdata.views import _get_Recent_Race_Dates, _get_recent_race_dates_from_queryset
 
+  
+class TestRecentRaceDates(TestCase):
+    
+    def test_get_recent_race_dates_from_queryset_simple(self):
+        
+        # Validate for an empty list - no races
+        queryset = []
+        racedates = _get_recent_race_dates_from_queryset(queryset, None)
+        self.assertEqual(racedates, [])
+                
+        # Validate 
+        fake_queryset = []
+        fake_queryset.append({'racedate': self._create_test_date(5)})
+        racedates = _get_recent_race_dates_from_queryset(fake_queryset, None)
+        self.assertEqual(racedates, [datetime.date(2012, 7, 5),])
+        
+    def test_get_recent_race_dates_from_queryset(self):
+        
+        # Validate 
+        fake_queryset = []
+        fake_queryset.append({'racedate': self._create_test_date(5)})
+        fake_queryset.append({'racedate': self._create_test_date(5)})
+        racedates = _get_recent_race_dates_from_queryset(fake_queryset, None)
+        self.assertEqual(racedates, [datetime.date(2012, 7, 5),])
+        
+        fake_queryset = []
+        fake_queryset.append({'racedate': self._create_test_date(5)})
+        fake_queryset.append({'racedate': self._create_test_date(5)})
+        fake_queryset.append({'racedate': self._create_test_date(4)})
+        racedates = _get_recent_race_dates_from_queryset(fake_queryset, None)
+        self.assertEqual(racedates, [datetime.date(2012, 7, 5), datetime.date(2012, 7, 4)])
+
+        fake_queryset = []
+        fake_queryset.append({'racedate': self._create_test_date(5)})
+        fake_queryset.append({'racedate': self._create_test_date(5)})
+        fake_queryset.append({'racedate': self._create_test_date(4)})
+        fake_queryset.append({'racedate': self._create_test_date(3)})
+        fake_queryset.append({'racedate': self._create_test_date(3)})
+        racedates = _get_recent_race_dates_from_queryset(fake_queryset, None)
+        self.assertEqual(racedates, [datetime.date(2012, 7, 5), datetime.date(2012, 7, 4), datetime.date(2012, 7, 3)])
+        
+    def _create_test_date(self, day):
+        return datetime.datetime(year=2012, month=7, day=day, hour=20, minute=9, second=03).replace(tzinfo=pytz.utc)
+
+        
 class TrackData(uploadresultstests.GeneralRaceUploader):
     
     singlerace_testfile1 = '''Scoring Software by www.RCScoringPro.com                9:26:42 PM  7/1/2012

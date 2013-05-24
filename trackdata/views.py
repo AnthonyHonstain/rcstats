@@ -340,7 +340,13 @@ def _get_Recent_Race_Dates(supported_track, number_races=None):
     """       
     # This is a quick re-write to take advantage for the time zone conversion.
     queryset = SingleRaceDetails.objects.filter(trackkey__exact=supported_track.trackkey.id).values('racedate').order_by('-racedate')
-        
+    return _get_recent_race_dates_from_queryset(queryset, number_races)
+
+def _get_recent_race_dates_from_queryset(queryset, number_races):
+    """
+    Given a queryset contains SingleRaceDetails, group the races by the day (collapse multiple races on the
+    same day down to a single date) and get a count for the day.
+    """
     tmz = pytz.timezone(settings.TIME_ZONE)    
     unique_dates = {}
     for date in queryset:
