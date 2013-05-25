@@ -79,9 +79,11 @@ def trackdetail(request, track_id):
     
     race_dates = []
     # Need to keep in mind there may be less races than expected for special events.
-    for racedate in raw_race_dates:
+    for racedate, racecount in raw_race_dates:
         # TODO - clean up the copy or find a better way to get them to click on the row
-        race_dates.append([ "Race Results from: " + _display_Date_User(racedate) + " - Click Here", '/trackdata/' + str(supported_track.id) + '/results-by-day/' + racedate.strftime('%Y-%m-%d')])
+        display_string = "{0} Race Results from: {1} - Click Here".format(racecount, _display_Date_User(racedate))
+        click_url = '/trackdata/' + str(supported_track.id) + '/results-by-day/' + racedate.strftime('%Y-%m-%d')
+        race_dates.append([display_string, click_url])
     raceday_jsdata = simplejson.dumps(race_dates)
 
     ctx = Context({'trackname':supported_track.trackkey.trackname,
@@ -256,8 +258,8 @@ def recentresultshistory(request, track_id):
     # Need to keep in mind there may be less races than expected for special events.
     for index in range(min(len(raw_race_dates), NUMBER_OF_RESULTS_FOR_HISTORY)):
         race_dates.append({'id':"button_" + str(index), 
-                           'display_date': _display_Date_User(raw_race_dates[index]),
-                           'date': raw_race_dates[index].strftime('%Y-%m-%d'), # This is for url.
+                           'display_date': _display_Date_User(raw_race_dates[index][0]),
+                           'date': raw_race_dates[index][0].strftime('%Y-%m-%d'), # This is for url.
                            })
                           
     ctx = Context({'supportedtrack':supported_track, 'race_dates':race_dates})
@@ -346,25 +348,25 @@ def _get_recent_race_dates_from_queryset(queryset, number_races):
     """
     Given a queryset contains SingleRaceDetails, group the races by the day (collapse multiple races on the
     same day down to a single date) and get a count for the day.
+
+    WARNING - the queryset must be sorted by racedate.
     """
     tmz = pytz.timezone(settings.TIME_ZONE)    
-    unique_dates = {}
+    unique_dates = []
     for date in queryset:
         if number_races and (len(unique_dates) >= number_races):
             # We want to stop when we have enough races.
             break
                 
         converted_date = date['racedate'].astimezone(tmz).date()        
-        if converted_date in unique_dates:
-            unique_dates[converted_date] += 1
+        if (not unique_dates) or converted_date != unique_dates[-1][0]:
+            unique_dates.append([converted_date, 1])
         else:
-            unique_dates[converted_date] = 1
-    
-    unique_dates = unique_dates.keys()
-    unique_dates.sort(reverse=True)
+            unique_dates[-1][1] += 1
+        
     #print 'UNIQUE_DATES', unique_dates
     # [datetime.date(2012, 8, 7), datetime.date(2012, 8, 3), datetime.date(2012, 7, 31),
-    return unique_dates[:number_races]
+    return unique_dates
 
 def _display_Date_User(datetime_object):
     """

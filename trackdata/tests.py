@@ -32,7 +32,7 @@ class TestRecentRaceDates(TestCase):
         fake_queryset = []
         fake_queryset.append({'racedate': self._create_test_date(5)})
         racedates = _get_recent_race_dates_from_queryset(fake_queryset, None)
-        self.assertEqual(racedates, [datetime.date(2012, 7, 5),])
+        self.assertEqual(racedates, [[datetime.date(2012, 7, 5),1],])
         
     def test_get_recent_race_dates_from_queryset(self):
         
@@ -41,14 +41,14 @@ class TestRecentRaceDates(TestCase):
         fake_queryset.append({'racedate': self._create_test_date(5)})
         fake_queryset.append({'racedate': self._create_test_date(5)})
         racedates = _get_recent_race_dates_from_queryset(fake_queryset, None)
-        self.assertEqual(racedates, [datetime.date(2012, 7, 5),])
+        self.assertEqual(racedates, [[datetime.date(2012, 7, 5), 2],])
         
         fake_queryset = []
         fake_queryset.append({'racedate': self._create_test_date(5)})
         fake_queryset.append({'racedate': self._create_test_date(5)})
         fake_queryset.append({'racedate': self._create_test_date(4)})
         racedates = _get_recent_race_dates_from_queryset(fake_queryset, None)
-        self.assertEqual(racedates, [datetime.date(2012, 7, 5), datetime.date(2012, 7, 4)])
+        self.assertEqual(racedates, [[datetime.date(2012, 7, 5), 2], [datetime.date(2012, 7, 4), 1]])
 
         fake_queryset = []
         fake_queryset.append({'racedate': self._create_test_date(5)})
@@ -57,7 +57,7 @@ class TestRecentRaceDates(TestCase):
         fake_queryset.append({'racedate': self._create_test_date(3)})
         fake_queryset.append({'racedate': self._create_test_date(3)})
         racedates = _get_recent_race_dates_from_queryset(fake_queryset, None)
-        self.assertEqual(racedates, [datetime.date(2012, 7, 5), datetime.date(2012, 7, 4), datetime.date(2012, 7, 3)])
+        self.assertEqual(racedates, [[datetime.date(2012, 7, 5), 2], [datetime.date(2012, 7, 4), 1], [datetime.date(2012, 7, 3), 2]])
         
     def _create_test_date(self, day):
         return datetime.datetime(year=2012, month=7, day=day, hour=20, minute=9, second=03).replace(tzinfo=pytz.utc)
@@ -362,6 +362,10 @@ Echo, Jon            #1          1           35.952         35.952
         car1 = RacerId.objects.get(racerpreferredname="Anthony Honstain")
 
         race_dates = _get_Recent_Race_Dates(self.supported_trackname_obj)        
-        self.assertEqual(race_dates, [datetime.date(2012, 7, 5), datetime.date(2012, 7, 4), datetime.date(2012, 7, 3), datetime.date(2012, 7, 1)])
+        self.assertEqual(race_dates, [[datetime.date(2012, 7, 5),1], 
+                                      [datetime.date(2012, 7, 4),1], 
+                                      [datetime.date(2012, 7, 3),1], 
+                                      [datetime.date(2012, 7, 1),2]])
                
-        
+        response = self.client.get("/trackdata/" + str(self.supported_trackname_obj.id) + "/")
+        self.assertEqual(response.status_code, 200)
