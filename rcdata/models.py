@@ -48,8 +48,7 @@ class SingleRaceDetails(models.Model):
     def __str__(self):
         return str(self.trackkey) + " | " +\
             str(self.racedata) + " | " +\
-            str(self.racedate) + " | " +\
-            str(self.uploaddate)
+            str(self.racedate)
 
 class SingleRaceResults(models.Model):
     raceid = models.ForeignKey(SingleRaceDetails)

@@ -46,9 +46,7 @@ class EasyUploadRecord(models.Model):
     def __str__(self):
         return str(self.filename) + " | " +\
             str(self.user) + " | " +\
-            str(self.ip) + " | " +\
             str(self.uploadstart) + "|" +\
-            str(self.uploadfinish) + "|" +\
             str(self.processed) + "|" +\
             str(self.errorenum)
 
