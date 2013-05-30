@@ -52,7 +52,7 @@ def ranking_track_class(request, rankedclass_id):
     current_ranking_formated = []
     
     datatable_ranking = Ranking.objects.filter(rankeventkey__exact=latestevents[0].id,
-                                               racecount__gte=rankedclass_obj.requiredraces).order_by('-displayrank')
+                                               racecount__gte=rankedclass_obj.requiredraces).order_by('-displayrank').select_related("raceridkey__racerpreferredname")
     
     count = 1
     for rank in datatable_ranking:
