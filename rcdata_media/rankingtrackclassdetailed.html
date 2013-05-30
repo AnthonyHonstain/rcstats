@@ -5,11 +5,11 @@ RC-Stats - Ranking by Class and Track
 {% endblock %}
 
 {% block description  %}    
-Rankings for users by race class and track. Using advanced statistical techniques, we provide high fidelity estimations of skill currently and over time.
+Rankings by race class and track. Using advanced statistical techniques, we provide high fidelity estimations of skill.
 {% endblock %}
 
 {% block pagetitle %}{{ trackname }} Ranking{% endblock %}
-{% block pagetitle_description %}Ranking for {{ classname }}{% endblock %}
+{% block pagetitle_description %}Ranking for {{ classname }} - last updated {{ lastdate }}{% endblock %}
 
 
 {% block content %}
@@ -17,11 +17,12 @@ Rankings for users by race class and track. Using advanced statistical technique
 <section class="full_width">
 			</br>
 			<p>A more detailed description of the ranking system and be found <a href="/ranking"><span>here</span></a>. A quick overview of the system:
-			<ol>
-<li>You must have at least 10 races in the class (with this name, if the ranking is for "stock buggy" but the results for the night are under "open buggy", they will not be counted).</li>
-<li>This is an <b>estimation</b> of your skill using statistical methods, the numbers displayed with the rankings are <b>relative</b> to your fellow racers at this track and in this class.</li>
-<li>This is meant to be a fun, informational, and transparent system, if you want more information on the rules or have suggestions on how to do it differently then please share your input. This is an early implementation, so expect results to change as bugs and changes are made.</li>
-			</ol>
+			<ul class="bullet-black">
+			<li>Ranking started on {{ startdate }}</li>
+			<li>You must have at least {{ requiredraces }} races in the class.</li>
+			<li>After you have missed {{ experation }} races your rank will no longer be displayed.
+			<li>This is an <b>estimation</b> of skill using statistical methods, the numbers displayed with the rankings are <b>relative</b> to your fellow racers at this track and in this class.</li>
+			</ul>
 			</p>
 			
 			<div id="racedetails_placeholder"></div>
