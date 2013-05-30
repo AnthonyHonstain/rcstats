@@ -28,6 +28,9 @@ def _format_rank(rank):
 
 @cache_page(60 * 60)
 def ranking_track_class(request, rankedclass_id):
+    '''
+    Primary page to display rankings for single class and track.
+    '''
     
     rankedclass_obj = get_object_or_404(RankedClass, pk=rankedclass_id)
     
@@ -122,14 +125,6 @@ def ranking_track_class(request, rankedclass_id):
         super_group[-1]['ranking_graph_jsdata'] = ranking_graph_jsdata
         prev = current
         count += 1
-    
-#    return render_to_response('rankingtrackclassdetailed.html', 
-#                              {'trackname': trackname,
-#                               'classname': classname, 
-#                               'current_ranking': current_ranking,
-#                               'ranking_graph_jsdata': ranking_graph_jsdata,}, 
-#                              context_instance=RequestContext(request))
-    #print super_group
 
     return render_to_response('rankingtrackclassdetailed.html', 
                               {'trackname': trackname,
