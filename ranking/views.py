@@ -90,14 +90,14 @@ def ranking_track_class(request, rankedclass_id):
             
         for rankevent in latestevents:        
             ranking = Ranking.objects.filter(rankeventkey__exact=rankevent.id,
-                                             racecount__gte=rankedclass_obj.requiredraces).order_by('-displayrank')
+                                             racecount__gte=rankedclass_obj.requiredraces).order_by('-displayrank').select_related("raceridkey")
             
             for rank in ranking: # This covers all the racers being ranked at this stage.
                 
                 # We only want to use them if they are in this grouping
-                print rank.raceridkey.id
+                #print rank.raceridkey.id
                 if (rank.raceridkey.id in current_rank_ordering[prev:current]):
-                    print "ping"
+                    #print "ping"
                     if rank.raceridkey.id in racer_dict:
                         racer_dict[rank.raceridkey.id].append(_format_rank(rank.displayrank))
                     else:
