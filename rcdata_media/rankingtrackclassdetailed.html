@@ -26,8 +26,27 @@ Rankings by race class and track. Using advanced statistical techniques, we prov
 			</ul>
 			</p>
 			
-			<div id="racedetails_placeholder"></div>
-			
+	{% if current_ranking %}
+	<table class="dark">
+	<tbody>
+  	<tr>
+    <th>Rank</th>
+    <th>Name</th>
+    <th>Skill</th>
+    <th>Link</th>
+    </tr>
+    {% for rank_list in current_ranking %}
+    <tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{ rank_list.0.racerpreferredname }}</td>
+    <td>{{ rank_list.1 }}</td>
+    <td><a href="/myresults/{{ rank_list.0.id }}/">link</a></td>
+    </tr>
+    {% endfor %} 
+    </tbody>
+    </table>
+    {% endif %}	
+    			
 			<section class="content_heading">
             	<a class="gotop" href="#"></a>
                 <h3>Ranking over time</h3>
@@ -74,27 +93,7 @@ Rankings by race class and track. Using advanced statistical techniques, we prov
 
 {% block scripts %}
 
-	<script src="/media/js/datatables/jquery.dataTables.js" type="text/javascript" language="javascript"></script>
    	<script type="text/javascript" src="/media/js/flot/jquery.flot.js"></script>   	
-	
-		<script type="text/javascript" charset="utf-8">
-		$(document).ready(function() {
-		    $('#racedetails_placeholder').html( '<table cellpadding="5" cellspacing="0" border="1" class="display" id="racedetails_table"></table>' );
-		    $('#racedetails_table').dataTable( {
-		    	"bPaginate": false,
-		        "bLengthChange": false,
-		        "bFilter": false,				        
-		        "bInfo": false,
-		        "aaData": {% autoescape off %} {{  current_ranking  }} {% endautoescape %},
-		        "sScrollX": "65%",
-		        "aoColumns": [
-		        				{ "sTitle": "Order" },
-							    { "sTitle": "Racer" , "sClass": "center" },
-								{ "sTitle": "Ranking" }
-		        ]
-		    } );			
-		} );					
-	</script>
 	
 	{% for group in super_group %}
 			

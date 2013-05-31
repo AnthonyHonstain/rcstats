@@ -54,17 +54,12 @@ def ranking_track_class(request, rankedclass_id):
     datatable_ranking = Ranking.objects.filter(rankeventkey__exact=latestevents[0].id,
                                                racecount__gte=rankedclass_obj.requiredraces).order_by('-displayrank').select_related("raceridkey__racerpreferredname")
     
-    count = 1
     for rank in datatable_ranking:
         # The are only shown if they have raced frequently enough (defined for the class).
         if (latestevents[0].eventcount - rank.lastrace <= rankedclass_obj.experation):
-            current_ranking_formated.append([count, rank.raceridkey.racerpreferredname, _format_rank(rank.displayrank)])
-            count += 1
+            current_ranking_formated.append([rank.raceridkey, _format_rank(rank.displayrank)])
             current_rank_ordering.append(rank.raceridkey.id)
-            
-    current_ranking = simplejson.dumps(current_ranking_formated) 
-    
-    
+        
     # =======================================================================
     # Collect and format the data flot graphs and racedetails links
     # =======================================================================
@@ -148,7 +143,7 @@ def ranking_track_class(request, rankedclass_id):
                                'lastdate':rankedclass_obj.lastdate,
                                'experation':rankedclass_obj.experation,
                                'requiredraces':rankedclass_obj.requiredraces,
-                               'current_ranking': current_ranking,
+                               'current_ranking': current_ranking_formated,
                                'racedetails_used': racedetails_used,
                                'super_group': super_group,}, 
                               context_instance=RequestContext(request))
