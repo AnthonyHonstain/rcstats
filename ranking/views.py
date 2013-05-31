@@ -64,6 +64,10 @@ def ranking_track_class(request, rankedclass_id):
             
     current_ranking = simplejson.dumps(current_ranking_formated) 
     
+    
+    # =======================================================================
+    # Collect and format the data flot graphs and racedetails links
+    # =======================================================================
     super_group = []
     count = 0
     prev = 0
@@ -78,7 +82,10 @@ def ranking_track_class(request, rankedclass_id):
         racedetails_used.append([x.racedetailskey for x in RankEventDetails.objects.filter(rankeventkey__exact=rankevent.id).select_related("racedetailskey")])
 
     
-    #print "current_rank_ordering", current_rank_ordering
+    #
+    # This is the logic to group the races into seperate flot graphs. It is
+    # to confusing to have 40+ racers all stacked into a single graph.
+    #
     for i in range(0, len(current_rank_ordering), 10):
         current = i + 10
         if (current > len(current_rank_ordering)):
