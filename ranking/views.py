@@ -98,10 +98,10 @@ def ranking_track_class(request, rankedclass_id):
                 #print rank.raceridkey.id
                 if (rank.raceridkey.id in current_rank_ordering[prev:current]):
                     #print "ping"
-                    if rank.raceridkey.id in racer_dict:
-                        racer_dict[rank.raceridkey.id].append(_format_rank(rank.displayrank))
+                    if rank.raceridkey in racer_dict:
+                        racer_dict[rank.raceridkey].append(_format_rank(rank.displayrank))
                     else:
-                        racer_dict[rank.raceridkey.id] = [None, None, _format_rank(rank.displayrank), ]
+                        racer_dict[rank.raceridkey] = [None, None, _format_rank(rank.displayrank), ]
             
             
         # Now we need to format the ranking data for display in the flot graph.    
@@ -114,7 +114,7 @@ def ranking_track_class(request, rankedclass_id):
             for i in range(len(racer_dict[racer])):
                 indv_rank_data.append([NUM_RANK_EVENTS_TO_DISPLAY + 2 - i, racer_dict[racer][i]])
             
-            racer_name = RacerId.objects.get(pk=racer).racerpreferredname
+            racer_name = racer.racerpreferredname
             #racer_name = racer.racerpreferredname
             ranking_graphdata[racer_name] = {'label': racer_name,
                                              'data': indv_rank_data}                
