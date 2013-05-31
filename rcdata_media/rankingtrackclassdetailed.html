@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
 {% block title %}
-RC-Stats - Ranking by Class and Track
+{{ classname }} Ranking at {{ trackname }}
 {% endblock %}
 
 {% block description  %}    
-Rankings by race class and track. Using advanced statistical techniques, we provide high fidelity estimations of skill.
+Current {{ classname }} rankings at {{ trackname }}. Using advanced statistical techniques, we provide high quality estimations of skill.
 {% endblock %}
 
 {% block pagetitle %}{{ trackname }} Ranking{% endblock %}
-{% block pagetitle_description %}Ranking for {{ classname }} - last updated {{ lastdate }}{% endblock %}
+{% block pagetitle_description %}{{ classname }} Ranking - last updated {{ lastdate }}{% endblock %}
 
 
 {% block content %}
         	
 <section class="full_width">
 			</br>
-			<p>A more detailed description of the ranking system and be found <a href="/ranking"><span>here</span></a>. A quick overview of the system:
+			<p>A more detailed description of the ranking system and be found on the <a href="/ranking"><span>ranking description page</span></a>. A quick overview of the system:
 			<ul class="bullet-black">
 			<li>Ranking started on {{ startdate }} and last updated {{ lastdate }}</li>
 			<li>You must have at least {{ requiredraces }} races in the class.</li>
