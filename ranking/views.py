@@ -68,7 +68,15 @@ def ranking_track_class(request, rankedclass_id):
     count = 0
     prev = 0
     
+    # Need to grab this data before we start looping through to build the flot graph data.
     racedetails_used = []
+    ranking_objects = {}
+    for rankevent in latestevents:        
+        ranking_objects[rankevent] = Ranking.objects.filter(rankeventkey__exact=rankevent.id,
+                                                          racecount__gte=rankedclass_obj.requiredraces).order_by('-displayrank').select_related("raceridkey")
+        # TODO - do I need to optimize this further??
+        racedetails_used.append([x.racedetailskey for x in RankEventDetails.objects.filter(rankeventkey__exact=rankevent.id).select_related("racedetailskey")])
+
     
     #print "current_rank_ordering", current_rank_ordering
     for i in range(0, len(current_rank_ordering), 10):
@@ -83,7 +91,7 @@ def ranking_track_class(request, rankedclass_id):
         
         
         # =======================================================================
-        # Collect and format the date for the flot graph.
+        # Collect and format the date for a single flot graph.
         # =======================================================================
         ranking_graphdata = {}
             
@@ -91,12 +99,7 @@ def ranking_track_class(request, rankedclass_id):
         # WARNING - The index 0 is the most recent event, index 1 is the next most recent, etc..
             
         for rankevent in latestevents:        
-            ranking = Ranking.objects.filter(rankeventkey__exact=rankevent.id,
-                                             racecount__gte=rankedclass_obj.requiredraces).order_by('-displayrank').select_related("raceridkey")
-            
-            # TODO - do I need to optimize this further??
-            racedetails_used.append([x.racedetailskey for x in RankEventDetails.objects.filter(rankeventkey__exact=rankevent.id).select_related("racedetailskey")])
-            
+            ranking = ranking_objects[rankevent]
             for rank in ranking: # This covers all the racers being ranked at this stage.
                 
                 # We only want to use them if they are in this grouping
