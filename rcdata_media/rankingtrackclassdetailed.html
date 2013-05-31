@@ -22,6 +22,7 @@ Rankings by race class and track. Using advanced statistical techniques, we prov
 			<li>You must have at least {{ requiredraces }} races in the class.</li>
 			<li>After you have missed {{ experation }} races your rank will no longer be displayed.
 			<li>This is an <b>estimation</b> of skill using statistical methods, the numbers displayed with the rankings are <b>relative</b> to your fellow racers at this track and in this class.</li>
+			<li>Links to the most recent races used for ranking are provided at the bottom of the page.</li>
 			</ul>
 			</p>
 			
@@ -40,7 +41,32 @@ Rankings by race class and track. Using advanced statistical techniques, we prov
 			<h3>{{ group.title }}</h3>
 			<div id="laptimegraph_placeholder{{ group.js_id }}" style="width:950px;height:700px;"></div>
 			{% endfor %}
-			
+
+			<section class="content_heading">
+            	<a class="gotop" href="#"></a>
+                <h3>Races Used in Rank Calculation</h3>
+		    </section> <!--  END content_heading -->
+
+	{% if racedetails_used %}
+	<table class="dark">
+	<tbody>
+  	<tr>
+    <th>Class</th>
+    <th>Date</th>
+    <th>Link</th>
+    </tr>
+    {% for details_list in racedetails_used %}
+    {% for details in details_list %}
+    <tr {% if forloop.parentloop.counter|divisibleby:"2" %}class="alt"{% endif %}>
+    <td>{{ details.racedata }}</td>
+    <td>{{ details.racedate }}</td>
+    <td><a href="/displayresults/singleracedetailed/{{ details.id }}/">link</a></td>
+    </tr>
+    {% endfor %}
+    {% endfor %} 
+    </tbody>
+    </table>
+    {% endif %}			
 </section><!-- /.full_width --> 
 					
 {% endblock %}

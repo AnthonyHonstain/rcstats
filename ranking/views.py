@@ -68,6 +68,8 @@ def ranking_track_class(request, rankedclass_id):
     count = 0
     prev = 0
     
+    racedetails_used = []
+    
     #print "current_rank_ordering", current_rank_ordering
     for i in range(0, len(current_rank_ordering), 10):
         current = i + 10
@@ -91,6 +93,9 @@ def ranking_track_class(request, rankedclass_id):
         for rankevent in latestevents:        
             ranking = Ranking.objects.filter(rankeventkey__exact=rankevent.id,
                                              racecount__gte=rankedclass_obj.requiredraces).order_by('-displayrank').select_related("raceridkey")
+            
+            # TODO - do I need to optimize this further??
+            racedetails_used.append([x.racedetailskey for x in RankEventDetails.objects.filter(rankeventkey__exact=rankevent.id).select_related("racedetailskey")])
             
             for rank in ranking: # This covers all the racers being ranked at this stage.
                 
@@ -134,6 +139,7 @@ def ranking_track_class(request, rankedclass_id):
                                'experation':rankedclass_obj.experation,
                                'requiredraces':rankedclass_obj.requiredraces,
                                'current_ranking': current_ranking,
+                               'racedetails_used': racedetails_used,
                                'super_group': super_group,}, 
                               context_instance=RequestContext(request))
 
