@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block title %}
-RC-Stats - {{ trackname }}
+RC-Stats {{ trackname }}
 {% endblock %}
 
 {% block description %}    
-RC-Stats stores your remote control race results and gives you tools to track your race results. We support indoor, outdoor, on-road, and off-road RC racing.
+Current race results for {{ trackname }} along with current rankings and track statistics.
 {% endblock %}
 
 {% block pagetitle %}{{ trackname }}{% endblock %}
@@ -16,11 +16,30 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 
 <section class="full_width">
 
-<h3>Track Ranking by Class</h3>
+<h3>Current rankings for {{ trackname }} organized by class.</h3>
 <ul>    
 {% if formated_rankedclasses %}
 {% for rankedclass in formated_rankedclasses %}
-	<a href="/ranking/{{ rankedclass.key }}/" class="button white" target="_self"><span>{{ rankedclass.class }}</span></a>
+	<a href="/ranking/{{ rankedclass.class.id }}/" class="button white" target="_self"><span>{{ rankedclass.class.raceclass }} Ranking</span></a>
+	{% if rankedclass.top3 %}
+	<table class="dark">
+	<tbody>
+  	<tr>
+    <th>Rank</th>
+    <th>Name</th>
+    <th>Skill</th>
+    </tr>
+    {% for racer_rank in rankedclass.top3 %}
+    <tr>
+    <td>{{ forloop.counter }}</td>
+    <td><a href="/myresults/{{ rank_list.0.id }}/">{{ racer_rank.raceridkey.racerpreferredname }}</a></td>
+    <td>{{ racer_rank.format_rank }}</td>
+    </tr>
+    {% endfor %} 
+    </tbody>
+    </table>
+    {% endif %}	
+	
 {% endfor %}
 {% else %}
 	<p>There are no ranked classes established for this track, or there are not enough races being tracked for the class.</p>

@@ -17,7 +17,7 @@ from rcstats.ranking.models import RankedClass
 from rcstats.ranking.models import RankEvent
 from rcstats.ranking.models import Ranking
 
-from rcstats.ranking.views import process_ranking 
+from rcstats.ranking.views import process_ranking, get_ranked_classes_by_track
 import rcstats.uploadresults.tests.general_race_uploader as uploadresultstests
 
 
@@ -199,3 +199,10 @@ ________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
                                      rankeventkey=rnk_event2)        
         
         
+        classes = get_ranked_classes_by_track(self.trackname_obj.id)
+        # There should only be one class, we will take it and the top racer
+        ranked_class_id, top_racers = classes[0]
+        
+        self.assertEqual(ranked_class_id, rnk_class.id)
+        self.assertAlmostEqual(top_racers[0].displayrank, 21.1014540971, places=4)
+        self.assertAlmostEqual(top_racers[2].displayrank, 7.91634267877, places=4)

@@ -20,7 +20,8 @@ def ranking(request):
 NUM_RANK_EVENTS_TO_DISPLAY = 8
 
 
-def _format_rank(rank):    
+def _format_rank(rank):
+    ''' Helper function to clean up the ranking number we display to the user '''
     rank = rank + 5 # I want to boost people above 0
     rank *= 2
     return round(rank, 2)
@@ -164,20 +165,21 @@ def get_ranked_classes_by_track(trackkey):
     return_keys = []
     
     for rankedclass in possible_rankedclasses:
-        rankevents = RankEvent.objects.filter(rankedclasskey__exact=rankedclass.id)
-            
-        if (len(rankevents) > 0):
-            latestevent = rankevents.order_by('-eventcount')[0]            
+        latestevents = RankEvent.objects.filter(rankedclasskey__exact=rankedclass.id).order_by('-eventcount')[:1]
+        
+        if latestevents:
+            latestevent = latestevents[0]            
             # We want to count the number of ranked racers with the required number of events.
             rankings = Ranking.objects.filter(rankeventkey__exact=latestevent.id,
-                                              racecount__gte=rankedclass.requiredraces)
+                                              racecount__gte=rankedclass.requiredraces,
+                                              lastrace__gte=latestevent.eventcount - rankedclass.experation).order_by('-displayrank')[:3]
+            for ranking in rankings:
+                ranking.format_rank = _format_rank(ranking.displayrank)            
             if (len(rankings) >= 2):
-                return_keys.append(rankedclass.id)
-        # If there were not rankevents or rankings, we don't want to show this class.
+                return_keys.append((rankedclass.id, rankings))
+        # If there were no rankevents or rankings, we don't want to show this class.
         
     return return_keys
-
-
 
 
 class _GroupedEvent():

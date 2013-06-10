@@ -62,13 +62,13 @@ def trackdetail(request, track_id):
     """
     supported_track = get_object_or_404(SupportedTrackName, pk=track_id)
     
-    rankedclasses = get_ranked_classes_by_track(supported_track.trackkey.id)
+    rankedclasses_tuple = get_ranked_classes_by_track(supported_track.trackkey.id)
     # Format the classes and retrieve the names to display.
     formated_rankedclasses = []
-    for rankedclass in rankedclasses:
-        rankedclass_obj = RankedClass.objects.get(pk=rankedclass)
-        formated_rankedclasses.append({'class': rankedclass_obj.raceclass,
-                                       'key': rankedclass})
+    for rankedclass_id, top_racers in rankedclasses_tuple:
+        rankedclass_obj = RankedClass.objects.get(pk=rankedclass_id)
+        formated_rankedclasses.append({'class': rankedclass_obj,
+                                       'top3':top_racers})
     
     # This is done so we can easily display a message indicating there are not rankings.
     if (formated_rankedclasses == []):
