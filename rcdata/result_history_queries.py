@@ -33,6 +33,9 @@ def qualifying_by_raceday_lookup(supported_track, date):
             " Race:" + str(qual.racenumber)
         
         qual_results.append({'racedetail_id':qual.id,
+                             'class':utils.format_main_event_for_user(qual),
+                             'round':qual.roundnumber,
+                             'race':qual.racenumber,
                              'racedata_summary':classname_summary})
     return qual_results
     

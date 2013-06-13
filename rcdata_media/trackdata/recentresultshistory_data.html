@@ -43,8 +43,21 @@
 {% endfor %}
 
 <!-- Qualifying links -->
-{% for qual_links in qual_results %}
-	<a href="/displayresults/singleracedetailed/{{ qual_links.racedetail_id }}/" class="button button-small white"><span>{{  qual_links.racedata_summary  }}</span></a><br />
-{% endfor %}
+<table class="dark">
+	<tbody>
+  	<tr>
+   		<th>Qualifying Class</th>
+   		<th>Round</th>
+   		<th>Race</th>
+    </tr>
+	{% for qual_links in qual_results %}
+    <tr>
+    	<td><a href="/displayresults/singleracedetailed/{{ qual_links.racedetail_id }}/">{{  qual_links.class  }}</a></td>
+    	<td>{{ qual_links.round }}</td>
+    	<td>{{ qual_links.race }}</td>
+    </tr>
+    {% endfor %} 
+    </tbody>
+</table>
 
 <a href="/trackdata/{{ supported_track_id }}/recentresultshistoryshare/{{ race_date }}/"" class="button button-small white" target="_self"><span>Share Results</span></a><br />	
