@@ -39,6 +39,19 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 			<p id="choices">Show:</p>
 			
 			<section class="content_heading">
+				<a class="gotop" href="#"></a>
+				<h3>Race Progress Graph</h3>
+			</section> <!--  END content_heading -->
+	  
+			<div id="battlegraph_placeholder" style="width:950px;height:600px;"></div>
+			<p id="battle_reference">Reference Racer:
+				<select id="battle_selector">
+					<option>None</option>
+				</select>
+			</p>
+			<p id="battle_choices">Show:</p>
+			
+			<section class="content_heading">
             	<a class="gotop" href="#"></a>
                 <h3>Lap Time Table</h3>
 		    </section> <!--  END content_heading -->
@@ -98,6 +111,48 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 	</script>
 
  	<script type="text/javascript" charset="utf-8">
+ 	
+ 			/**
+		 * Returns the number of laps the racer has completed, and an interpolated decimal portion if they are between laps
+		 * @param time number of seconds since the start of the race
+		 * @param lapData A two-dimensional array where the second element of the nested array is the racer's individual lap times.
+		*/
+		function getLapCountForRacer(_time, lapData) {
+			var time = _time; // not sure if javascript passes by reference, don't really care
+			var lapCount = 0.0;
+			for(var i=0; i< lapData.length; i++) {
+				var lap = lapData[i][1];
+				
+				if(time < lap) {
+					return lapCount + (time / lap);
+				} else {
+					time = time - lap;
+					lapCount = lapCount + 1.0;
+				}
+				
+			}
+			return lapCount;
+		}
+		
+		/**
+		 * Adjusts lap counts of all other racers so that the reference racer is at "0"
+		 *
+		 * Returns a new dataset.
+		 */
+		function rebaseToReferenceRacer(racer, battleData) {
+			var referenceLapTimes = battleData[racer].data;
+			// clone dataset
+			var newDataSet = $.extend(true, {}, battleData);
+			$.each(newDataSet, function(racer, lapData) {
+			
+				for(var i=0; i<lapData.data.length; i++) {
+					lapData.data[i][1] -= referenceLapTimes[i][1];
+				}
+			
+			});
+			
+			return newDataSet;
+		}
  	 									
 		$(function () {
 	    	var datasets = {% autoescape off %} {{ laptime_graph_jsdata }} {% endautoescape %};    
@@ -109,14 +164,48 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 		        ++i;
 		    });
 	    
-		    // insert checkboxes 
-		    var choiceContainer = $("#choices");
-		    $.each(datasets, function(key, val) {
-		        choiceContainer.append('<br/><input type="checkbox" name="' + key +
-		                               '" checked="checked" id="id' + key + '">' +
-		                               '<label for="id' + key + '">'
-		                                + val.label + '</label>');
-		    });
+	    	// determine unique lap time events
+			var uniqueTimes = [0.0];
+			$.each(datasets, function(key,val) {
+				var cumulativeTime = 0.0;
+				for(var i=0; i< val.data.length; ++i) {
+					cumulativeTime = cumulativeTime + val.data[i][1];
+					uniqueTimes.push(cumulativeTime);
+				}
+			});
+		
+			uniqueTimes.sort(function(a,b){return a-b;});
+			
+			var battleData = {};
+			racerColor = 0;
+			$.each(datasets, function(racer, lapTimeData) {
+				var lapProgressData = [];
+				for(var i=0;i<uniqueTimes.length; i++) {
+					var uniqueTime = uniqueTimes[i];
+					lapProgressData.push([uniqueTime, getLapCountForRacer(uniqueTime,lapTimeData.data)]);
+				}
+				battleData[racer] = {"data":lapProgressData};
+				battleData[racer].color = racerColor;
+				battleData[racer].label = racer;
+				racerColor++;
+			});
+	    
+	        // insert checkboxes 
+	        var choiceContainer = $("#choices");
+			var battleChoices = $("#battle_choices");
+			var battleSelector = $("#battle_selector");
+	        $.each(datasets, function(key, val) {
+	         
+				var racerCheckbox = '<br/><input type="checkbox" name="' + key +
+	                                   '" checked="checked" id="id' + key + '">' +
+	                                   '<label for="id' + key + '">'
+	                                    + val.label + '</label>';
+										
+				choiceContainer.append(racerCheckbox);
+				battleChoices.append(racerCheckbox);
+				battleSelector.append('<option>' + key + '</option>');
+				
+	        });
 		    choiceContainer.find("input").click(plotAccordingToChoices);
 		    
 		    function plotAccordingToChoices() {
@@ -139,6 +228,37 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 		    }
 		
 		    plotAccordingToChoices();
+		    
+		    		battleSelector.change(plotBattle);
+		battleChoices.find("input").click(plotBattle);
+		
+		function plotBattle() {
+			// rebase if necessary
+			var referenceRacer = battleSelector.val();
+			var referenceBattleData;
+			if(!referenceRacer || referenceRacer == "None") {
+				referenceBattleData = battleData;
+			} else {
+				referenceBattleData = rebaseToReferenceRacer(referenceRacer, battleData);
+			}
+			
+			var plotData = [];
+			battleChoices.find("input:checked").each(function() {
+				var racer = $(this).attr("name");
+				if(racer && referenceBattleData[racer]) {
+					plotData.push(referenceBattleData[racer]);
+			}});
+			
+			$.plot($("#battlegraph_placeholder"), plotData, {
+				xaxis: {tickSize: 30},
+				lines: {show: true},
+				points: {show: false},
+				legend: {position: "nw",
+						backgroundOpacity: 0.25}
+			});
+		}
+		
+		plotBattle();
 		    
 		    // ====================================================================
 		    // Hover tooltip
