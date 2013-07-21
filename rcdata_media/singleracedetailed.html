@@ -43,6 +43,10 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 				<h3>Race Progress Graph</h3>
 			</section> <!--  END content_heading -->
 	  
+	  		<div class="message-box green">
+				<p>NEW FEATURE - from Zach Miller: Try toggling through the reference racer to see the gap between other racer as the laps unfold.</p>
+			</div><!-- /.message-box -->
+			
 			<div id="battlegraph_placeholder" style="width:950px;height:600px;"></div>
 			<p id="battle_reference">Reference Racer:
 				<select id="battle_selector">
@@ -112,7 +116,7 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 
  	<script type="text/javascript" charset="utf-8">
  	
- 			/**
+ 		/**
 		 * Returns the number of laps the racer has completed, and an interpolated decimal portion if they are between laps
 		 * @param time number of seconds since the start of the race
 		 * @param lapData A two-dimensional array where the second element of the nested array is the racer's individual lap times.
@@ -153,7 +157,12 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 			
 			return newDataSet;
 		}
- 	 									
+ 	 	
+ 	 	/**
+ 	 	 * Main function that will get the dataset from the template and organize it for
+ 	 	 * the flot graphs.
+ 	 	 *
+ 	 	 */								
 		$(function () {
 	    	var datasets = {% autoescape off %} {{ laptime_graph_jsdata }} {% endautoescape %};    
 		    // hard-code color indices to prevent them from shifting as
@@ -189,8 +198,10 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 				battleData[racer].label = racer;
 				racerColor++;
 			});
-	    
-	        // insert checkboxes 
+            
+            // ====================================================================
+	        // insert checkboxes - for both the the lap times and battle graph
+	        // ====================================================================
 	        var choiceContainer = $("#choices");
 			var battleChoices = $("#battle_choices");
 			var battleSelector = $("#battle_selector");
@@ -208,6 +219,9 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 	        });
 		    choiceContainer.find("input").click(plotAccordingToChoices);
 		    
+		    // ====================================================================
+		    // plot the laptimes on the graph depending on what the user has selected.
+		    // ====================================================================
 		    function plotAccordingToChoices() {
 		        var data = [];
 		
@@ -225,11 +239,10 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 		                points: {show:true},
 		                grid: {hoverable: true, }, // Hover tooltip
 		            });
-		    }
-		
+		    }		
 		    plotAccordingToChoices();
 		    
-		    		battleSelector.change(plotBattle);
+		battleSelector.change(plotBattle);
 		battleChoices.find("input").click(plotBattle);
 		
 		function plotBattle() {
@@ -256,8 +269,7 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 				legend: {position: "nw",
 						backgroundOpacity: 0.25}
 			});
-		}
-		
+		}		
 		plotBattle();
 		    
 		    // ====================================================================
@@ -301,13 +313,11 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 		});
  	
  	</script>
- 	
- 	<!-- 
- 	===================================================================================
-	Recent lap times flot graph
- 	=================================================================================== 	
- 	 --> 	
+ 	 	
  	<script type="text/javascript">
+ 	// ===================================================================================
+ 	// Recent lap times flot graph
+ 	// ===================================================================================
 	$(function () {
    		var datasets = {% autoescape off %} {{ recent_laptimes_jsdata }} {% endautoescape %};
   
