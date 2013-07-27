@@ -36,7 +36,7 @@ def lap_time_history_fastest_each_night_flot_data(racedetails_obj):
                                      'color':"rgb(70, 120, 70)"})
        
     recent_laptimes_jsdata = simplejson.dumps(formated_recent_laptimes)
-    print recent_laptimes_jsdata
+    #print recent_laptimes_jsdata
     
     '''
      Example - 

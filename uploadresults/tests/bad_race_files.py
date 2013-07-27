@@ -186,11 +186,12 @@ Golf, Jon            #7         17         6:16.439         18.222            13
 
     singlerace_testfile4 = ''' '''
 
+    # Validate race - needed for the duplicate upload test.
     singlerace_testfile5 = '''Scoring Software by www.RCScoringPro.com                7:09:52 PM  04/08/2013
 
                      TACOMA RC RACEWAY TUESDAY NIGHT RACING
 
-STOCK BUGGY                                                   Round# 1, Race# 1
+STOCK BUGGYDOUBLE                                                   Round# 1, Race# 1
 
 ________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
 SHIRK, MIKE            #6         21         6:14.594         16.940                  
@@ -227,15 +228,16 @@ SCOVRONSKI, JEREMY            #1         17         6:00.082         18.588
      17/     18/     19/     18/     20/     21/     20/                        
   6:00.0  6:13.8  6:12.4  6:07.7  6:11.0  6:14.5  6:06.6 
 '''
-
+    
+    # This is a duplicate of singlerace_testfile6
     singlerace_testfile6 = '''Scoring Software by www.RCScoringPro.com                7:09:52 PM  04/08/2013
 
                      TACOMA RC RACEWAY TUESDAY NIGHT RACING
 
-STOCK BUGGY                                                   Round# 1, Race# 1
+STOCK BUGGYDOUBLE                                                   Round# 1, Race# 1
 
 ________________________Driver___Car#____Laps____RaceTime____Fast Lap___Behind_
-SHIRK, MIKE            #6         21         6:14.594         16.940                  
+ShouldNOTExist, Jon            #6         21         6:14.594         16.940                  
 JUSTIN GILKISON            #7         20         6:06.675         17.252                  
 AUTRY, BRIAN            #5         20         6:11.090         17.058             4.415
 MIKE MOLOSEAU            #3         19         6:12.442         17.760                  
@@ -329,11 +331,11 @@ Qual#  Name                          Laps  Race Time  Rnd  Pos  Behind FastLap
 
 '''
 
-    racelist_to_upload = [{'filename':'upload1', 'filecontent':singlerace_testfile1},
+    racelist_to_upload = [{'filename':'upload5', 'filecontent':singlerace_testfile5},
+                          {'filename':'upload1', 'filecontent':singlerace_testfile1},
                           {'filename':'upload2', 'filecontent':doublerace_testfile2},
                           {'filename':'upload3', 'filecontent':singlerace_testfile3},
                           {'filename':'upload4', 'filecontent':singlerace_testfile4},
-                          {'filename':'upload5', 'filecontent':singlerace_testfile5},
                           {'filename':'upload6', 'filecontent':singlerace_testfile6},
                           {'filename':'upload7', 'filecontent':singlerace_testfile7},]
     
@@ -376,10 +378,32 @@ Qual#  Name                          Laps  Race Time  Rnd  Pos  Behind FastLap
         self.assert_(records[0].processed)
         self.assertEqual(records[0].errorenum, None)
         
+        # Duplicate upload 
         records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload6')
         self.assert_(records[0].processed)
         self.assertEqual(records[0].errorenum, 6)
+        # We need to make sure nothing got in
+        
+        #====================================================
+        # Validate Race Details
+        #====================================================
+        # Validate the race details have been uploaded.
+        raceobj = SingleRaceDetails.objects.filter(trackkey=self.trackname_obj,
+                                                   racedata="STOCK BUGGYDOUBLE",
+                                                   racenumber=1,
+                                                   roundnumber=1,
+                                                   racelength=6,
+                                                   winninglapcount=21,
+                                                   mainevent=None)
+        self.assertEqual(len(raceobj), 1)
+        
+        with self.assertRaises(RacerId.DoesNotExist):        
+            #====================================================
+            # Validate Racers
+            #====================================================            
+            car1 = RacerId.objects.get(racerpreferredname="ShouldNOTExist, Jon")
         
         records = models.EasyUploadRecord.objects.filter(uploadrecord=self.primary_record, filename='upload7')
         self.assert_(records[0].processed)
         self.assertEqual(records[0].errorenum, None)
+        

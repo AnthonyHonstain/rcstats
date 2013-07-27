@@ -23,18 +23,10 @@ def process_singlerace(race):
     # Track - We assume it has already been validated that this is a known track.
     #    NOTE - we do not want to be creating new tracks in this code, if the track
     #    is new it probably means they are not uploading appropriately.
-    track_obj = TrackName.objects.get(trackname=race.trackName)
-            
+    track_obj = TrackName.objects.get(trackname=race.trackName)        
+    
     # ====================================================
-    # Insert Racers
-    # ====================================================
-    # We want to add a new racerid if one does not already exist.
-    for racer in race.raceHeaderData:
-        racer_obj, created = RacerId.objects.get_or_create(racerpreferredname=racer['Driver'])
-        racer['racer_obj'] = racer_obj
-        
-    # ====================================================
-    # Insert Race Details
+    # Get additional meta info for creating the race details
     # ====================================================
     # Find race length
     racelength = _calculate_race_length(race.raceHeaderData)
@@ -51,9 +43,13 @@ def process_singlerace(race):
     formatedtime = time.strftime('%Y-%m-%d %H:%M:%S', timestruct)
     currenttime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     
+    # ====================================================
+    # Check for duplicates
+    # ====================================================
     # We want to stop if this race is already in the database    
-    test_objs = SingleRaceDetails.objects.filter(trackkey=track_obj,
-                                            racedata=race.raceClass,    
+    test_objs = SingleRaceDetails.objects.filter(
+                                            #trackkey=track_obj, # I dont want to accidentally upload results across tracks
+                                            #racedata=race.raceClass, # This gets modified by the collapse names code.    
                                             roundnumber=race.roundNumber,
                                             racenumber=race.raceNumber,
                                             racedate=formatedtime,
@@ -68,6 +64,17 @@ def process_singlerace(race):
         # We can be reasonably certain this file has already been uploaded.
         raise FileAlreadyUploadedError("File already uploaded")
         
+    # ====================================================
+    # Insert Racers
+    # ====================================================
+    # We want to add a new racerid if one does not already exist.
+    for racer in race.raceHeaderData:
+        racer_obj, created = RacerId.objects.get_or_create(racerpreferredname=racer['Driver'])
+        racer['racer_obj'] = racer_obj
+    
+    # ====================================================
+    # Insert Race Details
+    # ====================================================    
     details_obj = SingleRaceDetails(trackkey=track_obj,
                                     racedata=race.raceClass,
                                     roundnumber=race.roundNumber,
@@ -80,7 +87,7 @@ def process_singlerace(race):
                                     maineventroundnum=race.mainEventRoundNum, 
                                     maineventparsed=race.mainEventParsed)
     details_obj.save()
-    
+        
     # ====================================================
     # Insert Race Laps
     # ====================================================
