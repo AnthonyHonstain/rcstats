@@ -4,3 +4,8 @@ settings.py
 .pydevproject
 .project
 *~
+rcdata/admin
+rcdata/css
+rcdata/grappelli
+rcdata/images
+rcdata/js
