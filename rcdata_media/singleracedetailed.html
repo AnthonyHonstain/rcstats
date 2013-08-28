@@ -123,19 +123,19 @@ RC-Stats stores your remote control race results and gives you tools to track yo
 		*/
 		function getLapCountForRacer(_time, lapData) {
 			var time = _time; // not sure if javascript passes by reference, don't really care
-			var lapCount = 0.0;
+			var lapNumber = 0.0;
 			for(var i=0; i< lapData.length; i++) {
-				var lap = lapData[i][1];
+				var lapTime = lapData[i][1];
+				lapNumber = lapData[i][0];
 				
-				if(time < lap) {
-					return lapCount + (time / lap);
+				if(time < lapTime) {
+					return lapNumber + (time / lapTime);
 				} else {
-					time = time - lap;
-					lapCount = lapCount + 1.0;
+					time = time - lapTime;
 				}
 				
 			}
-			return lapCount;
+			return lapNumber + 1.0;
 		}
 		
 		/**
